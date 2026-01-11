@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+		match /users/{userId} {
+      allow read: if request.auth != null;
+
+      allow create: if request.auth.uid == userId
+        && request.resource.data.keys().hasAll(['displayName', 'photoURL', 'joinedAt', 'lastLogin'])
+        && request.resource.data.photoURL is string
+        && request.resource.data.displayName is string
+        && request.resource.data.joinedAt == request.time
+        && request.resource.data.lastLogin == request.time
+			;
+
+      allow update: if request.auth.uid == userId
+        && request.resource.data
+          .diff(resource.data)
+          .affectedKeys()
+          .hasOnly(['displayName', 'photoURL', 'lastLogin'])
+        && request.resource.data.photoURL is string
+        && request.resource.data.displayName is string
+        && request.resource.data.lastLogin == request.time
+      ;
+
+      allow delete: if false;
+    }
+
+    match /players/{userid} {
+      allow create, write, read: if true;
+    }
+
+    match /cards/{cardId} {
+      allow create, write, read: if true;
+    }
+
+    match /packs/{packId} {
+      allow create, write, read: if true;
+    }
+
+    match /appData/misc {
+      allow create, write, read: if true;
+    }
+
+    // forbid everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -7,15 +7,7 @@ export interface iCard {
   teamId: string;
   teamName: string;
   type: CardType;
-  variant: iCardRarity
   stats: iCardStats;
-}
-
-export enum iCardRarity {
-  COMMON,
-  UNCOMMON,
-  RARE,
-  LEGENDARY
 }
 
 export enum CardType {
@@ -31,7 +23,15 @@ export interface iCardStats {
 
 export interface iCardInUsersCards {
   cardId: string;
+  rarity: iCardRarity
   quantity: number;
+}
+
+export enum iCardRarity {
+  COMMON,
+  UNCOMMON,
+  RARE,
+  LEGENDARY
 }
 
 export interface iCardInCollection {
