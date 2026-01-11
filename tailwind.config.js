@@ -1,8 +1,15 @@
 /** @type {import('tailwindcss').Config} */
-export default {
-  content: [],
+module.exports = {
+  content: [
+    "./app/**/*.{js,vue,ts}",
+  ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        f1: ['Formula1', 'sans-serif'],
+        sans: ['"Reddit Sans"', 'sans-serif'],
+      },
+    },
   },
   plugins: [],
 }

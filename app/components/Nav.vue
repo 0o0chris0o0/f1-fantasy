@@ -54,8 +54,7 @@
             <NuxtLink to="/login" class="main-link">Sign In</NuxtLink>
           </li>
         </template>
-        <li class="mt-3"><hr class="invisible my-3" ></li>
-        <li><NuxtLink to="/all-cards">All cards</NuxtLink></li>
+        <li class="mt-3"><hr class="invisible my-3"></li>
         <li v-if="userLoggedIn">
           <button @click="logout">Logout</button>
         </li>
@@ -72,7 +71,6 @@ const props = defineProps<{
 }>();
 const emit = defineEmits(["toggleMenu"]);
 
-const router = useRouter();
 const route = useRoute();
 
 const auth = useFirebaseAuth()!;
@@ -97,7 +95,9 @@ const logout = async () => {
   await signOut(auth);
   userStore.userFromStore = null;
 
-  router.push("/");
+  emit("toggleMenu");
+
+  navigateTo("/");
 };
 </script>
 
@@ -106,7 +106,7 @@ const logout = async () => {
   top: 0;
   right: 0;
   color: white;
-  min-width: 200px;
+  min-width: 250px;
   max-width: 280px;
 }
 

@@ -1,13 +1,16 @@
-import tailwindcss from "@tailwindcss/vite";
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
-  modules: ['nuxt-vuefire', "@pinia/nuxt"],
+  modules: ['nuxt-vuefire', "@pinia/nuxt", "@nuxtjs/tailwindcss"],
 
-  css: ['./assets/main.css'],
+  tailwindcss: {
+    cssPath: [`./app/assets/css/tailwind.css`, { injectPosition: "first" }],
+    config: {},
+    viewer: true,
+    exposeConfig: false,
+  },
 
   vuefire: {
     auth: {
@@ -22,11 +25,5 @@ export default defineNuxtConfig({
       messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
       appId: process.env.FIREBASE_APP_ID,
     },
-  },
-
-  vite: {
-    plugins: [
-      tailwindcss(),
-    ],
   },
 })

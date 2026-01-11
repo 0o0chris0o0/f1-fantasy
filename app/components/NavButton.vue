@@ -16,17 +16,16 @@ const props = defineProps(["navOpen"]);
 
 <style lang="scss" scoped>
 button span {
-  @apply absolute;
-  @apply left-0;
-  @apply rounded;
-  @apply bg-white;
-
+  position: absolute;
+  left: 0;
+  border-radius: 10%;
   transition: all 0.3s ease-in-out;
   width: 80%;
   top: 50%;
   left: 50%;
   height: 3px;
   transform: translate(-50%, -50%);
+  background: white;
 }
 
 button span:first-child {

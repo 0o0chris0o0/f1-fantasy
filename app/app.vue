@@ -19,7 +19,8 @@
             The page you were trying to visit requires you to login!
           </p>
         </div>
-        <NuxtPage />
+        <Loader v-if="!ready" />
+        <NuxtPage v-else />
         <NotificationContainer />
       </main>
     </div>
@@ -31,36 +32,49 @@
 import type { ComponentPublicInstance } from "vue";
 
 // Components
-import Loader from "../components/Loader.vue";
+import Loader from "./components/Loader.vue";
 
 const user = useCurrentUser();
-
-const router = useRouter();
 const route = useRoute();
-
-console.log(user.value);
+const userStore = useUserStore();
 
 const nav = ref<ComponentPublicInstance | null>(null);
 const contentContainer = ref<HTMLElement | null>(null);
 const navOpen = ref(false);
 const navWidth = ref(0);
 const showRedirectMessage = ref(false);
-
-// const userStore = useUserStore();
-
-// if (user.value && !userStore.userFromStore) {
-//   userStore.getUserForStore();
-// }
+const ready = ref(false);
 
 if (route.query.redirect) {
   showRedirectMessage.value = true;
 }
 
-onMounted(() => {
+onMounted(async () => {
   const navComp = nav.value;
   if (navComp && navComp.$el) {
     navWidth.value = navComp.$el.clientWidth;
   }
+
+  // wait for firebase auth to resolve (user becomes defined/null)
+  await new Promise<void>((resolve) => {
+    const stop = watch(
+      user,
+      () => {
+        nextTick(() => {
+          stop();
+          resolve();
+        });
+      },
+      { immediate: true }
+    );
+  });
+
+  // load user record if logged in and store not populated
+  if (user.value && !userStore.userFromStore) {
+    await userStore.getUserForStore();
+  }
+
+  ready.value = true;
 });
 
 const toggleMenu = () => {
@@ -74,14 +88,14 @@ const toggleMenu = () => {
   }
 };
 
-// watch([() => route.path, () => route.query], () => {
-//   if (route.query.redirect) {
-//     showRedirectMessage.value = true;
-//     toggleMenu();
-//   } else if (showRedirectMessage.value) {
-//     showRedirectMessage.value = false;
-//   }
-// });
+watch([() => route.path, () => route.query], () => {
+  if (route.query.redirect) {
+    showRedirectMessage.value = true;
+    toggleMenu();
+  } else if (showRedirectMessage.value) {
+    showRedirectMessage.value = false;
+  }
+});
 
 // watch(user, async (currentUser, previousUser) => {
 //   // redirect to login if they logout and the current route is only for authenticated users

@@ -2,6 +2,8 @@
   <div>
     <PageHeader> Login </PageHeader>
 
+    <Loader v-if="loading" />
+
     <p v-if="error" class="text-center text-red-600 mb-2">
       {{ error }}
     </p>
@@ -42,6 +44,7 @@ definePageMeta({
 
 const auth = useFirebaseAuth()!; // only exists on client side
 
+const loading = ref(false);
 const email = ref<string>("");
 const password = ref<string>("");
 const errorFields = ref<string[]>([]);
@@ -50,9 +53,13 @@ const errorFields = ref<string[]>([]);
 const error = ref<string | null>(null);
 
 const signIn = async () => {
+  if (loading.value) return;
+
+  loading.value = true;
+
   try {
     await signInWithEmailAndPassword(auth, email.value, password.value);
-    navigateTo("/");
+    navigateTo("home");
   } catch (reason: any) {
     if (reason.code) {
       const { errorMsg, field } = transformErrorCode(reason.code);
@@ -64,6 +71,8 @@ const signIn = async () => {
     } else {
       error.value = "Unknown error";
     }
+  } finally {
+    loading.value = false;
   }
 };
 

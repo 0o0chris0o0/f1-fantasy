@@ -1,8 +1,6 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
   const user = await getCurrentUser();
 
-  debugger;
-
   // If the user is not logged in and is trying to access any page other than login
   if (!user && to.path !== '/login') {
     return navigateTo('/login')
