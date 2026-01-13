@@ -1,5 +1,6 @@
 import { doc, Firestore, writeBatch } from "firebase/firestore";
 import { CardType, iCardRarity, type iCard } from "~/types/card";
+import type { ConstructorStanding, JolpicaConstructorStandingsResponse } from "~/types/jolpica/constructorStandings";
 import type { DriverStanding, JolpicaDriverStandingsResponse } from "~/types/jolpica/driverStandings";
 
 const currentYear = 2026;
@@ -38,101 +39,48 @@ export const addAllCards = async (db: Firestore) => {
     formattedDrivers.push(newObj);
   });
 
-  debugger;
-
   // add cards to DB
   formattedDrivers.forEach((card) => {
     const newRef = doc(db, "cards", card.cardId);
     batch.set(newRef, card);
   });
 
-  // // get all constructors
-  // const prevConstructorResponse = await fetch(
-  //   `https://api.jolpi.ca/ergast/f1/${currentYear - 1}/constructorStandings.json`
-  // );
-  // const prevConstructorData = await prevConstructorResponse.json();
-  // const prevConstructorStandings =
-  // prevConstructorData.MRData.StandingsTable.StandingsLists[0]
-  //     .ConstructorStandings;
-  // const prevConstructorPositions: Record<string, string> = {};
-  //   prevConstructorStandings.forEach((data: any) => {
-  //     prevConstructorPositions[data.Constructor.constructorId] = data.position;
-  // });
+  // get all constructors
+  const constructorResponse = await fetch(
+    `https://api.jolpi.ca/ergast/f1/${currentYear - 1}/constructorStandings.json`
+  );
 
-  // const currentConstructorResponse = await fetch(
-  //   `https://api.jolpi.ca/ergast/f1/${currentYear}/constructorStandings.json`
-  // );
-  // const currentConstructorData = await currentConstructorResponse.json();
-  // let currentConstructorStandings = []
+  const constructorData: JolpicaConstructorStandingsResponse = await constructorResponse.json();
+  const constructorStandings =
+  constructorData.MRData.StandingsTable?.StandingsLists[0]?.ConstructorStandings;
 
-  // if (currentConstructorData.MRData.StandingsTable.StandingsLists.length) {
-  //   currentConstructorStandings = currentConstructorData.MRData.StandingsTable.StandingsLists[0].ConstructorStandings
-  // } else {
-  //   currentConstructorStandings = prevDriverStandings;
-  // }
+  if (!constructorStandings) return;
 
-  // const formattedConstructors: iCard[] = [];
+  const formattedConstructors: iCard[] = [];
 
-  // // build car cards data
-  // currentConstructorStandings.forEach((constructor: any) => {
-  //   const constructorRank = parseFloat(prevConstructorPositions[constructor.Constructor.constructorId]) || currentConstructorStandings.length;
+  // build constructor cards data
+  constructorStandings.forEach((constructor: ConstructorStanding) => {
+    const newObj: iCard = {
+      cardId: constructor.Constructor.constructorId,
+      cardName: constructor.Constructor.name,
+      enabled: true,
+      teamId: constructor.Constructor.constructorId,
+      teamName: constructor.Constructor.name,
+      type: CardType.CONSTRUCTOR,
+      stats: {
+        averageQualifyingPosition: 0,
+        averageRacePosition: 0,
+        numberOfDNFs: 0,
+      },
+    };
 
-  //   const newObj: iCard = {
-  //     cardId: constructor.Constructor.constructorId,
-  //     cardName: constructor.Constructor.name,
-  //     currentPoints: 0,
-  //     currentRank: constructorRank,
-  //     previousRank: constructorRank,
-  //     previousTier: getConstructorTier(constructorRank),
-  //     currentTier: getConstructorTier(constructorRank),
-  //     enabled: true,
-  //     teamId: constructor.Constructor.constructorId,
-  //     teamName: constructor.Constructor.name,
-  //     type: CardType.CAR,
-  //     variant: false,
-  //     stats: {
-  //       racePoints: 0,
-  //       qualificationPoints: 0,
-  //       bestRacePosition: 11,
-  //       bestQualifyingPosition: 11,
-  //       averagePointsPerRace: 0,
-  //       rankAmoungPiers: `${constructorRank}/${currentConstructorStandings.length}`,
-  //       numberOfDNFs: 0,
-  //     },
-  //   };
-  //   formattedConstructors.push(newObj);
-  // });
+    formattedConstructors.push(newObj);
+  });
 
-  // formattedConstructors.forEach((card) => {
-  //   const newRef = doc(db, "cards", card.cardId);
-  //   batch.set(newRef, card);
-  // });
-
-  // // build Team Principle cards data
-  // tpData.forEach((card) => {
-  //   const constructorRank = parseFloat(prevConstructorPositions[card.teamId]) || currentConstructorStandings.length;
-
-  //   const newRef = doc(db, "cards", card.cardId);
-
-  //   batch.set(newRef, {
-  //     ...card,
-  //     currentRank: constructorRank,
-  //     previousRank: constructorRank,
-  //     previousTier: getConstructorTier(constructorRank),
-  //     currentTier: getConstructorTier(constructorRank),
-  //     stats: {
-  //       racePoints: 0,
-  //       qualificationPoints: 0,
-  //       bestRacePosition: 11,
-  //       bestQualifyingPosition: 11,
-  //       averagePointsPerRace: 0,
-  //       rankAmoungPiers: `${constructorRank}/${tpData.length}`,
-  //       numberOfDNFs: 0,
-  //     },
-  //   });
-  // });
-
-  debugger;
+  formattedConstructors.forEach((card) => {
+    const newRef = doc(db, "cards", card.cardId);
+    batch.set(newRef, card);
+  });
 
   await batch.commit();
 };

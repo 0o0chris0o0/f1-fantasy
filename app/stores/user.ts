@@ -41,48 +41,29 @@ export const useUserStore = defineStore('user', () => {
   //   return userFromStore.value.packs.map((pack) => pack.packId);
   // })
 
-  // const shouldUserSeeEmergencyPacks = computed(() => {
-  //   if (!userFromStore.value) {
-  //     return false;
-  //   }
+  const shouldUserSeeEmergencyPacks = computed(() => {
+    if (!userFromStore.value) {
+      return false;
+    }
 
-  //   if (['normal', 'starterCarPack', 'starterDriverPack', 'starterTpPack'].some(pack => userPacksIds.value.includes(pack))) {
-  //     return false;
-  //   }
+    // if user is missing a type of card
+    // const cardsStore = useCardsStore();
+    // if (!cardsStore.userCarCards || cardsStore.userDriverCards || cardsStore.userTpCards) {
+    //   return true;
+    // }
+  })
 
-  //   // if user is missing a type of card
-  //   const cardsStore = useCardsStore();
-  //   if (!cardsStore.userCarCards || cardsStore.userDriverCards || cardsStore.userTpCards) {
-  //     return true;
-  //   }
-  // })
+  const emergencyPacksAvailableToUser = computed(() => {
+    const cardsStore = useCardsStore();
+    const returnAry: any[] = [];
 
-  // const emergencyPacksAvailableToUser = computed(() => {
-  //   const cardsStore = useCardsStore();
-  //   const returnAry = [];
+    if (!shouldUserSeeEmergencyPacks.value) {
+      return [];
+    }
 
-  //   if (!shouldUserSeeEmergencyPacks.value) {
-  //     return [];
-  //   }
+    return returnAry;
+  })
 
-  //   if (!cardsStore.userCarCards?.length && !userPacksIds.value.includes('emergencyCarPack')) {
-  //     returnAry.push('emergencyCarPack')
-  //   }
-
-  //   if ((!cardsStore.userDriverCards?.length || cardsStore.userDriverCards?.length < 2) && !userPacksIds.value.includes('emergencyDriverPack')) {
-  //     returnAry.push('emergencyDriverPack')
-  //   }
-
-  //   if (!cardsStore.userTpCards?.length && !userPacksIds.value.includes('emergencyTpPack')) {
-  //     returnAry.push('emergencyTpPack')
-  //   }
-
-  //   return returnAry;
-  // })
-
-  // const userTyres = computed(() => {
-  //   return userFromStore.value?.tyres
-  // })
 
   // const userCurrentTeamIds = computed(() => {
   //   const carId = userFromStore.value?.currentTeam.car?.cardId;
@@ -169,5 +150,5 @@ export const useUserStore = defineStore('user', () => {
   //   }
   // }
 
-  return { userFromStore, getUserForStore, userPacksCount, setUserForStore };
+  return { userFromStore, getUserForStore, userPacksCount, setUserForStore, shouldUserSeeEmergencyPacks, emergencyPacksAvailableToUser };
 })

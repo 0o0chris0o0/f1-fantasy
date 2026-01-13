@@ -8,7 +8,11 @@
     </div>
 
     <div class="grid grid-cols-2 gap-4">
-      <div><Button textColorClass="text-white" @click="performAddAllCards">Add All Cards</Button></div>
+      <div>
+        <Button textColorClass="text-white" @click="performAddAllCards">
+          Add All Cards
+        </Button>
+      </div>
     </div>
 
     <Loader v-if="isLoading" />

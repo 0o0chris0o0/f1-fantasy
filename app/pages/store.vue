@@ -10,7 +10,7 @@
     </div>
 
     <div class="grid grid-cols-1 gap-12">
-      <StorePack v-for="pack in availablePacks" :key="pack.packId" :pack="pack" :buy-pack="buyPack"/>
+      <StorePack v-for="pack in availablePacks" :key="pack.packId" :pack="pack"/>
     </div>
   </div>
   <div v-else>
@@ -40,6 +40,7 @@ const notificationStore = useNotificationStore();
 
 definePageMeta({
   middleware: "auth",
+  layout: 'required-data',
 });
 
 const isLoading = ref(false);
@@ -56,43 +57,45 @@ const { pending } = useAsyncData(async () => {
   const q = query(packsRef, where("hiddenFromStore", "==", false));
   const querySnapshot = await getDocs(q);
 
+  // get all packs
   availablePacks.value = querySnapshot.docs.map(
     (packDoc: QueryDocumentSnapshot) => packDoc.data() as iPack
   );
 
+  // filter packs by those visible for this user
   availablePacks.value = filterPacks();
 });
 
-const buyPack = async (pack: iPack) => {
-  if (userFromStore.value?.userId) {
-    isLoading.value = true;
+// const buyPack = async (pack: iPack) => {
+//   if (userFromStore.value?.userId) {
+//     isLoading.value = true;
 
-    const batch = writeBatch(db);
+//     const batch = writeBatch(db);
 
-    const playerRef = doc(db, "players", userFromStore.value.userId);
+//     const playerRef = doc(db, "players", userFromStore.value.userId);
 
-    // reduce players money
-    batch.update(playerRef, {
-      money: userFromStore.value.money - pack.cost,
-    });
+//     // reduce players money
+//     batch.update(playerRef, {
+//       money: userFromStore.value.money - pack.cost,
+//     });
 
-    // add pack to player
-    await giveUserPack(pack.packId);
+//     // add pack to player
+//     await giveUserPack(pack.packId);
 
-    await batch.commit();
+//     await batch.commit();
 
-    isLoading.value = false;
+//     isLoading.value = false;
 
-    notificationStore.addNotification({
-      version: 'success',
-      message: `You just bought a ${pack.packName}`
-    })
-  }
-};
+//     notificationStore.addNotification({
+//       version: 'success',
+//       message: `You just bought a ${pack.packName}`
+//     })
+//   }
+// };
 
-watch(emergencyPacksAvailableToUser, () => {
-  availablePacks.value = filterPacks();
-});
+// watch(emergencyPacksAvailableToUser, () => {
+//   availablePacks.value = filterPacks();
+// });
 
 const filterPacks = () => {
   let activePacks = availablePacks.value;

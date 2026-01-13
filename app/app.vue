@@ -20,7 +20,9 @@
           </p>
         </div>
         <Loader v-if="!ready" />
-        <NuxtPage v-else />
+        <NuxtLayout v-else>
+          <NuxtPage />
+        </NuxtLayout>
         <NotificationContainer />
       </main>
     </div>

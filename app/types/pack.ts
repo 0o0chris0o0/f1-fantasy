@@ -3,11 +3,11 @@ import type { iCard, CardType, iCardRarity } from "./card";
 export interface iPack {
   cardsIncluded: number;
   cost: number;
+  hiddenFromStore: boolean;
+  isEmergencyPack: boolean;
   packId: string;
   packName: string;
-  hiddenFromStore: boolean;
   slots: Record<number, iSlot>
-  isEmergencyPack: boolean;
 }
 
 export interface iSlot {

@@ -1,7 +1,6 @@
 <template>
   <div>
-    <slot v-if="canRender"/>
-    <Loader v-else />
+    <slot/>
   </div>
 </template>
 
@@ -10,19 +9,23 @@ const userStore = useUserStore();
 const cardStore = useCardsStore();
 const appDataStore = useAppDataStore();
 
+// attempt to get all cards (won't run if we've already got em)
 await cardStore.getAllCards();
-const { status: appDataStatus } = useAsyncData(appDataStore.getAppData);
+
+// attempt to get the app data
+await appDataStore.getAppData();
 
 const canRender = computed(() => {
   // ensures we have:
   // - all cards
   // - a user
   // - the app data
+
   const doWeHaveAllCards = !!cardStore.allCards.length;
   const doWeHaveAUserObj = !!userStore.userFromStore;
-  const doWeHaveAppData = appDataStatus.value === 'success';
+  const doWeHaveAppData = !!appDataStore.roundInfo;
 
-  return doWeHaveAllCards && doWeHaveAUserObj && doWeHaveAppData
+  return doWeHaveAllCards && doWeHaveAUserObj && doWeHaveAppData;
 });
 </script>
 
