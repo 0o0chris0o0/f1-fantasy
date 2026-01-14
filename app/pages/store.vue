@@ -1,20 +1,17 @@
 <template>
-  <div v-if="!pending && userFromStore">
-    <Loader v-if="isLoading" />
+  <Loader v-if="isLoading"/>
+  <div v-if="userFromStore">
     <div class="grid grid-cols-12 px-4 mb-6 first:items-center">
       <PageHeader class="col-span-6 col-start-4"> Store </PageHeader>
       <div class="col-span-3 flex items-center justify-end">
         <img src="/img/coins.svg" class="w-6" >
-        <p class="font-f1 font-semibold text-lg text-yellow-500 ml-2">{{ userStore.userFromStore?.money }}</p>
+        <p class="font-f1 font-semibold text-lg text-yellow-500 ml-2">{{ userFromStore.money }}</p>
       </div>
     </div>
 
     <div class="grid grid-cols-1 gap-12">
-      <StorePack v-for="pack in availablePacks" :key="pack.packId" :pack="pack"/>
+      <StorePack v-for="pack in filteredPacks" :key="pack.packId" :pack="pack"/>
     </div>
-  </div>
-  <div v-else>
-    <p class="text-center">Loading...</p>
   </div>
 </template>
 
@@ -40,11 +37,10 @@ const notificationStore = useNotificationStore();
 
 definePageMeta({
   middleware: "auth",
-  layout: 'required-data',
 });
 
 const isLoading = ref(false);
-const availablePacks = ref<iPack[]>([]);
+const availablePacks = useState<iPack[]>('availablePacks', () => []);
 
 const {
   userFromStore,
@@ -52,7 +48,7 @@ const {
   emergencyPacksAvailableToUser,
 } = storeToRefs(userStore);
 
-const { pending } = useAsyncData(async () => {
+await callOnce(async () => {
   const packsRef = collection(db, "packs");
   const q = query(packsRef, where("hiddenFromStore", "==", false));
   const querySnapshot = await getDocs(q);
@@ -61,9 +57,10 @@ const { pending } = useAsyncData(async () => {
   availablePacks.value = querySnapshot.docs.map(
     (packDoc: QueryDocumentSnapshot) => packDoc.data() as iPack
   );
+});
 
-  // filter packs by those visible for this user
-  availablePacks.value = filterPacks();
+const filteredPacks = computed(() => {
+  return filterPacks();
 });
 
 // const buyPack = async (pack: iPack) => {

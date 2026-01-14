@@ -1,6 +1,7 @@
 <template>
   <div>
-    <slot/>
+    <Loader v-if="!canRender"/>
+    <slot v-else/>
   </div>
 </template>
 
@@ -22,10 +23,12 @@ const canRender = computed(() => {
   // - the app data
 
   const doWeHaveAllCards = !!cardStore.allCards.length;
-  const doWeHaveAUserObj = !!userStore.userFromStore;
+  // const doWeHaveAUserObj = !!userStore.userFromStore;
   const doWeHaveAppData = !!appDataStore.roundInfo;
 
-  return doWeHaveAllCards && doWeHaveAUserObj && doWeHaveAppData;
+  console.log('checking...');
+
+  return doWeHaveAllCards && doWeHaveAppData;
 });
 </script>
 

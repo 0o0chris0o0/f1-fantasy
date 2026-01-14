@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { doc, onSnapshot, writeBatch } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, writeBatch } from "firebase/firestore";
 
 import type { iFBUser, iUserFromStore } from '@/types/user';
 import type { iCardInUsersCards } from '@/types/card';
@@ -10,17 +10,31 @@ export const useUserStore = defineStore('user', () => {
   const user = useCurrentUser();
   const db = useFirestore();
 
-  const getUserForStore = () => {
+  const getUserForStore = async () => {
+    // Only fetch if data doesn't exist
+    if (userFromStore.value) return userFromStore.value
+
     if (user.value) {
-      onSnapshot(doc(db, "players", user.value.uid), (userDoc) => {
-        userFromStore.value = {
-          userId: userDoc.id,
-          ...userDoc.data() as iFBUser
-        }
-      })
+      const docRef = doc(db, 'players', user.value.uid);
+      const userDoc = await getDoc(docRef);
+      userFromStore.value = {
+        userId: userDoc.id,
+        ...userDoc.data() as iFBUser
+      }
+      return userFromStore.value  
+
     } else {
-      console.log('no user!')
+      console.log('NO USER!!')
+      return {};
     }
+
+    // onSnapshot(doc(db, "players", newUser.uid), (userDoc) => {
+    //   console.log('setting userFromStore')
+    //   userFromStore.value = {
+    //     userId: userDoc.id,
+    //     ...userDoc.data() as iFBUser
+    //   }
+    // })
   }
 
   const setUserForStore = (userData: iUserFromStore) => {

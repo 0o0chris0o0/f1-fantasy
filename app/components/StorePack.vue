@@ -6,10 +6,6 @@
       <img 
         :src="`/img/pack-${pack.packId}.png`"
         class="absolute top-1/2 w-28 -translate-y-1/2" 
-        :class="{
-          '-rotate-6': pack.packId === 'normal',
-          'rotate-3': pack.packId === 'premium'
-        }"
         @error="loadFallbackPackImage($event)"
       >
       <div class="ml-28 w-full p-4">
@@ -28,6 +24,7 @@
           version="green"
           text-color-class="text-white text-sm"
           :disabled="userFromStore.money < pack.cost"
+          @click="navigateTo('/open-pack?packId=' + pack.packId)"
         >
           Buy pack
         </Button>

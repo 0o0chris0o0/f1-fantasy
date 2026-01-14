@@ -14,16 +14,9 @@
         </div>
       </header>
       <main class="w-full max-w-lg mx-auto flex-1 flex flex-col p-4">
-        <div v-if="showRedirectMessage" class="bg-orange-500 rounded mb-4">
-          <p class="text-sm p-3">
-            The page you were trying to visit requires you to login!
-          </p>
-        </div>
-        <Loader v-if="!ready" />
-        <NuxtLayout v-else>
-          <NuxtPage />
-        </NuxtLayout>
-        <NotificationContainer />
+        <Loader v-if="!userData"/>
+        <NuxtPage />
+        <!-- <NotificationContainer /> -->
       </main>
     </div>
     <Nav ref="nav" :nav-open="navOpen" @toggle-menu="toggleMenu" />
@@ -37,46 +30,22 @@ import type { ComponentPublicInstance } from "vue";
 import Loader from "./components/Loader.vue";
 
 const user = useCurrentUser();
-const route = useRoute();
 const userStore = useUserStore();
 
 const nav = ref<ComponentPublicInstance | null>(null);
 const contentContainer = ref<HTMLElement | null>(null);
 const navOpen = ref(false);
 const navWidth = ref(0);
-const showRedirectMessage = ref(false);
-const ready = ref(false);
 
-if (route.query.redirect) {
-  showRedirectMessage.value = true;
-}
+const { data: userData } = await useAsyncData('user-request', () => {
+  return userStore.getUserForStore();
+});
 
 onMounted(async () => {
   const navComp = nav.value;
   if (navComp && navComp.$el) {
     navWidth.value = navComp.$el.clientWidth;
   }
-
-  // wait for firebase auth to resolve (user becomes defined/null)
-  await new Promise<void>((resolve) => {
-    const stop = watch(
-      user,
-      () => {
-        nextTick(() => {
-          stop();
-          resolve();
-        });
-      },
-      { immediate: true }
-    );
-  });
-
-  // load user record if logged in and store not populated
-  if (user.value && !userStore.userFromStore) {
-    await userStore.getUserForStore();
-  }
-
-  ready.value = true;
 });
 
 const toggleMenu = () => {
@@ -90,35 +59,13 @@ const toggleMenu = () => {
   }
 };
 
-watch([() => route.path, () => route.query], () => {
-  if (route.query.redirect) {
-    showRedirectMessage.value = true;
-    toggleMenu();
-  } else if (showRedirectMessage.value) {
-    showRedirectMessage.value = false;
+// useful for when user logs in as the page won't refresh
+watch(user, async (currentUser) => {
+  // update user info
+  if (currentUser && !userStore.userFromStore) {
+    userStore.getUserForStore();
   }
 });
-
-// watch(user, async (currentUser, previousUser) => {
-//   // redirect to login if they logout and the current route is only for authenticated users
-//   if (
-//     !currentUser &&
-//     previousUser &&
-//     (Array.isArray(route.meta.middleware)
-//       ? route.meta.middleware.includes("authenticated")
-//       : route.meta.middleware === "authenticated")
-//   ) {
-//     return router.push({ name: "login" });
-//   }
-//   // redirect the user if they are logged in but were rejected because the user wasn't ready yet
-//   if (currentUser && typeof route.query.redirect === "string") {
-//     return router.push(route.query.redirect);
-//   }
-//   // update user info
-//   if (currentUser && !userStore.userFromStore) {
-//     userStore.getUserForStore();
-//   }
-// });
 </script>
 
 <style lang="scss" scoped>
