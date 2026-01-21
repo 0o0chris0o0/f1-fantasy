@@ -1,6 +1,6 @@
-export default function loadDefaultImage(e: Event, cardType: string) {
+export default function loadDefaultImage(e: Event, rarity: string = 'common') {
   const imgElement = e.target as HTMLImageElement;
-  imgElement.src = `/img/${cardType}-black.svg`;
+  imgElement.src = `/img/drivers/generic-${rarity}.png`;
   imgElement.classList.add("broken-img");
 };
 

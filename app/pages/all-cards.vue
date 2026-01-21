@@ -6,7 +6,12 @@
       ...filters...
     </div>
     <div>
-      <div class="grid grid-cols-2 gap-x-4 gap-y-3 mb-6">
+    <div class="grid grid-cols-1 gap-x-4 gap-y-3 mb-6">
+      <button v-if="allCards[0]" class="block w-full">
+        <Card :card="allCards[0]" :rarity="iCardRarity.COMMON" />
+      </button>
+    </div>
+      <div class="grid grid-cols-2 md:grid-cols-2 gap-x-4 gap-y-3 mb-6">
         <button v-if="allCards[0]" class="block w-full">
           <Card :card="allCards[0]" :rarity="iCardRarity.COMMON" />
         </button>
@@ -22,7 +27,7 @@
       </div>
     </div>
     <div>
-      <div class="grid grid-cols-2 md:grid-cols-3 gap-x-2 gap-y-3 mb-6">
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-x-3 gap-y-2 mb-6">
         <div v-for="card in allCards" :key="card.cardId">
           <button class="block w-full">
             <Card :card="card" />
