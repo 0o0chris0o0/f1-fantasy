@@ -21,3 +21,23 @@
   font-style: normal;
   font-display: swap;
 }
+
+/* Team colours */
+:root {
+  --color-alpine: #005081;
+  --color-aston_martin: #00482c;
+  --color-williams: #000681;
+  --color-ferrari: #710006;
+  --color-audi: #6b0015;
+  --color-cadillac: #444444;
+  --color-haas: #4d5052;
+  --color-mclaren: #863400;
+  --color-mercedes: #007560;
+  --color-rb: #2345ab;
+  --color-red_bull: #003282;
+
+  /* Shared fallback */
+  --color-default: #808080;
+}
+
+

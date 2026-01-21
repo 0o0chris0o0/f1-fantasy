@@ -24,17 +24,8 @@ export const useUserStore = defineStore('user', () => {
       return userFromStore.value  
 
     } else {
-      console.log('NO USER!!')
       return {};
     }
-
-    // onSnapshot(doc(db, "players", newUser.uid), (userDoc) => {
-    //   console.log('setting userFromStore')
-    //   userFromStore.value = {
-    //     userId: userDoc.id,
-    //     ...userDoc.data() as iFBUser
-    //   }
-    // })
   }
 
   const setUserForStore = (userData: iUserFromStore) => {

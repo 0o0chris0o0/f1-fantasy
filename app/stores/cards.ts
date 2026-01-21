@@ -69,8 +69,6 @@ export const useCardsStore = defineStore('cards', () => {
 //   const getXCard = (cardId: string) => {
 //     return allCards.value.find((card) => card.cardId === cardId)
 //   }
-
-//   return { allCards, getAllCards, userDriverCards, userCarCards, userTpCards, driverCards, carCards, tpCards, getXCard };
 // })
 
 // function filterCards(userCards: iCardInUsersCards[], typedCards: iCard[]) {

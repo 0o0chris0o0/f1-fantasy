@@ -30,6 +30,7 @@ export const addAllCards = async (db: Firestore) => {
       teamName: driver.Constructors[0]?.name || '',
       type: CardType.DRIVER,
       stats: {
+        currentFantasyPoints: 0,
         averageQualifyingPosition: 0,
         averageRacePosition: 0,
         numberOfDNFs: 0,
@@ -68,6 +69,7 @@ export const addAllCards = async (db: Firestore) => {
       teamName: constructor.Constructor.name,
       type: CardType.CONSTRUCTOR,
       stats: {
+        currentFantasyPoints: 0,
         averageQualifyingPosition: 0,
         averageRacePosition: 0,
         numberOfDNFs: 0,

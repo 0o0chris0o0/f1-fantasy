@@ -5,6 +5,8 @@ export default defineNuxtConfig({
 
   modules: ['nuxt-vuefire', "@pinia/nuxt", "@nuxtjs/tailwindcss"],
 
+  css: ['vue-final-modal/style.css'],
+
   tailwindcss: {
     cssPath: [`./app/assets/css/tailwind.css`, { injectPosition: "first" }],
     config: {},

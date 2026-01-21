@@ -16,6 +16,7 @@ export enum CardType {
 }
 
 export interface iCardStats {
+  currentFantasyPoints: number;
   averageQualifyingPosition: number;
   averageRacePosition: number;
   numberOfDNFs: number;

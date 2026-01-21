@@ -16,6 +16,7 @@
       <main class="w-full max-w-lg mx-auto flex-1 flex flex-col p-4">
         <Loader v-if="!userData"/>
         <NuxtPage />
+        <ModalsContainer />
         <!-- <NotificationContainer /> -->
       </main>
     </div>
@@ -25,6 +26,7 @@
 
 <script lang="ts" setup>
 import type { ComponentPublicInstance } from "vue";
+import { ModalsContainer } from 'vue-final-modal'
 
 // Components
 import Loader from "./components/Loader.vue";
@@ -60,7 +62,7 @@ const toggleMenu = () => {
 };
 
 // useful for when user logs in as the page won't refresh
-watch(user, async (currentUser) => {
+watch(user, async (currentUser, previousUser) => {
   // update user info
   if (currentUser && !userStore.userFromStore) {
     userStore.getUserForStore();

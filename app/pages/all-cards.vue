@@ -1,47 +1,42 @@
 <template>
   <div>
-    <h2 class="text-center mb-6 text-lg">My Cards</h2>
+    <h2 class="text-center mb-6 text-lg">All Cards</h2>
 
-    <template v-if="pending">
-      <Loader />
-    </template>
-    <template v-else>
-      <div>
-        <h3 class="text-lg mb-2">Drivers</h3>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-x-2 gap-y-3 mb-6">
-          <div v-for="card in cardsStore.driverCards" :key="card.cardId">
-            <button class="block w-full">
-              <Card :card="card" />
-            </button>
-          </div>
-        </div>
-
-        <h3 class="text-lg mb-2">Cars</h3>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-x-2 gap-y-3 mb-6">
-          <div v-for="card in cardsStore.carCards" :key="card.cardId">
-            <button class="block w-full">
-              <Card :card="card" />
-            </button>
-          </div>
-        </div>
-
-        <h3 class="text-lg mb-2">Team Principles</h3>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-x-2 gap-y-3 mb-6">
-          <div v-for="card in cardsStore.tpCards" :key="card.cardId">
-            <button class="block w-full">
-              <Card :card="card" />
-            </button>
-          </div>
+    <div>
+      ...filters...
+    </div>
+    <div>
+      <div class="grid grid-cols-2 gap-x-4 gap-y-3 mb-6">
+        <button v-if="allCards[0]" class="block w-full">
+          <Card :card="allCards[0]" :rarity="iCardRarity.COMMON" />
+        </button>
+        <button v-if="allCards[2]" class="block w-full">
+          <Card :card="allCards[2]" :rarity="iCardRarity.UNCOMMON" />
+        </button>
+        <button v-if="allCards[3]" class="block w-full">
+          <Card :card="allCards[3]" :rarity="iCardRarity.RARE" />
+        </button>
+        <button v-if="allCards[0]" class="block w-full">
+          <Card :card="allCards[0]" :rarity="iCardRarity.LEGENDARY" />
+        </button>
+      </div>
+    </div>
+    <div>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-x-2 gap-y-3 mb-6">
+        <div v-for="card in allCards" :key="card.cardId">
+          <button class="block w-full">
+            <Card :card="card" />
+          </button>
         </div>
       </div>
-    </template>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 // Components
 import Loader from "~/components/Loader.vue";
-import type { iCard } from "~/types/card";
+import { iCardRarity, type iCard } from "~/types/card";
 
 // Stores
 const cardsStore = useCardsStore();
@@ -50,9 +45,11 @@ definePageMeta({
   middleware: "auth",
 });
 
-const { pending } = await useAsyncData("cards", cardsStore.getAllCards);
+await callOnce("cards", cardsStore.getAllCards);
 
 const selectedCard = ref<iCard | null>(null);
+
+const { allCards } = storeToRefs(cardsStore);
 </script>
 
 <style lang="scss" scoped></style>
