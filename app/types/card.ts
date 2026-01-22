@@ -1,4 +1,5 @@
 import type { Timestamp } from "firebase/firestore";
+import type { iRace } from "./race";
 
 export interface iCard {
   cardId: string;
@@ -6,6 +7,9 @@ export interface iCard {
   enabled: boolean;
   teamId: string;
   teamName: string;
+  nationality: string;
+  homeRaceLocationId: string | null;
+  homeRaces: iRace[];
   type: CardType;
   stats: iCardStats;
 }

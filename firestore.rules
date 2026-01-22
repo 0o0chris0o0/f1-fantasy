@@ -42,6 +42,10 @@ service cloud.firestore {
       allow create, write, read: if true;
     }
 
+    match /schedule/{roundNumber} {
+      allow create, write, read: if true;
+    }
+
     // forbid everything else
     match /{document=**} {
       allow read, write: if false;

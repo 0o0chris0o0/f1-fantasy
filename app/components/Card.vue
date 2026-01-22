@@ -44,7 +44,6 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
 
 .card {
   width: 400px;
-  // aspect-ratio: 269/397;
   height: auto;
   position: relative;
   overflow: hidden;
@@ -88,7 +87,6 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
   }
 
   &.rarity-legendary {
-    /* A 5-stop gradient creates a metallic 'cylindrical' reflection */
     background: linear-gradient(
       130deg,
       #bf953f 0%,
@@ -157,7 +155,7 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
   max-width: 400px;
 }
 
-@container card (min-width: 230px) {
+@container card (min-width: 200px) {
   .card {
     font-size: 22px;
   }

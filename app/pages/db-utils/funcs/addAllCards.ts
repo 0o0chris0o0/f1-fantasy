@@ -1,7 +1,7 @@
 import { doc, Firestore, writeBatch } from "firebase/firestore";
-import { CardType, iCardRarity, type iCard } from "~/types/card";
-import type { ConstructorStanding, JolpicaConstructorStandingsResponse } from "~/types/jolpica/constructorStandings";
-import type { DriverStanding, JolpicaDriverStandingsResponse } from "~/types/jolpica/driverStandings";
+import { CardType, type iCard } from "~/types/card";
+import type { JolpicaConstructorStanding, JolpicaConstructorStandingsResponse } from "~/types/jolpica/constructorStandings";
+import type { JolppicaDriverStanding, JolpicaDriverStandingsResponse } from "~/types/jolpica/driverStandings";
 
 const currentYear = 2026;
 
@@ -21,7 +21,7 @@ export const addAllCards = async (db: Firestore) => {
   const formattedDrivers: iCard[] = [];
 
   // build drivers cards data
-  driverStandings.forEach((driver: DriverStanding) => {
+  driverStandings.forEach((driver: JolppicaDriverStanding) => {
     const newObj: iCard = {
       cardId: driver.Driver.driverId,
       cardName: `${driver.Driver.givenName} ${driver.Driver.familyName}`,
@@ -29,6 +29,9 @@ export const addAllCards = async (db: Firestore) => {
       teamId: driver.Constructors[0]?.constructorId || '',
       teamName: driver.Constructors[0]?.name || '',
       type: CardType.DRIVER,
+      nationality: driver.Driver.nationality,
+      homeRaceLocationId: null,
+      homeRaces: [],
       stats: {
         currentFantasyPoints: 0,
         averageQualifyingPosition: 0,
@@ -60,7 +63,7 @@ export const addAllCards = async (db: Firestore) => {
   const formattedConstructors: iCard[] = [];
 
   // build constructor cards data
-  constructorStandings.forEach((constructor: ConstructorStanding) => {
+  constructorStandings.forEach((constructor: JolpicaConstructorStanding) => {
     const newObj: iCard = {
       cardId: constructor.Constructor.constructorId,
       cardName: constructor.Constructor.name,
@@ -68,6 +71,9 @@ export const addAllCards = async (db: Firestore) => {
       teamId: constructor.Constructor.constructorId,
       teamName: constructor.Constructor.name,
       type: CardType.CONSTRUCTOR,
+      nationality: constructor.Constructor.nationality,
+      homeRaceLocationId: null,
+      homeRaces: [],
       stats: {
         currentFantasyPoints: 0,
         averageQualifyingPosition: 0,

@@ -2,7 +2,7 @@ export interface JolpicaConstructorStandingsResponse {
   MRData: Mrdata
 }
 
-export interface Mrdata {
+interface Mrdata {
   xmlns: string
   series: string
   url: string
@@ -12,19 +12,19 @@ export interface Mrdata {
   StandingsTable: StandingsTable
 }
 
-export interface StandingsTable {
+interface StandingsTable {
   season: string
   round: string
   StandingsLists: StandingsList[]
 }
 
-export interface StandingsList {
+interface StandingsList {
   season: string
   round: string
-  ConstructorStandings: ConstructorStanding[]
+  ConstructorStandings: JolpicaConstructorStanding[]
 }
 
-export interface ConstructorStanding {
+export interface JolpicaConstructorStanding {
   position: string
   positionText: string
   points: string
@@ -32,7 +32,7 @@ export interface ConstructorStanding {
   Constructor: Constructor
 }
 
-export interface Constructor {
+interface Constructor {
   constructorId: string
   url: string
   name: string

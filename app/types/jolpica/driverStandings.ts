@@ -2,7 +2,7 @@ export interface JolpicaDriverStandingsResponse {
   MRData: Mrdata
 }
 
-export interface Mrdata {
+interface Mrdata {
   xmlns: string
   series: string
   url: string
@@ -12,19 +12,19 @@ export interface Mrdata {
   StandingsTable: StandingsTable
 }
 
-export interface StandingsTable {
+interface StandingsTable {
   season: string
   round: string
   StandingsLists: StandingsList[]
 }
 
-export interface StandingsList {
+interface StandingsList {
   season: string
   round: string
-  DriverStandings: DriverStanding[]
+  DriverStandings: JolppicaDriverStanding[]
 }
 
-export interface DriverStanding {
+export interface JolppicaDriverStanding {
   position: string
   positionText: string
   points: string
@@ -33,7 +33,7 @@ export interface DriverStanding {
   Constructors: Constructor[]
 }
 
-export interface Driver {
+interface Driver {
   driverId: string
   permanentNumber: string
   code: string
@@ -44,7 +44,7 @@ export interface Driver {
   nationality: string
 }
 
-export interface Constructor {
+interface Constructor {
   constructorId: string
   url: string
   name: string

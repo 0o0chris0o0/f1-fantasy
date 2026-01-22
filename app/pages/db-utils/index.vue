@@ -13,6 +13,11 @@
           Add All Cards
         </Button>
       </div>
+      <div>
+        <Button textColorClass="text-white" @click="performAddSchedule">
+          Add Schedule
+        </Button>
+      </div>
     </div>
 
     <Loader v-if="isLoading" />
@@ -21,6 +26,7 @@
 
 <script setup lang="ts">
 import { addAllCards } from "./funcs/addAllCards";
+import { addSchedule } from "./funcs/addSchedule";
 
 const isLoading = ref(false);
 const db = useFirestore();
@@ -30,6 +36,12 @@ const performAddAllCards = async () => {
   await addAllCards(db);
   isLoading.value = false;
 };
+
+const performAddSchedule = async () => {
+  isLoading.value = true;
+  await addSchedule(db);
+  isLoading.value = false;
+}
 
 // const resetAllCards = async () => {
 //   const batch = writeBatch(db);

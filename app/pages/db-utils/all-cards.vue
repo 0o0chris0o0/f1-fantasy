@@ -15,11 +15,9 @@
         class="border p-2 bg-black text-white rounded shadow-md"
         :class="{ 'opacity-25': !card.enabled }"
       >
-        <img
-          :src="`/img/${card.type}s/${card.cardId}.avif`"
-          class="w-full"
-          @error="loadDefaultImage($event, card.type)"
-        >
+        <button class="block w-full">
+          <Card :card="card" />
+        </button>
         <hr class="my-1" >
         <form
           class="grid grid-cols-1 gap-2"
@@ -32,6 +30,8 @@
               v-model="allCards[i].cardId"
               type="text"
               placeholder="Card ID"
+              readonly
+              disabled
             >
           </label>
           <label>
@@ -55,6 +55,31 @@
               readonly disabled
             >
           </label>
+          <label>
+            <span class="font-semibold">Nationality</span>
+            <input
+              v-model="allCards[i].nationality"
+              type="text"
+              placeholder="Nationality"
+              readonly disabled
+            >
+          </label>
+          <label>
+            <span class="font-semibold">Home Races</span>
+            <p v-if="!allCards[i].homeRaceLocationId" class="text-sm text-red-600 italic">No races selected</p>
+            <div v-else class="mb-2 grid grid-cols-2 gap-2">
+              <span v-for="homeRace in getHomeRaces(allCards[i].homeRaceLocationId)" class="block px-2 py-1 rounded bg-green-400">
+                {{ homeRace.raceName }}
+              </span>
+            </div>
+            <select class="w-full text-black" @change="$event => handleHomeRaceSelect($event, i)">
+              <option selected disabled>-- Add a new race ---</option>
+              <option v-for="race in allRaces" :value="race.locationCountry">
+                {{ race.locationCountry }} - {{ race.raceName }}
+              </option>
+            </select>
+          </label>
+
           <p class="text-sm text-yellow-600 italic">
             These fields will auto update when the main function runs
           </p>
@@ -103,12 +128,14 @@
 </template>
 
 <script setup lang="ts">
-import { collection, getDocs, doc, setDoc } from "firebase/firestore";
-import { CardType, type iCard } from "~/types/card";
+import { collection, getDocs, doc, setDoc, query, orderBy } from "firebase/firestore";
+import { type iCard } from "~/types/card";
+import type { iRace } from "~/types/race";
 
 const db = useFirestore();
 
 const allCards = ref<iCard[]>([]);
+const allRaces = ref<iRace[]>([]);
 
 const isLoading = ref(false);
 
@@ -120,13 +147,19 @@ const getCards = async () => {
   });
 };
 
-const loadDefaultImage = (e: any, cardType: string) => {
-  e.target.src = `/img/${cardType}-white.svg`;
-  e.target.classList.add("broken-img");
-};
+const getRaces = async () => {
+  const collectionRef = collection(db, "schedule");
+  const orderedQuery = query(collectionRef, orderBy('locationCountry'))
+  const querySnapshot = await getDocs(orderedQuery);
+  querySnapshot.forEach((doc) => {
+    const cardData = doc.data() as iRace;
+    allRaces.value.push(cardData);
+  });
+}
 
 onMounted(() => {
   getCards();
+  getRaces();
 });
 
 const handleUpdate = async (cardId: string) => {
@@ -134,7 +167,11 @@ const handleUpdate = async (cardId: string) => {
 
   let cardToUpdate;
 
-  allCards.value = allCards.value.filter((card) => card.cardId !== cardId);
+  cardToUpdate = allCards.value.find((card) => card.cardId === cardId);
+
+  if (cardToUpdate?.homeRaceLocationId) {
+    cardToUpdate.homeRaces = getHomeRaces(cardToUpdate.homeRaceLocationId);
+  }
 
   const cardsRef = collection(db, "cards");
 
@@ -142,6 +179,20 @@ const handleUpdate = async (cardId: string) => {
 
   isLoading.value = false;
 };
+
+const handleHomeRaceSelect = (event: Event, cardIndex: number) => {
+  if (!event || !allCards.value[cardIndex]) return;
+
+  const target = event.target as HTMLSelectElement;
+  const locationId = target.value;
+
+  allCards.value[cardIndex].homeRaceLocationId = locationId;
+}
+
+const getHomeRaces = (locationId: string) => {
+  const races = allRaces.value.filter((race: iRace) => race.locationCountry === locationId);
+  return races;
+}
 </script>
 
 <style lang="scss" scoped>
