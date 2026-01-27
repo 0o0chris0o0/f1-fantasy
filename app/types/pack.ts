@@ -1,4 +1,4 @@
-import type { iCard, CardType, iCardRarity } from "./card";
+import type { iDriverCard, CardType, iCardRarity } from "./card";
 
 export interface iPack {
   cardsIncluded: number;

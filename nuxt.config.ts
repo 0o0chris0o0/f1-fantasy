@@ -3,9 +3,14 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
-  modules: ['nuxt-vuefire', "@pinia/nuxt", "@nuxtjs/tailwindcss"],
+  modules: ['nuxt-vuefire', "@pinia/nuxt", '@nuxt/icon', "@nuxtjs/tailwindcss"],
 
   css: ['vue-final-modal/style.css'],
+
+  icon: {
+    mode: 'css',
+    cssLayer: 'base'
+  },
 
   tailwindcss: {
     cssPath: [`./app/assets/css/tailwind.css`, { injectPosition: "first" }],

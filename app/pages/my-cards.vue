@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 // Components
-import type { iCard } from "~/types/card";
+import type { iDriverCard } from "~/types/card";
 
 const cardsStore = useCardsStore();
 const userStore = useUserStore();
@@ -38,8 +38,8 @@ definePageMeta({
   middleware: "auth",
 });
 
-const selectedCard = ref<iCard | null>(null);
-const cardsInView = ref<iCard[]>([]);
+const selectedCard = ref<iDriverCard | null>(null);
+const cardsInView = ref<iDriverCard[]>([]);
 </script>
 
 <style lang="scss" scoped>

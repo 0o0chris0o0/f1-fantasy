@@ -37,7 +37,7 @@ import openPack from "@/utils/openPack";
 import { loadFallbackPackImage } from "~/utils/loadDefaultImage";
 
 import { LootType, type TyreType , type iLoot, type iPack, type iPackInUser } from "~/types/pack";
-import type { iCard, iCardInUsersCards, iCardWithIsNew } from "~/types/card";
+import type { iDriverCard, iCardInUsersCards, iCardWithIsNew } from "~/types/card";
 
 const db = useFirestore();
 const userStore = useUserStore();

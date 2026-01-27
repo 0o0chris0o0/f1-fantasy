@@ -9,10 +9,10 @@ import { useUserStore } from './user';
 
 // Types
 import { CardType } from '~/types/card';
-import type { iCard, iCardInUsersCards } from '~/types/card';
+import type { iDriverCard, iCardInUsersCards } from '~/types/card';
 
 export const useCardsStore = defineStore('cards', () => {
-  const allCards = ref<iCard[]>([]);
+  const allCards = ref<iDriverCard[]>([]);
 
   const db = useFirestore();
   const userStore = useUserStore();

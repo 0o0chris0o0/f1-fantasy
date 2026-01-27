@@ -14,6 +14,25 @@
           @error="loadDefaultImage($event, enumToText(iCardRarity, rarity))"
         />
       </ClientOnly>
+      <div class="absolute right-0 flex flex-col card-icons">
+        <div
+          class="border border-gray-800 rounded-full card-icons__team-logo"
+          :style="{ backgroundColor: `var(--color-${card.teamId})` }"
+        >
+          <img :src="`/img/teams/${card.teamId}.avif`" />
+        </div>
+        <Icon 
+          class="border border-gray-800 rounded-full card-icons__flag" 
+          :name="`circle-flags:${card.nationalityCode?.toLowerCase()}`" mode="svg"
+        />
+      </div>
+      <div class="absolute card-level">
+        <div class="segmented-circle" :style="calcLevelCirc"></div>
+        <p class="text-black font-f1 font-bold card-level__text">
+          <span>Lvl</span>
+          <span>{{ level }}</span>
+        </p>
+      </div>
       <div class="font-f1 font-semibold tracking-tight card-name">
         <p>{{ card.cardName }}</p>
       </div>
@@ -30,17 +49,55 @@
 </template>
 
 <script setup lang="ts">
-import { CardType, iCardRarity, type iCard } from "~/types/card";
+import { iCardRarity, type iConstructorCard, type iDriverCard } from "~/types/card";
 
 import loadDefaultImage from "~/utils/loadDefaultImage";
 
-const { rarity = iCardRarity.COMMON } = defineProps<{
-  card: iCard;
+const { rarity = iCardRarity.COMMON, level = 1 } = defineProps<{
+  card: iDriverCard | iConstructorCard;
   rarity?: iCardRarity;
+  level?: number;
 }>();
+
+const levelColors: Record<number, string> = {
+  1: 'rgba(184, 146, 40, 1)',
+  2: 'rgba(214, 175, 50, 1)',
+  3: 'rgba(244, 201, 50, 1)',
+  4: 'rgba(255, 223, 0, 1)'
+};
+
+const calcLevelCirc = computed(() => {
+  const segments = 4;
+  const filledSegments = Math.min(Math.max(level, 0), segments);
+  const anglePerSegment = (360 / segments);
+  const activeColor = levelColors[level] || 'rgba(184, 146, 40, 1)';
+  let gradientParts = [
+    `rgba(0, 0, 0, 0) 0deg 4deg`
+  ];
+
+  for (let i = 0; i < segments; i++) {
+    const startAngle = i * anglePerSegment;
+    const endAngle = startAngle + anglePerSegment;
+
+    if (i < filledSegments) {
+      // Add the filled segment
+      gradientParts.push(`${activeColor} ${startAngle + 4}deg ${endAngle - 4}deg`);
+      gradientParts.push(`rgba(0,0,0,0) ${endAngle - 4}deg ${endAngle + 4}deg`);
+    } else {
+      gradientParts.push(`${activeColor.replace('1)', '0.2)')} ${startAngle + 4}deg ${endAngle - 4}deg`);
+      gradientParts.push(`rgba(0,0,0,0) ${endAngle - 4}deg ${endAngle + 4}deg`);
+    }
+  }
+
+  return {
+    background: `conic-gradient(${gradientParts.join(', ')})`
+  };
+});
+
 </script>
 
 <style lang="scss" scoped>
+@use "sass:color";
 
 .card {
   width: 400px;
@@ -82,7 +139,7 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
     color: #f128ff;
 
     hr {
-      border-color: lighten(#f128ff, 10%);
+      border-color: color.adjust(#f128ff, $lightness: 10%);
     }
   }
 
@@ -99,13 +156,82 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
     color: #ffc927;
 
     hr {
-      border-color: lighten(#ffc927, 10%);
+      border-color: color.adjust(#ffc927, $lightness: 10%);
     }
   }
 }
 
 .card-image {
   // 
+}
+
+.card-icons {
+  padding: 0.4em;
+  gap: 0.2em;
+
+  &__flag {
+    width: 1.4em;
+    height: 1.4em;
+  }
+
+  &__team-logo {
+    width: 1.4em;
+    height: 1.4em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 80%;
+      height: 80%;
+      display: block;
+    }
+  }
+}
+
+.card-level {
+  margin: 0.4em;
+  width: 2em;
+
+  .segmented-circle {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    /* Optional: Create the "border" look by masking the center */
+    position: relative;
+  }
+
+  /* To make it look like a border/ring instead of a pie: */
+  .segmented-circle::after {
+    content: "";
+    position: absolute;
+    top: 0.2em;
+    left: 0.2em;
+    right: 0.2em;
+    bottom: 0.2em;
+    background: #f5f5f5;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0.18em rgba(0, 0, 0, 0.8);
+  }
+
+  &__text {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7em;
+    line-height: 1;
+    z-index: 10;
+    color: #333;
+
+    span:first-child {
+      display: none;
+    }
+  }
 }
 
 .card-name {
@@ -163,6 +289,14 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
   .card-team {
     display: block;
   }
+
+  .card-level__text {
+    font-size: 0.5em;
+
+    span:first-child {
+      display: block;
+    }
+  }
 }
 
 @container card (min-width: 330px) {
@@ -180,6 +314,14 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
 
   .card-score {
     right: 5%;
+  }
+
+  .card-icons {
+    padding: 0.2em 0.3em;
+  }
+
+  .card-level {
+    margin: 0.2em;
   }
 }
 </style>

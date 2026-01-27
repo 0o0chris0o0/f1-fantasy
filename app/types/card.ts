@@ -1,17 +1,22 @@
 import type { Timestamp } from "firebase/firestore";
 import type { iRace } from "./race";
 
-export interface iCard {
+export interface iDriverCard {
   cardId: string;
   cardName: string;
   enabled: boolean;
   teamId: string;
   teamName: string;
   nationality: string;
+  nationalityCode: string;
   homeRaceLocationId: string | null;
   homeRaces: iRace[];
   type: CardType;
-  stats: iCardStats;
+  stats: iDriverCardStats;
+}
+
+export interface iConstructorCard extends iDriverCard {
+  drivers: iDriverCard[]
 }
 
 export enum CardType {
@@ -19,7 +24,7 @@ export enum CardType {
   CONSTRUCTOR = 'constructor',
 }
 
-export interface iCardStats {
+export interface iDriverCardStats {
   currentFantasyPoints: number;
   averageQualifyingPosition: number;
   averageRacePosition: number;

@@ -42,26 +42,44 @@
               placeholder="Name"
             >
           </label>
-          <label>
-            <span class="font-semibold">Team ID</span>
-            <input v-model="allCards[i].teamId" type="text" placeholder="Team" readonly disabled>
-          </label>
-          <label>
-            <span class="font-semibold">Team Name</span>
-            <input
-              v-model="allCards[i].teamName"
-              type="text"
-              placeholder="Team Name"
-              readonly disabled
+          <div class="border p-2">     
+            <select 
+              v-if="!allCards[i].teamId"
+              class="w-full text-black" 
+              @change="$event => handleSelectTeam($event, i)"
             >
-          </label>
+              <option value="" selected disabled>-- Select Team --</option>
+              <option v-for="team in teams" :value="team.id">{{ team.name }}</option>
+            </select>     
+            <label>
+              <span class="font-semibold">Team ID</span>
+              <input v-model="allCards[i].teamId" type="text" placeholder="Team" readonly disabled>
+            </label>
+            <label>
+              <span class="font-semibold">Team Name</span>
+              <input
+                v-model="allCards[i].teamName"
+                type="text"
+                placeholder="Team Name"
+                readonly disabled
+              >
+            </label>
+          </div>
           <label>
             <span class="font-semibold">Nationality</span>
             <input
               v-model="allCards[i].nationality"
               type="text"
               placeholder="Nationality"
-              readonly disabled
+            >
+          </label>
+          <label>
+            <span class="font-semibold">Nationality Code</span>
+            <input
+              v-model="allCards[i].nationalityCode"
+              type="text"
+              placeholder="Nationality Code"
+
             >
           </label>
           <label>
@@ -129,12 +147,13 @@
 
 <script setup lang="ts">
 import { collection, getDocs, doc, setDoc, query, orderBy } from "firebase/firestore";
-import { type iCard } from "~/types/card";
+import { CardType, type iConstructorCard, type iDriverCard } from "~/types/card";
 import type { iRace } from "~/types/race";
 
 const db = useFirestore();
 
-const allCards = ref<iCard[]>([]);
+const allCards = ref<(iDriverCard | iConstructorCard)[]>([]);
+const teams = ref<{ id: string; name: string }[]>([]);
 const allRaces = ref<iRace[]>([]);
 
 const isLoading = ref(false);
@@ -142,7 +161,12 @@ const isLoading = ref(false);
 const getCards = async () => {
   const querySnapshot = await getDocs(collection(db, "cards"));
   querySnapshot.forEach((doc) => {
-    const cardData = doc.data() as iCard;
+    const cardData = doc.data() as iDriverCard | iConstructorCard;
+
+    if (cardData.type === CardType.CONSTRUCTOR) {
+      teams.value.push({ id: cardData.cardId, name: cardData.cardName });
+    }
+
     allCards.value.push(cardData);
   });
 };
@@ -193,6 +217,18 @@ const getHomeRaces = (locationId: string) => {
   const races = allRaces.value.filter((race: iRace) => race.locationCountry === locationId);
   return races;
 }
+
+const handleSelectTeam = (event: Event, cardIndex: number) => {
+  if (!event || !allCards.value[cardIndex]) return;
+
+  const target = event.target as HTMLSelectElement;
+  const teamId = target.value;
+
+  const selectedTeam = teams.value.find((team) => team.id === teamId);
+
+  allCards.value[cardIndex].teamId = teamId;
+  allCards.value[cardIndex].teamName = selectedTeam ? selectedTeam.name : '';
+};
 </script>
 
 <style lang="scss" scoped>

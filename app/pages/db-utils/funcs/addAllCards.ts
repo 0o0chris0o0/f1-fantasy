@@ -1,35 +1,52 @@
 import { doc, Firestore, writeBatch } from "firebase/firestore";
-import { CardType, type iCard } from "~/types/card";
+import nationalities from 'i18n-nationality';
+import enLocale from 'i18n-nationality/langs/en.json';
+import { CardType, type iDriverCard, type iConstructorCard } from "~/types/card";
+import type { JolpicaConstructor, JolpicaConstructorsResponse } from "~/types/jolpica/constructors";
 import type { JolpicaConstructorStanding, JolpicaConstructorStandingsResponse } from "~/types/jolpica/constructorStandings";
+import type { JolpicaDriver, JolpicaDriversResponse } from "~/types/jolpica/drivers";
 import type { JolppicaDriverStanding, JolpicaDriverStandingsResponse } from "~/types/jolpica/driverStandings";
 
 const currentYear = 2026;
 
+nationalities.registerLocale(enLocale);
+
 export const addAllCards = async (db: Firestore) => {
   const batch = writeBatch(db);
 
-  // get all drivers standings from the previous year
-  const driverResponse = await fetch(
+  // get all drivers standings from the previous year for matching teams
+  const driverStandingsResponse = await fetch(
     `https://api.jolpi.ca/ergast/f1/${currentYear - 1}/driverStandings.json`
   );
-  const driverData: JolpicaDriverStandingsResponse = await driverResponse.json();
-  const driverStandings =
-  driverData.MRData.StandingsTable?.StandingsLists[0]?.DriverStandings;
+  const driverStandingsData: JolpicaDriverStandingsResponse = await driverStandingsResponse.json();
+  const allDriversStandings = driverStandingsData.MRData.StandingsTable.StandingsLists[0]?.DriverStandings;
 
-  if (!driverStandings) return;
+  const driverResponse = await fetch(`https://api.jolpi.ca/ergast/f1/${currentYear}/drivers/`);
+  const driverData: JolpicaDriversResponse = await driverResponse.json();
+  const allDrivers = driverData.MRData.DriverTable.Drivers;
 
-  const formattedDrivers: iCard[] = [];
+  if (!allDrivers) return;
+
+  const formattedDrivers: iDriverCard[] = [];
 
   // build drivers cards data
-  driverStandings.forEach((driver: JolppicaDriverStanding) => {
-    const newObj: iCard = {
-      cardId: driver.Driver.driverId,
-      cardName: `${driver.Driver.givenName} ${driver.Driver.familyName}`,
+  allDrivers.forEach((driver: JolpicaDriver) => {
+
+    const driverLocaleCode = nationalities.getAlpha2Code(driver.nationality, 'en');
+    const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+    const driverCountry = driverLocaleCode ? regionNames.of(driverLocaleCode) : '';
+
+    const driverStanding = allDriversStandings?.find((ds => ds.Driver.driverId === driver.driverId));
+
+    const newObj: iDriverCard = {
+      cardId: driver.driverId,
+      cardName: `${driver.givenName} ${driver.familyName}`,
       enabled: true,
-      teamId: driver.Constructors[0]?.constructorId || '',
-      teamName: driver.Constructors[0]?.name || '',
+      teamId: driverStanding?.Constructors[0]?.constructorId || '',
+      teamName: driverStanding?.Constructors[0]?.name || '',
       type: CardType.DRIVER,
-      nationality: driver.Driver.nationality,
+      nationality: driverCountry || '',
+      nationalityCode: driverLocaleCode || '',
       homeRaceLocationId: null,
       homeRaces: [],
       stats: {
@@ -50,30 +67,40 @@ export const addAllCards = async (db: Firestore) => {
   });
 
   // get all constructors
-  const constructorResponse = await fetch(
-    `https://api.jolpi.ca/ergast/f1/${currentYear - 1}/constructorStandings.json`
-  );
+  // const constructorResponse = await fetch(
+  //   `https://api.jolpi.ca/ergast/f1/${currentYear}/constructorStandings.json`
+  // );
 
-  const constructorData: JolpicaConstructorStandingsResponse = await constructorResponse.json();
-  const constructorStandings =
-  constructorData.MRData.StandingsTable?.StandingsLists[0]?.ConstructorStandings;
+  const constructorResponse = await fetch(`https://api.jolpi.ca/ergast/f1/${currentYear}/constructors/`)
 
-  if (!constructorStandings) return;
+  const constructorData: JolpicaConstructorsResponse = await constructorResponse.json();
+  const allConstructors = constructorData.MRData.ConstructorTable.Constructors;
 
-  const formattedConstructors: iCard[] = [];
+  if (!allConstructors) return;
+
+  const formattedConstructors: iConstructorCard[] = [];
 
   // build constructor cards data
-  constructorStandings.forEach((constructor: JolpicaConstructorStanding) => {
-    const newObj: iCard = {
-      cardId: constructor.Constructor.constructorId,
-      cardName: constructor.Constructor.name,
+  allConstructors.forEach((constructor: JolpicaConstructor) => {
+
+    const constructorLocaleCode = nationalities.getAlpha2Code(constructor.nationality, 'en');
+    const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+    const constructorCountry = constructorLocaleCode ? regionNames.of(constructorLocaleCode) : '';
+
+    const constructorDrivers = formattedDrivers.filter(driver => driver.teamId === constructor.constructorId);
+
+    const newObj: iConstructorCard = {
+      cardId: constructor.constructorId,
+      cardName: constructor.name,
       enabled: true,
-      teamId: constructor.Constructor.constructorId,
-      teamName: constructor.Constructor.name,
+      teamId: constructor.constructorId,
+      teamName: constructor.name,
       type: CardType.CONSTRUCTOR,
-      nationality: constructor.Constructor.nationality,
+      nationality: constructorCountry || '',
+      nationalityCode: constructorLocaleCode || '',
       homeRaceLocationId: null,
       homeRaces: [],
+      drivers: constructorDrivers,
       stats: {
         currentFantasyPoints: 0,
         averageQualifyingPosition: 0,

@@ -2,7 +2,7 @@ import { collection, doc, getDoc, getDocs, query, where } from "firebase/firesto
 
 import { selectLootType, selectTyre, selectIsVariant, selectIsNew, selectCardTier } from './packFuncs';
 
-import { type iCard } from "~/types/card";
+import { type iDriverCard } from "~/types/card";
 import { LootType, PackType, type iLoot, type iPack, type iSlot } from "~/types/pack";
 
 export default async function openPack(
