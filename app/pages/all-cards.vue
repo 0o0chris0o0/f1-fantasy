@@ -8,21 +8,21 @@
     <div>
     <div class="grid grid-cols-1 gap-x-4 gap-y-3 mb-6">
       <button v-if="allCards[0]" class="block w-full">
-        <Card :card="allCards[0]" :rarity="iCardRarity.COMMON" :level="2" />
+        <UserCard :card="allCards[0]" :rarity="iCardRarity.COMMON" :level="2" />
       </button>
     </div>
       <div class="grid grid-cols-2 md:grid-cols-2 gap-x-4 gap-y-3 mb-6">
         <button v-if="allCards[0]" class="block w-full">
-          <Card :card="allCards[0]" :rarity="iCardRarity.COMMON" :level="1" />
+          <UserCard :card="allCards[0]" :rarity="iCardRarity.COMMON" :level="1" />
         </button>
         <button v-if="allCards[2]" class="block w-full">
-          <Card :card="allCards[2]" :rarity="iCardRarity.UNCOMMON" :level="2"/>
+          <UserCard :card="allCards[2]" :rarity="iCardRarity.UNCOMMON" :level="2"/>
         </button>
         <button v-if="allCards[3]" class="block w-full">
-          <Card :card="allCards[3]" :rarity="iCardRarity.RARE" :level="3" />
+          <UserCard :card="allCards[3]" :rarity="iCardRarity.RARE" :level="3" />
         </button>
         <button v-if="allCards[0]" class="block w-full">
-          <Card :card="allCards[0]" :rarity="iCardRarity.LEGENDARY" :level="4" />
+          <UserCard :card="allCards[0]" :rarity="iCardRarity.LEGENDARY" :level="4" />
         </button>
       </div>
     </div>

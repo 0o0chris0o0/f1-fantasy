@@ -1,49 +1,42 @@
 <template>
-  <div :class="['relative card-container', { 'opacity-25': !card.enabled }]">
-    <div 
-      class="max-w-full rounded-lg card" 
-      :class="
-        rarity !== undefined && `rarity-${enumToText(iCardRarity, rarity)}`
-      "
-    >
-      <ClientOnly>
-        <img 
-          :alt="card.type"
-          :src="`/img/drivers/${card.cardId}-${enumToText(iCardRarity, rarity)}.png`" 
-          class="card-image rounded-lg" 
-          @error="loadDefaultImage($event, enumToText(iCardRarity, rarity))"
-        />
-      </ClientOnly>
-      <div class="absolute right-0 flex flex-col card-icons">
-        <div
-          class="border border-gray-800 rounded-full card-icons__team-logo"
-          :style="{ backgroundColor: `var(--color-${card.teamId})` }"
-        >
-          <img :src="`/img/teams/${card.teamId}.avif`" />
-        </div>
-        <Icon 
-          class="border border-gray-800 rounded-full card-icons__flag" 
-          :name="`circle-flags:${card.nationalityCode?.toLowerCase()}`" mode="svg"
-        />
+  <div 
+    class="max-w-full rounded-lg card" 
+    :class="[
+      rarity !== undefined && `rarity-${enumToText(iCardRarity, rarity)}`,
+      { 'opacity-25': !card.enabled }
+    ]"
+  >
+    <ClientOnly>
+      <img 
+        :alt="card.type"
+        :src="`/img/drivers/${card.cardId}-${enumToText(iCardRarity, rarity)}.png`" 
+        class="rounded-lg" 
+        @error="loadDefaultImage($event, enumToText(iCardRarity, rarity))"
+      />
+    </ClientOnly>
+    <div class="absolute right-0 flex flex-col card-icons">
+      <div
+        class="border border-gray-800 rounded-full card-icons__team-logo"
+        :style="{ backgroundColor: `var(--color-${card.teamId})` }"
+      >
+        <img :src="`/img/teams/${card.teamId}.avif`" />
       </div>
-      <div class="absolute card-level">
-        <div class="segmented-circle" :style="calcLevelCirc"></div>
-        <p class="text-black font-f1 font-bold card-level__text">
-          <span>Lvl</span>
-          <span>{{ level }}</span>
-        </p>
-      </div>
-      <div class="font-f1 font-semibold tracking-tight card-name">
-        <p>{{ card.cardName }}</p>
-      </div>
-      <div class="inline-block text-left uppercase card-team">
-        <hr class="opacity-50" />
-        <p class="opacity-75">{{ card.teamName }}</p>
-      </div>
-      <div class="font-f1 text-right card-score">
-        <p class="card-score__number">{{ card.stats.currentFantasyPoints }}</p>
-        <p class="card-score__text">Pts</p>
-      </div>
+      <Icon 
+        class="border border-gray-800 rounded-full card-icons__flag" 
+        :name="`circle-flags:${card.nationalityCode?.toLowerCase()}`" mode="svg"
+      />
+    </div>
+
+    <div class="font-f1 font-semibold tracking-tight card-name">
+      <p>{{ card.cardName }}</p>
+    </div>
+    <div class="inline-block text-left uppercase card-team">
+      <hr class="opacity-50" />
+      <p class="opacity-75">{{ card.teamName }}</p>
+    </div>
+    <div class="font-f1 text-right card-score">
+      <p class="card-score__number">{{ card.stats.currentFantasyPoints }}</p>
+      <p class="card-score__text">Pts</p>
     </div>
   </div>
 </template>
@@ -53,46 +46,10 @@ import { iCardRarity, type iConstructorCard, type iDriverCard } from "~/types/ca
 
 import loadDefaultImage from "~/utils/loadDefaultImage";
 
-const { rarity = iCardRarity.COMMON, level = 1 } = defineProps<{
+const { rarity = iCardRarity.COMMON } = defineProps<{
   card: iDriverCard | iConstructorCard;
   rarity?: iCardRarity;
-  level?: number;
 }>();
-
-const levelColors: Record<number, string> = {
-  1: 'rgba(184, 146, 40, 1)',
-  2: 'rgba(214, 175, 50, 1)',
-  3: 'rgba(244, 201, 50, 1)',
-  4: 'rgba(255, 223, 0, 1)'
-};
-
-const calcLevelCirc = computed(() => {
-  const segments = 4;
-  const filledSegments = Math.min(Math.max(level, 0), segments);
-  const anglePerSegment = (360 / segments);
-  const activeColor = levelColors[level] || 'rgba(184, 146, 40, 1)';
-  let gradientParts = [
-    `rgba(0, 0, 0, 0) 0deg 4deg`
-  ];
-
-  for (let i = 0; i < segments; i++) {
-    const startAngle = i * anglePerSegment;
-    const endAngle = startAngle + anglePerSegment;
-
-    if (i < filledSegments) {
-      // Add the filled segment
-      gradientParts.push(`${activeColor} ${startAngle + 4}deg ${endAngle - 4}deg`);
-      gradientParts.push(`rgba(0,0,0,0) ${endAngle - 4}deg ${endAngle + 4}deg`);
-    } else {
-      gradientParts.push(`${activeColor.replace('1)', '0.2)')} ${startAngle + 4}deg ${endAngle - 4}deg`);
-      gradientParts.push(`rgba(0,0,0,0) ${endAngle - 4}deg ${endAngle + 4}deg`);
-    }
-  }
-
-  return {
-    background: `conic-gradient(${gradientParts.join(', ')})`
-  };
-});
 
 </script>
 
@@ -161,10 +118,6 @@ const calcLevelCirc = computed(() => {
   }
 }
 
-.card-image {
-  // 
-}
-
 .card-icons {
   padding: 0.4em;
   gap: 0.2em;
@@ -185,51 +138,6 @@ const calcLevelCirc = computed(() => {
       width: 80%;
       height: 80%;
       display: block;
-    }
-  }
-}
-
-.card-level {
-  margin: 0.4em;
-  width: 2em;
-
-  .segmented-circle {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    border-radius: 50%;
-    /* Optional: Create the "border" look by masking the center */
-    position: relative;
-  }
-
-  /* To make it look like a border/ring instead of a pie: */
-  .segmented-circle::after {
-    content: "";
-    position: absolute;
-    top: 0.2em;
-    left: 0.2em;
-    right: 0.2em;
-    bottom: 0.2em;
-    background: #f5f5f5;
-    border-radius: 50%;
-    box-shadow: inset 0 0 0.18em rgba(0, 0, 0, 0.8);
-  }
-
-  &__text {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7em;
-    line-height: 1;
-    z-index: 10;
-    color: #333;
-
-    span:first-child {
-      display: none;
     }
   }
 }
@@ -289,14 +197,6 @@ const calcLevelCirc = computed(() => {
   .card-team {
     display: block;
   }
-
-  .card-level__text {
-    font-size: 0.5em;
-
-    span:first-child {
-      display: block;
-    }
-  }
 }
 
 @container card (min-width: 330px) {
@@ -318,10 +218,6 @@ const calcLevelCirc = computed(() => {
 
   .card-icons {
     padding: 0.2em 0.3em;
-  }
-
-  .card-level {
-    margin: 0.2em;
   }
 }
 </style>
