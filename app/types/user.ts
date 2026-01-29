@@ -1,5 +1,5 @@
 import type { Timestamp } from "firebase/firestore";
-import type { iCard, iCardInUsersCards, iCardInCollection, iCardRarity } from "./card";
+import type { iCardInUsersCards, iCardInCollection, iCardRarity, iDriverCard, iConstructorCard } from "./card";
 import type { iPackInUser } from './pack';
 
 export interface iFBUser {
@@ -14,23 +14,19 @@ export interface iFBUser {
   displayName: string;
   latestResult: iResult | null;
   money: number;
-  packs: iPackInUser[];
+  packs: Record<string, iPackInUser>;
   packsSinceLastLegendary: number;
   prevRank: number;
   results: iResult[];
 }
 
-export interface iUserFromStore extends iFBUser {
-  userId: string;
-}
-
 interface iCurrentTeam {
-  rareLegendaryDriver: iCard | null;
-  rareLegendaryConstructor: iCard | null;
-  uncommonDriver: iCard | null;
-  uncommonConstructor: iCard | null;
-  commonDriver: iCard | null;
-  commonConstructor: iCard | null;
+  rareLegendaryDriver: iDriverCard | null;
+  rareLegendaryConstructor: iConstructorCard | null;
+  uncommonDriver: iDriverCard | null;
+  uncommonConstructor: iConstructorCard | null;
+  commonDriver: iDriverCard | null;
+  commonConstructor: iConstructorCard | null;
 }
 
 export interface iResult {

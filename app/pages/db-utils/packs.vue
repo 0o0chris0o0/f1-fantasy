@@ -18,13 +18,13 @@
 
           <div v-if="packs[i]">
 
-            <div>
-              <label>
-                <span>Pack name:</span>
-                <input v-model="packs[i].packName" type="text" class="text-lg">
-                <span class="block italic text-sm text-gray-400">(This will be visible to the user)</span>
-              </label>
-            </div>
+          <div>
+            <label>
+              <span>Pack name:</span>
+              <input v-model="packs[i].packName" type="text" class="text-lg">
+              <span class="block italic text-sm text-gray-400">(This will be visible to the user)</span>
+            </label>
+          </div>
 
           <!-- <div>
             <label>
@@ -185,11 +185,11 @@
               <input v-model="formData.isEmergencyPack" type="checkbox" >
             </div>
           </label>
-          <label for="numberOfSlots">
+          <label for="cardsIncluded">
             Number of slots:
             <input
-              v-model="formData.slots"
-              name="numberOfSlots"
+              v-model="formData.cardsIncluded"
+              name="cardsIncluded"
               type="number"
             >
           </label>
@@ -211,14 +211,14 @@ const db = useFirestore();
 const packs = ref<iPack[]>([]);
 const isLoading = ref(false);
 
-const formData = ref({
+const formData = ref<iPack>({
   cardsIncluded: 5,
   cost: 100,
   hiddenFromStore: false,
   isEmergencyPack: false,
   packId: '',
   packName: '',
-  slots: 5
+  slots: {}
 });
 
 const getPacks = async () => {
@@ -254,7 +254,7 @@ const addNewPack = async () => {
 
   const packSlots: Record<string, iSlot> = {}
   
-  for (let i = 1; i <= formData.value.slots; i++) {
+  for (let i = 1; i <= formData.value.cardsIncluded; i++) {
     packSlots[i] = {
       forcedRarity: null,
       rarityChances: {

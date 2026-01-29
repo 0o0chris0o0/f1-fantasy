@@ -7,13 +7,13 @@
       <ul class="space-y-3">
         <li v-if="userLoggedIn">
           <div class="flex justify-between mb-4 -ml-1">
-            <NuxtLink to="/profile" class="flex align-items-center">
-              <img src="/img/user.svg" class="w-8 p-1" >
-              <p class="ml-2 mt-1 font-f1 leading-tight">{{ user ? user.displayName : "User" }}</p>
+            <NuxtLink to="/profile" class="flex items-center">
+              <Icon name="bi:person" size="1.5em" />
+              <p class="ml-2 font-f1 leading-tight">{{ user ? user.displayName : "User" }}</p>
             </NuxtLink>
             <div class="flex items-center">
-              <img src="/img/coins.svg" class="w-5" >
-              <p class="font-f1 font-semibold text-sm text-yellow-500 ml-1">{{ userStore.userFromStore?.money }}</p>
+              <Icon name="bi:cash-coin" class="text-yellow-500" size="1.5em" />
+              <p class="font-f1 font-semibold text-sm text-yellow-500 ml-1">{{ userObj?.money }}</p>
             </div>
           </div>
         </li>
@@ -28,13 +28,15 @@
             <NuxtLink to="/store" class="main-link">Store</NuxtLink>
           </li>
           <li>
-            <NuxtLink to="/packs" class="main-link flex items-center"
-              >Packs<span
+            <NuxtLink to="/packs" class="main-link flex items-center">
+              Packs
+              <span
                 v-if="userStore.userPacksCount"
                 class="pack-notification"
-                >{{ userStore.userPacksCount }}</span
-              ></NuxtLink
-            >
+              >
+                {{ userStore.userPacksCount }}
+              </span>
+            </NuxtLink>
           </li>
           <li>
             <NuxtLink to="/my-cards" class="main-link">My Cards</NuxtLink>
@@ -77,6 +79,7 @@ const auth = useFirebaseAuth()!;
 const user = useCurrentUser();
 
 const userStore = useUserStore();
+const { userObj } = storeToRefs(userStore);
 
 const userLoggedIn = computed(() => {
   return !!user.value?.uid;
@@ -93,7 +96,7 @@ watch(
 
 const logout = async () => {
   await signOut(auth);
-  userStore.userFromStore = null;
+  userStore.userObj = undefined;
 
   emit("toggleMenu");
 

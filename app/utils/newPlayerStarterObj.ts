@@ -19,7 +19,7 @@ const newPlayerStarterObj: iFBUser = {
   displayName: '',
   latestResult: null,
   money: 500,
-  packs: [],
+  packs: {},
   packsSinceLastLegendary: 0,
   prevRank: 0,
   results: [],

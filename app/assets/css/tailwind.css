@@ -36,6 +36,11 @@
   --color-rb: #2345ab;
   --color-red_bull: #003282;
 
+  --color-common: #f5f5f5;
+  --color-uncommon: #a1e9ff;
+  --color-rare: #f128ff;
+  --color-legendary: #ffc927;
+
   /* Shared fallback */
   --color-default: #808080;
 }

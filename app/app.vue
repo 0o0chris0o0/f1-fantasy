@@ -14,10 +14,9 @@
         </div>
       </header>
       <main class="w-full max-w-lg mx-auto flex-1 flex flex-col p-4">
-        <Loader v-if="!userData"/>
         <NuxtPage />
         <ModalsContainer />
-        <!-- <NotificationContainer /> -->
+        <NotificationContainer />
       </main>
     </div>
     <Nav ref="nav" :nav-open="navOpen" @toggle-menu="toggleMenu" />
@@ -28,20 +27,12 @@
 import type { ComponentPublicInstance } from "vue";
 import { ModalsContainer } from 'vue-final-modal'
 
-// Components
-import Loader from "./components/Loader.vue";
-
 const user = useCurrentUser();
-const userStore = useUserStore();
 
 const nav = ref<ComponentPublicInstance | null>(null);
 const contentContainer = ref<HTMLElement | null>(null);
 const navOpen = ref(false);
 const navWidth = ref(0);
-
-const { data: userData } = await useAsyncData('user-request', () => {
-  return userStore.getUserForStore();
-});
 
 onMounted(async () => {
   const navComp = nav.value;
@@ -60,14 +51,6 @@ const toggleMenu = () => {
     }px`;
   }
 };
-
-// useful for when user logs in as the page won't refresh
-watch(user, async (currentUser, previousUser) => {
-  // update user info
-  if (currentUser && !userStore.userFromStore) {
-    userStore.getUserForStore();
-  }
-});
 </script>
 
 <style lang="scss" scoped>

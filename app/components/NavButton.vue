@@ -1,17 +1,33 @@
 <template>
-  <button
-    class="block w-10 h-10 relative"
-    :class="{ active: props.navOpen }"
-    @click="$emit('toggle-menu')"
-  >
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
+  <div class="relative">
+    <button
+      class="block w-10 h-10"
+      :class="{ active: props.navOpen }"
+      @click="$emit('toggle-menu')"
+    >
+      <span></span>
+      <span></span>
+      <span></span>    
+    </button>
+    <div 
+      v-if="!props.navOpen && userHasNotifications"
+      class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full">
+    </div>  
+  </div>
 </template>
 
 <script lang="ts" setup>
 const props = defineProps(["navOpen"]);
+
+const userStore = useUserStore();
+
+const userHasNotifications = computed(() => {
+
+  if (userStore.userPacksCount) return true;
+
+  return false;
+});
+
 </script>
 
 <style lang="scss" scoped>

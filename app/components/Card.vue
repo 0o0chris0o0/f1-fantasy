@@ -2,29 +2,31 @@
   <div 
     class="max-w-full rounded-lg card" 
     :class="[
-      rarity !== undefined && `rarity-${enumToText(iCardRarity, rarity)}`,
+      rarity !== undefined && `rarity-${rarity.toLowerCase()}`,
       { 'opacity-25': !card.enabled }
     ]"
   >
     <ClientOnly>
       <img 
         :alt="card.type"
-        :src="`/img/drivers/${card.cardId}-${enumToText(iCardRarity, rarity)}.png`" 
+        :src="`/img/${card.type === CardType.CONSTRUCTOR ? 'constructors' : 'drivers'}/${card.cardId}-${rarity.toLowerCase()}.png`" 
         class="rounded-lg" 
-        @error="loadDefaultImage($event, enumToText(iCardRarity, rarity))"
+        @error="loadDefaultImage($event, card.type, rarity.toLowerCase())"
       />
     </ClientOnly>
     <div class="absolute right-0 flex flex-col card-icons">
       <div
-        class="border border-gray-800 rounded-full card-icons__team-logo"
+        class="rounded-full card-icons__team-logo"
         :style="{ backgroundColor: `var(--color-${card.teamId})` }"
       >
         <img :src="`/img/teams/${card.teamId}.avif`" />
       </div>
-      <Icon 
-        class="border border-gray-800 rounded-full card-icons__flag" 
-        :name="`circle-flags:${card.nationalityCode?.toLowerCase()}`" mode="svg"
-      />
+      <div class="rounded-full card-icons__flag">
+        <Icon 
+          class="w-full h-full" 
+          :name="`circle-flags:${card.nationalityCode?.toLowerCase()}`"
+        />
+      </div>
     </div>
 
     <div class="font-f1 font-semibold tracking-tight card-name">
@@ -42,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { iCardRarity, type iConstructorCard, type iDriverCard } from "~/types/card";
+import { CardType, iCardRarity, type iConstructorCard, type iDriverCard } from "~/types/card";
 
 import loadDefaultImage from "~/utils/loadDefaultImage";
 
@@ -65,16 +67,16 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
   flex-direction: column;
   padding: 3px;
 
-  background: #f5f5f5;
+  background: var(--color-common);
   background: linear-gradient(130deg,rgba(245, 245, 245, 1) 0%, rgba(192, 192, 196, 1) 50%, rgba(245, 245, 245, 1) 99%);
 
   &.rarity-common {
-    background: #f5f5f5;
+    background: var(--color-common);
     background: linear-gradient(130deg,rgba(245, 245, 245, 1) 0%, rgba(192, 192, 196, 1) 50%, rgba(245, 245, 245, 1) 99%);
   }
 
   &.rarity-uncommon {
-    background: #a1e9ff;
+    background: var(--color-uncommon);
     background: linear-gradient(130deg,rgba(161, 233, 255, 1) 0%, rgba(118, 192, 219, 1) 50%, rgba(161, 233, 255, 1) 99%);
     color: #91f6ff;
 
@@ -93,7 +95,7 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
       #632c65 100%
     );
     box-shadow: 0 0 15px rgba(146, 59, 168, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.3);
-    color: #f128ff;
+    color: var(--color-rare);
 
     hr {
       border-color: color.adjust(#f128ff, $lightness: 10%);
@@ -110,7 +112,7 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
       #aa771c 100%
     );
     box-shadow: 0 0 20px rgba(184, 134, 11, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5);
-    color: #ffc927;
+    color: var(--color-legendary);
 
     hr {
       border-color: color.adjust(#ffc927, $lightness: 10%);
@@ -123,8 +125,24 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
   gap: 0.2em;
 
   &__flag {
+    position: relative;
+    overflow: hidden;
     width: 1.4em;
     height: 1.4em;
+
+    &:after {
+      box-shadow: inset 0 0 0.18em rgba(0, 0, 0, 0.8);
+      content: '';
+      display: block;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+
+    svg {
+      z-index: 1;
+    }
   }
 
   &__team-logo {
@@ -133,6 +151,7 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: inset 0 0 0.18em rgba(0, 0, 0, 0.8);
 
     img {
       width: 80%;

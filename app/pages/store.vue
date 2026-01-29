@@ -1,11 +1,11 @@
 <template>
   <Loader v-if="isLoading"/>
-  <div v-if="userFromStore">
+  <div v-if="userObj">
     <div class="grid grid-cols-12 px-4 mb-6 first:items-center">
       <PageHeader class="col-span-6 col-start-4"> Store </PageHeader>
       <div class="col-span-3 flex items-center justify-end">
-        <img src="/img/coins.svg" class="w-6" >
-        <p class="font-f1 font-semibold text-lg text-yellow-500 ml-2">{{ userFromStore.money }}</p>
+        <Icon name="bi:cash-coin" class="text-yellow-500" size="1.5em" />
+        <p class="font-f1 font-semibold text-lg text-yellow-500 ml-2">{{ userObj.money }}</p>
       </div>
     </div>
 
@@ -27,13 +27,13 @@ import {
   where,
 } from "firebase/firestore";
 import { useNotificationStore } from "~/stores/notification";
-
 import type { iPack } from "@/types/pack";
 import { giveUserPack } from "@/utils/giveUserPack";
 
 const db = useFirestore();
 const userStore = useUserStore();
-const notificationStore = useNotificationStore();
+
+const { userObj } = storeToRefs(userStore);
 
 definePageMeta({
   middleware: "auth",
@@ -43,7 +43,6 @@ const isLoading = ref(false);
 const availablePacks = useState<iPack[]>('availablePacks', () => []);
 
 const {
-  userFromStore,
   shouldUserSeeEmergencyPacks,
   emergencyPacksAvailableToUser,
 } = storeToRefs(userStore);
@@ -107,6 +106,8 @@ const filterPacks = () => {
         emergencyPacksAvailableToUser.value.includes(pack.packId)
     );
   }
+
+  activePacks.sort((a, b) => a.cost - b.cost);
 
   return activePacks;
 };

@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   css: ['vue-final-modal/style.css'],
 
   icon: {
-    mode: 'css',
+    mode: 'svg',
     cssLayer: 'base'
   },
 

@@ -1,6 +1,8 @@
-export default function loadDefaultImage(e: Event, rarity: string = 'common') {
+import { CardType } from "~/types/card";
+
+export default function loadDefaultImage(e: Event, cardType: CardType, rarity: string = 'common') {
   const imgElement = e.target as HTMLImageElement;
-  imgElement.src = `/img/drivers/generic-${rarity}.png`;
+  imgElement.src = `/img/${cardType === CardType.CONSTRUCTOR ? 'constructors' : 'drivers'}/generic-${rarity}.png`;
   imgElement.classList.add("broken-img");
 };
 

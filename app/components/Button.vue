@@ -6,7 +6,7 @@
       version,
       classes,
       size || 'medium',
-      textColorClass || 'text-black',
+      textColorClass || 'text-white',
     ]"
   >
     <slot/>
@@ -29,15 +29,15 @@ button:disabled {
 }
 
 .green {
-  border-color: green;
+  @apply border border-green-700 bg-green-600;
 }
 
 .orange {
-  border-color : orange;
+  @apply border border-orange-700 bg-orange-600;
 }
 
 .red {
-  border-color: rgba(184,16,16,1);
+  @apply border border-red-700 bg-red-600;
 }
 
 .medium {
@@ -45,6 +45,6 @@ button:disabled {
 }
 
 .small {
-  @apply py-2 px-5;
+  @apply py-2 px-5 text-sm;
 }
 </style>

@@ -38,10 +38,10 @@ export interface iCardInUsersCards {
 }
 
 export enum iCardRarity {
-  COMMON,
-  UNCOMMON,
-  RARE,
-  LEGENDARY
+  COMMON = 'COMMON',
+  UNCOMMON = 'UNCOMMON',
+  RARE = 'RARE',
+  LEGENDARY = 'LEGENDARY'
 }
 
 export interface iCardInCollection {

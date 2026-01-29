@@ -1,44 +1,34 @@
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import type { iPack } from "@/types/pack";
+import { doc, setDoc } from "firebase/firestore";
+import type { iPack, iPackInUser } from "@/types/pack";
 
-export async function giveUserPack(packId: string) {
+export async function giveUserPack(pack: iPack) {
+  const user = useCurrentUser();
   const db = useFirestore();
   const userStore = useUserStore();
 
-  const { userFromStore } = storeToRefs(userStore);
-  
-  if (userFromStore.value) {
-    // award them with a normal pack
-    const packRef = doc(db, 'packs', packId);
-    const packSnap = await getDoc(packRef);
+  const { userObj, userDocRef } = storeToRefs(userStore);
 
-    if (packSnap.exists()) {
-      const packData = packSnap.data() as iPack;
+  if (!user.value || !userObj.value || !userDocRef.value) return;
 
-      const playerRef = doc(db, "players", userFromStore.value.userId);
-      const playerData = userFromStore.value;
+  const packs = userObj.value.packs as Record<string, iPackInUser>;
 
-      const packIndex = playerData.packs.findIndex(
-        (userPack) => userPack.packId === packData.packId
-      );
+  let userPack = packs[pack.packId];
 
-      if (packIndex !== -1) {
-        playerData.packs[packIndex].quantity += 1;
-      } else {
-        playerData.packs.push({
-          packId: packData.packId,
-          packName: packData.packName,
-          quantity: 1,
-        });
-      }
-
-      await updateDoc(playerRef, {
-        packs: playerData.packs
-      })
-    } else {
-      console.log(`pack ID: ${packId} doesnt exist`)
-    }
+  if (userPack) {
+    userPack.quantity += 1;
   } else {
-    console.log('missing user');
+    userPack = {
+      packId: pack.packId,
+      packName: pack.packName,
+      quantity: 1,
+    };
   }
+
+  await setDoc(
+    userDocRef.value,
+    { 
+      packs, 
+      money: userObj.value.money - pack.cost
+    }, { merge: true }
+  );
 }

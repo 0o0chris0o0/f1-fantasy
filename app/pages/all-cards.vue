@@ -5,26 +5,32 @@
     <div>
       ...filters...
     </div>
-    <div>
     <div class="grid grid-cols-1 gap-x-4 gap-y-3 mb-6">
       <button v-if="allCards[0]" class="block w-full">
         <UserCard :card="allCards[0]" :rarity="iCardRarity.COMMON" :level="2" />
       </button>
     </div>
-      <div class="grid grid-cols-2 md:grid-cols-2 gap-x-4 gap-y-3 mb-6">
-        <button v-if="allCards[0]" class="block w-full">
-          <UserCard :card="allCards[0]" :rarity="iCardRarity.COMMON" :level="1" />
-        </button>
-        <button v-if="allCards[2]" class="block w-full">
-          <UserCard :card="allCards[2]" :rarity="iCardRarity.UNCOMMON" :level="2"/>
-        </button>
-        <button v-if="allCards[3]" class="block w-full">
-          <UserCard :card="allCards[3]" :rarity="iCardRarity.RARE" :level="3" />
-        </button>
-        <button v-if="allCards[0]" class="block w-full">
-          <UserCard :card="allCards[0]" :rarity="iCardRarity.LEGENDARY" :level="4" />
-        </button>
-      </div>
+    <div class="grid grid-cols-2 gap-x-4 gap-y-3 mb-6">
+      <button v-if="allCards[1]" class="block w-full">
+        <UserCard :card="allCards[1]" :rarity="iCardRarity.COMMON" :level="1" />
+      </button>
+      <button v-if="allCards[2]" class="block w-full">
+        <UserCard :card="allCards[2]" :rarity="iCardRarity.UNCOMMON" :level="2"/>
+      </button>
+    </div>
+    <div class="grid grid-cols-3 gap-x-4 gap-y-3 mb-6">
+      <button v-if="allCards[3]" class="block w-full">
+        <UserCard :card="allCards[3]" :rarity="iCardRarity.UNCOMMON" :level="2"/>
+      </button>
+      <button v-if="allCards[4]" class="block w-full">
+        <UserCard :card="allCards[4]" :rarity="iCardRarity.RARE" :level="3" />
+      </button>
+      <button v-if="allCards[5]" class="block w-full">
+        <UserCard :card="allCards[5]" :rarity="iCardRarity.LEGENDARY" :level="4" />
+      </button>
+    </div>
+    <div>
+      <hr class="my-8">
     </div>
     <div>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-x-3 gap-y-2 mb-6">

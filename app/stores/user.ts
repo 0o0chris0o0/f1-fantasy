@@ -1,41 +1,31 @@
 import { defineStore } from 'pinia';
-import { doc, getDoc, onSnapshot, writeBatch } from "firebase/firestore";
+import { collection, doc, getDoc, onSnapshot, writeBatch } from "firebase/firestore";
 
-import type { iFBUser, iUserFromStore } from '@/types/user';
+import type { iFBUser } from '@/types/user';
 import type { iCardInUsersCards } from '@/types/card';
 
 export const useUserStore = defineStore('user', () => {
-  const userFromStore = ref<iUserFromStore | null>(null);
-
   const user = useCurrentUser();
   const db = useFirestore();
 
-  const getUserForStore = async () => {
-    // Only fetch if data doesn't exist
-    if (userFromStore.value) return userFromStore.value
-
+  const userDocRef = computed(() => {
     if (user.value) {
-      const docRef = doc(db, 'players', user.value.uid);
-      const userDoc = await getDoc(docRef);
-      userFromStore.value = {
-        userId: userDoc.id,
-        ...userDoc.data() as iFBUser
-      }
-      return userFromStore.value  
-
-    } else {
-      return {};
+      return doc(db, 'players', user.value.uid);
     }
-  }
+    return null;
+  });
 
-  const setUserForStore = (userData: iUserFromStore) => {
-    userFromStore.value = userData
-  }
+  const userObj = useDocument(() => 
+    user.value ? doc(db, 'players', user.value.uid) : null
+  )
 
   const userPacksCount = computed(() => {
-    const userPacks = userFromStore.value?.packs;
+    const userPacks = userObj.value?.packs;
+    if (!userPacks) {
+      return 0;
+    }
     let packCount = 0;
-    userPacks?.forEach((pack) => packCount += pack.quantity)
+    Object.keys(userPacks)?.forEach((pack) => packCount += userPacks[pack]? userPacks[pack].quantity : 0)
     return packCount;
   })
 
@@ -47,7 +37,7 @@ export const useUserStore = defineStore('user', () => {
   // })
 
   const shouldUserSeeEmergencyPacks = computed(() => {
-    if (!userFromStore.value) {
+    if (!userObj.value) {
       return false;
     }
 
@@ -155,5 +145,5 @@ export const useUserStore = defineStore('user', () => {
   //   }
   // }
 
-  return { userFromStore, getUserForStore, userPacksCount, setUserForStore, shouldUserSeeEmergencyPacks, emergencyPacksAvailableToUser };
+  return { userObj, userDocRef, userPacksCount, shouldUserSeeEmergencyPacks, emergencyPacksAvailableToUser };
 })
