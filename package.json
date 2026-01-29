@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@iconify-json/bi": "^1.2.7",
+    "@iconify-json/circle-flags": "^1.2.10",
     "@nuxt/icon": "^2.2.1"
   }
 }

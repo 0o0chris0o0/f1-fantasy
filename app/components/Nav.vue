@@ -9,7 +9,7 @@
           <div class="flex justify-between mb-4 -ml-1">
             <NuxtLink to="/profile" class="flex items-center">
               <Icon name="bi:person" size="1.5em" />
-              <p class="ml-2 font-f1 leading-tight">{{ user ? user.displayName : "User" }}</p>
+              <p class="ml-2 font-f1 leading-tight">{{ userObj ? userObj.displayName : "User" }}</p>
             </NuxtLink>
             <div class="flex items-center">
               <Icon name="bi:cash-coin" class="text-yellow-500" size="1.5em" />

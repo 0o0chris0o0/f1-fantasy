@@ -35,7 +35,7 @@
     <div>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-x-3 gap-y-2 mb-6">
         <div v-for="card in allCards" :key="card.cardId">
-          <button class="block w-full">
+          <button class="block w-full" @click="handleSelectCard(card)">
             <Card :card="card" />
           </button>
         </div>
@@ -46,7 +46,9 @@
 
 <script setup lang="ts">
 // Components
+import { useModal } from "vue-final-modal";
 import Loader from "~/components/Loader.vue";
+import CardInfoModal from "~/components/modals/CardInfoModal.vue";
 import { iCardRarity, type iDriverCard } from "~/types/card";
 
 // Stores
@@ -61,6 +63,28 @@ await callOnce("cards", cardsStore.getAllCards);
 const selectedCard = ref<iDriverCard | null>(null);
 
 const { allCards } = storeToRefs(cardsStore);
+
+const { open: openCardInfoModal, close: closeCardInfoModal, patchOptions } = useModal({
+  component: CardInfoModal,
+  attrs: {
+    cardData: selectedCard.value,
+    close: () => closeCardInfoModal(),
+  }
+});
+
+const handleSelectCard = async (card: iDriverCard) => {
+  selectedCard.value = card;
+  
+  // Update the modal attributes explicitly if it's already "created"
+  patchOptions({
+    attrs: {
+      cardData: card,
+    },
+  });
+  
+  openCardInfoModal();
+}
+
 </script>
 
 <style lang="scss" scoped></style>

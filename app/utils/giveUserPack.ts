@@ -24,6 +24,8 @@ export async function giveUserPack(pack: iPack) {
     };
   }
 
+  packs[pack.packId] = userPack
+
   await setDoc(
     userDocRef.value,
     { 

@@ -18,6 +18,11 @@
           Add Schedule
         </Button>
       </div>
+      <div>
+        <Button textColorClass="text-white" @click="performUserReset">
+          Reset Test User
+        </Button>
+      </div>
     </div>
 
     <Loader v-if="isLoading" />
@@ -25,6 +30,7 @@
 </template>
 
 <script setup lang="ts">
+import { doc, updateDoc } from "firebase/firestore";
 import { addAllCards } from "./funcs/addAllCards";
 import { addSchedule } from "./funcs/addSchedule";
 
@@ -40,6 +46,16 @@ const performAddAllCards = async () => {
 const performAddSchedule = async () => {
   isLoading.value = true;
   await addSchedule(db);
+  isLoading.value = false;
+}
+
+const performUserReset = async () => {
+  isLoading.value = true;
+
+  const docRef = doc(db, "players", "ntupyRYb3YvCZjp1iGqCz3VdoaJj");
+
+  await updateDoc(docRef, { ...newPlayerStarterObj, displayName: "Chris" });
+
   isLoading.value = false;
 }
 

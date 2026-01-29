@@ -46,9 +46,4 @@ const props = defineProps<{
 <style scoped></style>
 
 <style lang="scss" scoped>
-.rarity-grid {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-}
-
 </style>

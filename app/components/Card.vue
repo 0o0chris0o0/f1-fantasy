@@ -1,44 +1,46 @@
 <template>
-  <div 
-    class="max-w-full rounded-lg card" 
-    :class="[
-      rarity !== undefined && `rarity-${rarity.toLowerCase()}`,
-      { 'opacity-25': !card.enabled }
-    ]"
-  >
-    <ClientOnly>
-      <img 
-        :alt="card.type"
-        :src="`/img/${card.type === CardType.CONSTRUCTOR ? 'constructors' : 'drivers'}/${card.cardId}-${rarity.toLowerCase()}.png`" 
-        class="rounded-lg" 
-        @error="loadDefaultImage($event, card.type, rarity.toLowerCase())"
-      />
-    </ClientOnly>
-    <div class="absolute right-0 flex flex-col card-icons">
-      <div
-        class="rounded-full card-icons__team-logo"
-        :style="{ backgroundColor: `var(--color-${card.teamId})` }"
-      >
-        <img :src="`/img/teams/${card.teamId}.avif`" />
-      </div>
-      <div class="rounded-full card-icons__flag">
-        <Icon 
-          class="w-full h-full" 
-          :name="`circle-flags:${card.nationalityCode?.toLowerCase()}`"
+  <div class="card-container">
+    <div 
+      class="max-w-full rounded-lg card" 
+      :class="[
+        rarity !== undefined && `rarity-${rarity.toLowerCase()}`,
+        { 'opacity-25': !card.enabled }
+      ]"
+    >
+      <ClientOnly>
+        <img 
+          :alt="card.type"
+          :src="`/img/${card.type === CardType.CONSTRUCTOR ? 'constructors' : 'drivers'}/${card.cardId}-${rarity.toLowerCase()}.png`" 
+          class="rounded-lg" 
+          @error="loadDefaultImage($event, card.type, rarity.toLowerCase())"
         />
+      </ClientOnly>
+      <div class="absolute right-0 flex flex-col card-icons">
+        <div
+          class="rounded-full card-icons__team-logo"
+          :style="{ backgroundColor: `var(--color-${card.teamId})` }"
+        >
+          <img :src="`/img/teams/${card.teamId}.avif`" />
+        </div>
+        <div class="rounded-full card-icons__flag">
+          <Icon 
+            class="w-full h-full" 
+            :name="`circle-flags:${card.nationalityCode?.toLowerCase()}`"
+          />
+        </div>
       </div>
-    </div>
 
-    <div class="font-f1 font-semibold tracking-tight card-name">
-      <p>{{ card.cardName }}</p>
-    </div>
-    <div class="inline-block text-left uppercase card-team">
-      <hr class="opacity-50" />
-      <p class="opacity-75">{{ card.teamName }}</p>
-    </div>
-    <div class="font-f1 text-right card-score">
-      <p class="card-score__number">{{ card.stats.currentFantasyPoints }}</p>
-      <p class="card-score__text">Pts</p>
+      <div class="font-f1 font-semibold tracking-tight card-name">
+        <p>{{ card.cardName }}</p>
+      </div>
+      <div class="inline-block text-left uppercase card-team">
+        <hr class="opacity-50" />
+        <p class="opacity-75">{{ card.teamName }}</p>
+      </div>
+      <div class="font-f1 text-right card-score">
+        <p class="card-score__number">{{ card.stats.currentFantasyPoints }}</p>
+        <p class="card-score__text">Pts</p>
+      </div>
     </div>
   </div>
 </template>

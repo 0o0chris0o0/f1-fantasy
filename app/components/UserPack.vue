@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="text-center">
     <div class="relative inline-block mb-2">
       <ClientOnly>
         <img 
