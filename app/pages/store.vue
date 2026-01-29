@@ -19,16 +19,12 @@
 import type {
   QueryDocumentSnapshot} from "firebase/firestore";
 import {
-  writeBatch,
-  doc,
   collection,
   getDocs,
   query,
   where,
 } from "firebase/firestore";
-import { useNotificationStore } from "~/stores/notification";
 import type { iPack } from "@/types/pack";
-import { giveUserPack } from "@/utils/giveUserPack";
 
 const db = useFirestore();
 const userStore = useUserStore();
@@ -61,37 +57,6 @@ await callOnce(async () => {
 const filteredPacks = computed(() => {
   return filterPacks();
 });
-
-// const buyPack = async (pack: iPack) => {
-//   if (userFromStore.value?.userId) {
-//     isLoading.value = true;
-
-//     const batch = writeBatch(db);
-
-//     const playerRef = doc(db, "players", userFromStore.value.userId);
-
-//     // reduce players money
-//     batch.update(playerRef, {
-//       money: userFromStore.value.money - pack.cost,
-//     });
-
-//     // add pack to player
-//     await giveUserPack(pack.packId);
-
-//     await batch.commit();
-
-//     isLoading.value = false;
-
-//     notificationStore.addNotification({
-//       version: 'success',
-//       message: `You just bought a ${pack.packName}`
-//     })
-//   }
-// };
-
-// watch(emergencyPacksAvailableToUser, () => {
-//   availablePacks.value = filterPacks();
-// });
 
 const filterPacks = () => {
   let activePacks = availablePacks.value;

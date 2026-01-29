@@ -2,7 +2,7 @@
   <div>
     <Loader v-if="isLoading"/>
     <div 
-      class="relative flex shadow-inner-custom border border-gray-700 rounded-lg rotate-"
+      class="relative flex shadow-inner-custom border border-gray-700 rounded-lg"
     >
       <ClientOnly>
         <img 
