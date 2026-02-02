@@ -15,9 +15,14 @@ export const useUserStore = defineStore('user', () => {
     return null;
   });
 
-  const userObj = useDocument(() => 
-    user.value ? doc(db, 'players', user.value.uid) : null
-  )
+  const userObj = useDocument(() => {
+    try {
+      return user.value ? doc(db, 'players', user.value.uid) : null;
+    } catch (error) {
+      debugger;
+    }
+    
+  })
 
   const userPacksCount = computed(() => {
     const userPacks = userObj.value?.packs;

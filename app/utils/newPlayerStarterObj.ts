@@ -3,7 +3,7 @@ import type { iFBUser } from "~/types/user";
 const newPlayerStarterObj: iFBUser = {
   cards: [],
   cardsInCollection: 0,
-  cardsObtained: [],
+  cardsData: {},
   collection: [],
   collectionCompletion: 0,
   currentRank: 0,
@@ -20,7 +20,6 @@ const newPlayerStarterObj: iFBUser = {
   latestResult: null,
   money: 500,
   packs: {},
-  packsSinceLastLegendary: 0,
   prevRank: 0,
   results: [],
 };

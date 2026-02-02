@@ -5,7 +5,7 @@ import type { iPackInUser } from './pack';
 export interface iFBUser {
   cards: iCardInUsersCards[];
   cardsInCollection: number;
-  cardsObtained: string[];
+  cardsData: Record<string, iUserCardData>;
   collection: iCardInCollection[];
   collectionCompletion: number;
   currentRank: number;
@@ -15,7 +15,6 @@ export interface iFBUser {
   latestResult: iResult | null;
   money: number;
   packs: Record<string, iPackInUser>;
-  packsSinceLastLegendary: number;
   prevRank: number;
   results: iResult[];
 }
@@ -71,6 +70,8 @@ export interface IConstructorScore {
   totalFantasyScore: number;
 }
 
-// export interface iUserFromStore extends iFBUser {
-//   userId: string;
-// }
+export interface iUserCardData {
+  hasCard: boolean;
+  xp: number;
+  level: number;
+}
