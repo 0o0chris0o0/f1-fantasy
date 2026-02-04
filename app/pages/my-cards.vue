@@ -8,20 +8,13 @@
 
     <div>
       <h3 class="text-lg mb-2">Drivers</h3>
-      <p v-if="!cardsStore.userDriverCards?.length" class="italic opacity-50">
+      <p v-if="!userObj?.cards?.length" class="italic opacity-50">
         No cards...
       </p>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-x-2 gap-y-3 mb-6">
-        <div v-for="card in cardsStore.userDriverCards" :key="card.cardId">
-          <button class="w-full">
-            <Card
-              :card="card"
-              :quantity="card.quantity"
-              show-collection-tag
-              show-team-tag
-            />
-          </button>
-        </div>
+        <button v-for="card in userObj?.cards">
+          <UserCard :card="card.cardData" :rarity="card.rarity" :level="card.level" :quantity="card.quantity" />
+        </button>
       </div>
     </div>
   </div>
@@ -33,6 +26,8 @@ import type { iDriverCard } from "~/types/card";
 
 const cardsStore = useCardsStore();
 const userStore = useUserStore();
+
+const { userObj } = storeToRefs(userStore);
 
 definePageMeta({
   middleware: "auth",

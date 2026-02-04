@@ -9,6 +9,7 @@
         </p>
       </div>
       <Card :card="card" :rarity="rarity" />
+      <div class="absolute bottom-8 right-2">x{{ quantity }}</div>
     </div>
   </div>
 </template>
@@ -16,10 +17,11 @@
 <script setup lang="ts">
 import { iCardRarity, type iConstructorCard, type iDriverCard } from "~/types/card";
 
-const { rarity = iCardRarity.COMMON, level = 1 } = defineProps<{
+const { rarity = iCardRarity.COMMON, level = 1, quantity = 1 } = defineProps<{
   card: iDriverCard | iConstructorCard;
   rarity?: iCardRarity;
   level?: number;
+  quantity?: number;
 }>();
 
 const levelColors: Record<number, string> = {

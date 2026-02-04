@@ -39,8 +39,10 @@ export async function openPack(packId: string) {
   // pick random cards based on pack data
   const pickedCards = pickCardsForUser(allCards, packData.cardsIncluded);
 
+  const newCards = createLootCards(pickedCards, packData, userObj.value.cards, userObj.value.cardsHistory)
+
   // create users card obj, includes adding rarity, level & xp
-  const newCardsForUsers = createCardsForUser(pickedCards, packData, userObj.value.cards, userObj.value.cardsHistory)
+  const newCardsForUsers = mergeNewCardsWithCurrentUserCards(newCards, userObj.value.cards);
  
   if (!userDocRef.value) {
     throw new Error('User not logged in');
@@ -60,15 +62,25 @@ export async function openPack(packId: string) {
   }
 
   userPackData.quantity -= 1;
+
+  // if there are no more packs left delete the object
+  if (userPackData.quantity < 1) {
+    delete userPacks[packData.packId];
+  }
+
   batch.update(userDocRef.value, {
     packs: userPacks
   });
 
   await batch.commit();
 
-  return newCardsForUsers;
+  return newCards;
 }
 
+/** 
+ * Picks a set number of random cards from all cards,
+ * Includes logic to select ateast 1 driver & 1 constructor
+ */
 export function pickCardsForUser(allCards: (iDriverCard | iConstructorCard)[], cardsToPick: number) {
   // Separate cards by type
   const driverCards = allCards.filter(card => card.type === 'driver');
@@ -114,17 +126,21 @@ export function pickCardsForUser(allCards: (iDriverCard | iConstructorCard)[], c
   return pickedCards;
 }
 
-export function createCardsForUser(
-  newCards: (iDriverCard | iConstructorCard)[],
+/**
+ * Creates the new card objects ready for the user object
+ * Assigns the rarity to each card based on the pack slot data
+ */
+export function createLootCards(
+  pickedCards: (iDriverCard | iConstructorCard)[],
   packData: iPack,
   usersCurrentCards: iCardInUsersCards[],
   usersCardHistory: Record<string, iUserCardHistory>
 ){
-  const cardsInUsersCards: iCardInUsersCards[] = usersCurrentCards.slice();
+  const newCards: iCardInUsersCards[] = [];
 
   for (const [key, slotData] of Object.entries(packData.slots)) {
     const i = Number(key);
-    const cardInSlot = newCards[i - 1];
+    const cardInSlot = pickedCards[i - 1];
 
     if (!slotData || !cardInSlot) continue;
 
@@ -134,12 +150,16 @@ export function createCardsForUser(
     if (!selectedRarity) continue;
 
     // check if user already has this card in their collection
-    const selectedCardIndex = cardsInUsersCards.findIndex((userCard: iCardInUsersCards) => userCard.cardData.cardId === cardInSlot.cardId && userCard.rarity === selectedRarity);
+    const selectedCardIndex = usersCurrentCards.findIndex((userCard: iCardInUsersCards) => userCard.cardData.cardId === cardInSlot.cardId && userCard.rarity === selectedRarity);
 
-    if (cardsInUsersCards[selectedCardIndex]) {
+    if (usersCurrentCards[selectedCardIndex]) {
       // user already has this card, increase quantity
-      cardsInUsersCards[selectedCardIndex].quantity += 1;
+      newCards.push({
+        ...usersCurrentCards[selectedCardIndex],
+        quantity: usersCurrentCards[selectedCardIndex].quantity + 1
+      })
     } else {
+      // get the users card history
       let userCardHistory: iUserCardHistory | undefined = usersCardHistory[cardInSlot.cardId];
 
       if (!userCardHistory) {
@@ -149,7 +169,6 @@ export function createCardsForUser(
         }
       }
 
-      // user does not have this card, add to collection
       const newUserCard: iCardInUsersCards = {
         cardData: cardInSlot,
         quantity: 1,
@@ -157,12 +176,35 @@ export function createCardsForUser(
         level: userCardHistory.level,
         xp: userCardHistory.xp,
       };
-      cardsInUsersCards.push(newUserCard);
+      newCards.push(newUserCard);
     }
   }
 
-  // return new user card object including new cards
-  return cardsInUsersCards;
+  // return new cards
+  return newCards;
+}
+
+/**
+ * Merges the new cards with the existing user card object
+ */
+export function mergeNewCardsWithCurrentUserCards(
+  newCards: iCardInUsersCards[],
+  usersCurrentCards: iCardInUsersCards[],
+){
+  // clone user obj
+  const newUserCardsObj = usersCurrentCards.slice();
+
+  newCards.forEach((newCard) => {
+    const cardIndex = newUserCardsObj.findIndex((oldCard) => oldCard.cardData.cardId === newCard.cardData.cardId && oldCard.rarity === newCard.rarity);
+
+    if (newUserCardsObj[cardIndex]) {
+      newUserCardsObj[cardIndex].quantity += 1;
+    } else {
+      newUserCardsObj.push(newCard);
+    }
+  })
+
+  return newUserCardsObj;
 }
 
 /**

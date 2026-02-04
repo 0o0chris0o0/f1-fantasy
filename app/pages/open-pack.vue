@@ -2,7 +2,11 @@
   <div>
     <Loader v-if="isLoading" />
     <p>{{ packId }}</p>
-    <p v-for="card in loot"> {{ card.cardData.cardId }}</p>
+    <div class="grid grid-cols-2 gap-x-4 gap-y-3 mb-6">
+      <button v-for="card in loot" class="block w-full">
+        <UserCard :card="card.cardData" :rarity="card.rarity" :level="card.level" :quantity="card.quantity" />
+      </button>
+    </div>
   </div>
 </template>
 

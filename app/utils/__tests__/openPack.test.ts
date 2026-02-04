@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { pickCardsForUser, createCardsForUser } from '../openPack';
+import { pickCardsForUser, createLootCards } from '../openPack';
 import { type iConstructorCard, type iDriverCard } from '../../types/card';
 import type { iPack } from '../../types/pack';
 
@@ -63,7 +63,7 @@ describe('pickCardsForUser', () => {
   });
 });
 
-describe('createCardsForUser', () => {
+describe('createLootCards', () => {
   let mockAllCards: (iDriverCard | iConstructorCard)[];
 
   beforeEach(() => {
@@ -72,7 +72,7 @@ describe('createCardsForUser', () => {
 
   it('adds new cards when user does not have any', () => {
     const newCards = pickCardsForUser(mockAllCards, 6);
-    const result = createCardsForUser(newCards, mockPackData, [], {});
+    const result = createLootCards(newCards, mockPackData, [], {});
 
     expect(result).toHaveLength(6);
     expect(result[0]!.cardData.cardId).toBe(newCards[0]!.cardId);
@@ -84,7 +84,7 @@ describe('createCardsForUser', () => {
     // force random card to be first available (will gurantee albon selection)
     vi.spyOn(Math, 'random').mockReturnValue(0);
     const newCards = pickCardsForUser(mockAllCards, 6);
-    const result = createCardsForUser(newCards, mockPackData, mockUsersCurrentCards, mockUsersCardHistory);
+    const result = createLootCards(newCards, mockPackData, mockUsersCurrentCards, mockUsersCardHistory);
 
     const albonCard = result.find((card) => card.cardData.cardId === 'albon');
 
