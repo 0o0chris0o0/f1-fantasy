@@ -19,7 +19,7 @@
         <NotificationContainer />
       </main>
     </div>
-    <Nav ref="nav" :nav-open="navOpen" @toggle-menu="toggleMenu" />
+    <Nav v-if="!userDataFetchPending" ref="nav" :nav-open="navOpen" @toggle-menu="toggleMenu" />
   </div>
 </template>
 
@@ -28,11 +28,17 @@ import type { ComponentPublicInstance } from "vue";
 import { ModalsContainer } from 'vue-final-modal'
 
 const user = useCurrentUser();
+const userStore = useUserStore();
 
 const nav = ref<ComponentPublicInstance | null>(null);
 const contentContainer = ref<HTMLElement | null>(null);
 const navOpen = ref(false);
 const navWidth = ref(0);
+
+const { pending: userDataFetchPending } = await useAsyncData('my-unique-key', async () => {
+  await userStore.getUserData();
+  return true; // useAsyncData expects a return value
+});
 
 onMounted(async () => {
   const navComp = nav.value;

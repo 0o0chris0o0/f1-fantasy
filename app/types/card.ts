@@ -32,9 +32,11 @@ export interface iDriverCardStats {
 }
 
 export interface iCardInUsersCards {
-  cardId: string;
-  rarity: iCardRarity
+  cardData: iDriverCard | iConstructorCard
+  level: number;
   quantity: number;
+  rarity: iCardRarity;
+  xp: number;
 }
 
 export enum iCardRarity {

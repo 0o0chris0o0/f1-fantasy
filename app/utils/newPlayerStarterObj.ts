@@ -3,7 +3,7 @@ import type { iFBUser } from "~/types/user";
 const newPlayerStarterObj: iFBUser = {
   cards: [],
   cardsInCollection: 0,
-  cardsData: {},
+  cardsHistory: {},
   collection: [],
   collectionCompletion: 0,
   currentRank: 0,

@@ -4,8 +4,8 @@ import type { iPackInUser } from './pack';
 
 export interface iFBUser {
   cards: iCardInUsersCards[];
+  cardsHistory: Record<string, iUserCardHistory>;
   cardsInCollection: number;
-  cardsData: Record<string, iUserCardData>;
   collection: iCardInCollection[];
   collectionCompletion: number;
   currentRank: number;
@@ -37,15 +37,15 @@ export interface iResult {
 }
 
 interface iCurrentTeamScores {
-  rareLegendaryDriver: IDriverScore;
+  rareLegendaryDriver: iDriverScore;
   rareLegendaryConstructor: number;
-  uncommonDriver: IDriverScore;
+  uncommonDriver: iDriverScore;
   uncommonConstructor: number;
-  commonDriver: IDriverScore;
+  commonDriver: iDriverScore;
   commonConstructor: number;
 }
 
-export interface IDriverScore {
+export interface iDriverScore {
   cardId: string;
   cardName: string;
   cardRarity: iCardRarity;
@@ -60,18 +60,17 @@ export interface IDriverScore {
   wasDNF: boolean;
 }
 
-export interface IConstructorScore {
+export interface iConstructorScore {
   cardId: string;
   cardName: string;
   cardRarity: iCardRarity;
-  drivers: Record<string, IDriverScore>
+  drivers: Record<string, iDriverScore>
   fantasyQualScore: number;
   fantasyRaceScore: number;
   totalFantasyScore: number;
 }
 
-export interface iUserCardData {
-  hasCard: boolean;
+export interface iUserCardHistory {
   xp: number;
   level: number;
 }

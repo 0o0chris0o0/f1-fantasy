@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { addAllCards } from "./funcs/addAllCards";
 import { addSchedule } from "./funcs/addSchedule";
 
@@ -54,7 +54,7 @@ const performUserReset = async () => {
 
   const docRef = doc(db, "players", "ntupyRYb3YvCZjp1iGqCz3VdoaJj");
 
-  await updateDoc(docRef, { ...newPlayerStarterObj, displayName: "Chris" });
+  await setDoc(docRef, { ...newPlayerStarterObj, displayName: "Chris", money: 5000 });
 
   isLoading.value = false;
 }

@@ -9,10 +9,10 @@ import { useUserStore } from './user';
 
 // Types
 import { CardType } from '~/types/card';
-import type { iDriverCard, iCardInUsersCards } from '~/types/card';
+import type { iDriverCard, iCardInUsersCards, iConstructorCard } from '~/types/card';
 
 export const useCardsStore = defineStore('cards', () => {
-  const allCards = ref<iDriverCard[]>([]);
+  const allCards = ref<(iDriverCard | iConstructorCard)[]>([]);
 
   const db = useFirestore();
   const userStore = useUserStore();
@@ -21,7 +21,7 @@ export const useCardsStore = defineStore('cards', () => {
     if (!allCards.value.length) {
       const q = query(collection(db, "cards"));
       const querySnapshot = await getDocs(q);
-      allCards.value = querySnapshot.docs.map((doc) => doc.data() as iCard)
+      allCards.value = querySnapshot.docs.map((doc) => doc.data() as iDriverCard | iConstructorCard)
     }
   }
 

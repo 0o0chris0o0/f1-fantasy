@@ -3,7 +3,9 @@
     <PageHeader class="mb-6"> Packs </PageHeader>
 
     <div class="flex flex-col gap-10">
-      <UserPack v-for="pack in userObj.packs" :key="pack.packId" :pack="pack"/>
+      <template v-for="pack in userObj.packs">
+        <UserPack  v-if="pack.quantity" :key="pack.packId" :pack="pack"/>
+      </template>
     </div>
   </div>
 </template>

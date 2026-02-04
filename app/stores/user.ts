@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia';
-import { collection, doc, getDoc, onSnapshot, writeBatch } from "firebase/firestore";
+import { doc, DocumentReference, getDoc } from "firebase/firestore";
 
 import type { iFBUser } from '@/types/user';
-import type { iCardInUsersCards } from '@/types/card';
 
 export const useUserStore = defineStore('user', () => {
   const user = useCurrentUser();
@@ -15,14 +14,19 @@ export const useUserStore = defineStore('user', () => {
     return null;
   });
 
-  const userObj = useDocument(() => {
-    try {
-      return user.value ? doc(db, 'players', user.value.uid) : null;
-    } catch (error) {
+  const userObj = useDocument(() =>
+    user.value ? doc(db, 'players', user.value.uid) as DocumentReference<iFBUser> : null
+  );
+
+  async function getUserData() {
+    console.log('getting user data')
+    if (userDocRef.value) {
+      const docSnap = await getDoc(userDocRef.value);
+      return docSnap;
+    } else {
       debugger;
     }
-    
-  })
+  }
 
   const userPacksCount = computed(() => {
     const userPacks = userObj.value?.packs;
@@ -150,5 +154,5 @@ export const useUserStore = defineStore('user', () => {
   //   }
   // }
 
-  return { userObj, userDocRef, userPacksCount, shouldUserSeeEmergencyPacks, emergencyPacksAvailableToUser };
+  return { userObj, userDocRef, userPacksCount, shouldUserSeeEmergencyPacks, emergencyPacksAvailableToUser, getUserData };
 })
