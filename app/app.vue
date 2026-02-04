@@ -3,7 +3,7 @@
     <div
       ref="contentContainer"
       class="relative min-h-screen w-full flex flex-col z-20 content-container pb-6"
-      :class="{ active: navOpen }"
+      :class="[{ active: navOpen }, `page-${makeCssSafe(route.path)}`]"
     >
       <header class="flex items-center p-4 shadow-sm z-10">
         <NuxtLink :to="user ? '/home' : '/'">
@@ -29,6 +29,7 @@ import { ModalsContainer } from 'vue-final-modal'
 
 const user = useCurrentUser();
 const userStore = useUserStore();
+const route = useRoute();
 
 const nav = ref<ComponentPublicInstance | null>(null);
 const contentContainer = ref<HTMLElement | null>(null);
@@ -65,14 +66,16 @@ const toggleMenu = () => {
   transition: left 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
   left: 0;
 
-  background: linear-gradient(
-    300deg,
-    rgba(2, 12, 56, 1) 0%,
-    rgba(1, 8, 25, 1) 100%
-  );
+  background: var(--bg-gradient, linear-gradient(300deg, rgba(2, 12, 56, 1) 0%, rgba(1, 8, 25, 1) 100%));
+
+  &.page-open-pack {
+    --bg-gradient: url('/img/surface.avif');
+    background-size: 200px;
+  }
 
   &.active {
     transition: left 0.4s cubic-bezier(0.68, 0, 0.265, 1.55);
+    box-shadow: inset -10px 0 10px rgba(0, 0, 0, 0.3);
   }
 }
 </style>

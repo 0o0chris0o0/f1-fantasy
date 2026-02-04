@@ -1,5 +1,3 @@
-import { iCardRarity } from "~/types/card";
-
 export const toCamel = (text: string) => {
   return text.toLowerCase().replace(/^./, c => c.toUpperCase());
 }
@@ -9,3 +7,11 @@ export const enumToText = (enumObj: Object, value: string | number): string => {
   if (!label) return '';
   return String(label).toLowerCase();
 };
+
+export function makeCssSafe(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/[^a-z0-9-_]/g, '-') // Replace invalid chars with hyphens
+    .replace(/-+/g, '-') // Collapse multiple hyphens
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+}

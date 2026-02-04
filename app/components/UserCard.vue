@@ -1,5 +1,5 @@
 <template>
-  <div class="relative card-container">
+  <div class="relative card-container shadow-xl">
     <div class="card">
       <div class="absolute card-level">
         <div class="segmented-circle" :style="calcLevelCirc"></div>

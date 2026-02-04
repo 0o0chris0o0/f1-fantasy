@@ -80,7 +80,8 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
   &.rarity-uncommon {
     background: var(--color-uncommon);
     background: linear-gradient(130deg,rgba(161, 233, 255, 1) 0%, rgba(118, 192, 219, 1) 50%, rgba(161, 233, 255, 1) 99%);
-    color: #91f6ff;
+    box-shadow: 0 0 15px rgba(4, 101, 109, 0.3), inset 0 0 15px rgba(145, 246, 255, 0.2);
+    color: rgb(145, 246, 255);
 
     hr {
       border-color: #91f6ff
@@ -96,7 +97,7 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
       #c27bd4 55%,
       #632c65 100%
     );
-    box-shadow: 0 0 15px rgba(146, 59, 168, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 15px rgba(146, 59, 168, 0.7), inset 0 0 15px rgba(255, 255, 255, 0.5);
     color: var(--color-rare);
 
     hr {
@@ -113,7 +114,7 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
       #fcf6ba 75%,
       #aa771c 100%
     );
-    box-shadow: 0 0 20px rgba(184, 134, 11, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 20px rgba(184, 134, 11, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.5);
     color: var(--color-legendary);
 
     hr {
