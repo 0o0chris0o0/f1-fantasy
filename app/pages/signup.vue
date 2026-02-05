@@ -130,11 +130,6 @@ const createUser = async () => {
 
     await setDoc(doc(db, "players", userCred.user.uid), newUserObj);
 
-    userStore.setUserForStore({
-      ...newUserObj,
-      userId: userCred.user.uid,
-    });
-
     // clear sensitive data
     password.value = "";
     navigateTo("/home");
