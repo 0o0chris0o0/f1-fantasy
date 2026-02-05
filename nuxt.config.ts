@@ -19,6 +19,12 @@ export default defineNuxtConfig({
     exposeConfig: false,
   },
 
+  runtimeConfig: {
+    googleServiceAccount: process.env.GOOGLE_APPLICATION_CREDENTIALS 
+      ? JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS) 
+      : {}
+  },
+
   vuefire: {
     auth: {
         enabled: true,
