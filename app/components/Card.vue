@@ -22,10 +22,10 @@
         >
           <img :src="`/img/teams/${card.teamId}.avif`" />
         </div>
-        <div class="rounded-full card-icons__flag">
-          <Icon 
+        <div v-if="card.nationalityCode" class="rounded-full card-icons__flag">
+          <Icon
             class="w-full h-full" 
-            :name="`circle-flags:${card.nationalityCode?.toLowerCase()}`"
+            :name="`circle-flags:${card.nationalityCode.toLowerCase()}`"
           />
         </div>
       </div>

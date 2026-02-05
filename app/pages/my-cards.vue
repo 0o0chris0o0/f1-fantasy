@@ -2,17 +2,56 @@
   <div>
     <h2 class="text-center mb-6 text-lg">My Cards</h2>
 
-    <div>
-      ...filters...
+    <div class="flex items-end justify-between mb-4 border-b border-gray-700 pb-4">
+      <div class="">
+        <p class="text-sm mb-1">Grid size</p>
+        <div class="grid grid-cols-2 gap-2">
+          <button
+            v-for="n in gridSizes"
+            :key="n"
+            :class="[
+              'flex gap-0.5 px-2 py-3 border-2 border-gray-500 rounded justify-center card-size', 
+              { 
+                'opacity-50': gridSize === n,
+              }
+            ]"
+            @click="changeGridSize(n as '2' | '3')"
+            :aria-pressed="gridSize === n"
+            :disabled="gridSize === n"
+            :title="`Set grid to ${n} columns`"
+          >
+            <span v-for="i in Number(n)" :key="i"></span>
+          </button>
+        </div>
+      </div>
+      <div>
+        <Button size="small" @click="toggleFilters">Show Filters</Button>
+      </div>
     </div>
 
+    <FiltersDrawer
+      v-model:showFilters="showFilters"
+      v-model:searchText="searchText"
+      v-model:selectedRarity="selectedRarity"
+      v-model:selectedTeam="selectedTeam"
+      v-model:sortBy="sortBy"
+      :teams="teams"
+      @reset="resetFilters"
+    />
+
     <div>
-      <h3 class="text-lg mb-2">Drivers</h3>
       <p v-if="!userObj?.cards?.length" class="italic opacity-50">
         No cards...
       </p>
-      <div class="grid grid-cols-2 md:grid-cols-3 gap-x-2 gap-y-3 mb-6">
-        <button v-for="card in userObj?.cards" @click="handleSelectCard(card)">
+      <div class="mb-4 text-sm">Showing {{ filteredCards.length }} / {{ userObj?.cards?.length || 0 }}</div>
+      <div
+        class="grid gap-x-2 gap-y-3 mb-6"
+        :class="{
+          'grid-cols-2': gridSize === '2',
+          'grid-cols-3': gridSize === '3'
+        }"
+      >
+        <button v-for="card in filteredCards" :key="card.cardData.cardId" @click="handleSelectCard(card)">
           <UserCard :card="card.cardData" :rarity="card.rarity" :level="card.level" :quantity="card.quantity" />
         </button>
       </div>
@@ -24,14 +63,86 @@
 // Components
 import { useModal } from "vue-final-modal";
 import CardInfoModal from "~/components/modals/CardInfoModal.vue";
+import FiltersDrawer from "~/components/FiltersDrawer.vue";
 import type { iCardInUsersCards } from "~/types/card";
+import { ref, computed } from 'vue';
 
 const userStore = useUserStore();
 
 const { userObj } = storeToRefs(userStore);
 
+// filter / sort state
+const searchText = ref('');
+const selectedRarity = ref('ALL');
+const selectedTeam = ref('ALL');
+const sortBy = ref('rarity:desc,name');
+const gridSize = ref<'2' | '3'>('3');
+const gridSizes = ['3', '2'] as const;
+const showFilters = ref(false);
+
 definePageMeta({
   middleware: "auth",
+});
+
+const teams = computed(() => {
+  const t = new Set<string>();
+  (userObj.value?.cards || []).forEach((c: any) => {
+    if (c?.cardData?.teamName) t.add(c.cardData.teamName);
+  });
+  return Array.from(t).sort();
+});
+
+const changeGridSize = (newSize: '2' | '3') => {
+  gridSize.value = newSize;
+}
+
+const filteredCards = computed(() => {
+  const cards = userObj.value?.cards || [];
+
+  let out = cards.filter((c: iCardInUsersCards) => {
+    const name = c.cardData.cardName?.toLowerCase() || '';
+    const team = c.cardData.teamName?.toLowerCase() || '';
+    const q = searchText.value.trim().toLowerCase();
+
+    if (q) {
+      if (!(name.includes(q) || team.includes(q))) return false;
+    }
+
+    if (selectedRarity.value !== 'ALL' && c.rarity !== selectedRarity.value) return false;
+
+    if (selectedTeam.value !== 'ALL' && c.cardData.teamName !== selectedTeam.value) return false;
+
+    return true;
+  });
+
+   const compareMulti = (a: any, b: any) => {
+    // allow comma-separated criteria like "rarity:desc,name" or "name,level:asc"
+    const criteria = String(sortBy.value || 'name').split(',').map(s => s.trim()).filter(Boolean);
+
+    for (const crit of criteria) {
+      const [rawKey, rawDir] = crit.split(':').map(s => s && s.trim());
+      const key = rawKey || 'name';
+      const dir = (rawDir || 'asc').toLowerCase();
+
+      const va = getFilterKey(a, key);
+      const vb = getFilterKey(b, key);
+
+      let res = 0;
+      if (typeof va === 'string' && typeof vb === 'string') {
+        res = va.localeCompare(vb);
+      } else {
+        res = (Number(va) || 0) - (Number(vb) || 0);
+      }
+
+      if (res !== 0) return dir === 'desc' ? -res : res;
+    }
+
+    return 0;
+  };
+
+  out = out.sort((a: any, b: any) => compareMulti(a, b));
+
+  return out;
 });
 
 const { open: openCardInfoModal, close: closeCardInfoModal, patchOptions } = useModal({
@@ -52,7 +163,27 @@ const handleSelectCard = async (card: iCardInUsersCards) => {
   
   openCardInfoModal();
 }
+
+const toggleFilters = () => {
+  showFilters.value = !showFilters.value;
+}
+
+const resetFilters = () => {
+  searchText.value = '';
+  selectedRarity.value = 'ALL';
+  selectedTeam.value = 'ALL';
+  sortBy.value = 'name';
+}
 </script>
 
 <style lang="scss" scoped>
+.card-size {
+  span {
+    display: inline-block;
+    width: 10px;
+    height: 16px;
+    border-radius: 3px;
+    border: 2px solid white;
+  }
+}
 </style>

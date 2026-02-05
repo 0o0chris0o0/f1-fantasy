@@ -14,7 +14,7 @@
         </div>
       </header>
       <main class="w-full max-w-lg mx-auto flex-1 flex flex-col p-4">
-        <NuxtPage />
+        <NuxtPage/>
         <ModalsContainer />
         <NotificationContainer />
       </main>

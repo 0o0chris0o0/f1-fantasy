@@ -19,12 +19,9 @@ export const useUserStore = defineStore('user', () => {
   );
 
   async function getUserData() {
-    console.log('getting user data')
     if (userDocRef.value) {
       const docSnap = await getDoc(userDocRef.value);
       return docSnap;
-    } else {
-      debugger;
     }
   }
 
