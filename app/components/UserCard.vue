@@ -1,5 +1,5 @@
 <template>
-  <div class="relative card-container shadow-xl">
+  <div class="relative card-container">
     <div class="card">
       <div class="absolute card-level">
         <div class="segmented-circle" :style="calcLevelCirc"></div>
@@ -8,8 +8,26 @@
           <span>{{ level }}</span>
         </p>
       </div>
-      <Card :card="card" :rarity="rarity" />
-      <div class="absolute bottom-8 right-2">x{{ quantity }}</div>
+      <div class="shadow-xl">
+        <Card :card="card" :rarity="rarity" />
+      </div>
+      <div v-if="!hideUserData" class="flex items-center justify-center gap-2 text-xs sm:text-sm pt-1 font-f1 font-bold">
+        <Icon name="bi:stack" />
+        <p>x{{ quantity }}</p>
+        <div class="w-0.5 h-4 bg-white opacity-90"></div>
+        <div class="text-lg collected-icon">
+          <Icon 
+            v-if="inCollection"
+            name="lets-icons:book-check-fill" 
+            :customize="customizeIcon" 
+          />
+          <Icon 
+            v-else
+            name="lets-icons:book-check" 
+            class="opacity-40"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -17,11 +35,13 @@
 <script setup lang="ts">
 import { iCardRarity, type iConstructorCard, type iDriverCard } from "~/types/card";
 
-const { rarity = iCardRarity.COMMON, level = 1, quantity = 1 } = defineProps<{
+const { rarity = iCardRarity.COMMON, level = 1, quantity = 1, hideUserData = false } = defineProps<{
   card: iDriverCard | iConstructorCard;
   rarity?: iCardRarity;
   level?: number;
   quantity?: number;
+  inCollection?: boolean;
+  hideUserData?: boolean;
 }>();
 
 const levelColors: Record<number, string> = {
@@ -58,6 +78,13 @@ const calcLevelCirc = computed(() => {
     background: `conic-gradient(${gradientParts.join(', ')})`
   };
 });
+
+const customizeIcon = (content: string) => {
+  return content
+    .replace(/fill="[^"]*"/g, `fill="#84cc16"`) // Change fill color to red
+    .replace(/stroke="[^"]*"/g, `stroke="#84cc16"`) // Change stroke color to red
+
+}
 
 </script>
 
@@ -106,6 +133,10 @@ const calcLevelCirc = computed(() => {
       display: none;
     }
   }
+}
+
+.collected-icon {
+  
 }
 
 .card-container {

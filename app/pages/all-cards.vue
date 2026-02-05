@@ -12,7 +12,7 @@
     </div>
     <div class="grid grid-cols-2 gap-x-4 gap-y-3 mb-6">
       <button v-if="allCards[1]" class="block w-full">
-        <UserCard :card="allCards[1]" :rarity="iCardRarity.COMMON" :level="1" />
+        <UserCard :card="allCards[1]" :rarity="iCardRarity.COMMON" :level="1" inCollection />
       </button>
       <button v-if="allCards[2]" class="block w-full">
         <UserCard :card="allCards[2]" :rarity="iCardRarity.UNCOMMON" :level="2"/>
@@ -49,7 +49,7 @@
 import { useModal } from "vue-final-modal";
 import Loader from "~/components/Loader.vue";
 import CardInfoModal from "~/components/modals/CardInfoModal.vue";
-import { iCardRarity, type iDriverCard } from "~/types/card";
+import { iCardRarity, type iCardInUsersCards, type iConstructorCard, type iDriverCard } from "~/types/card";
 
 // Stores
 const cardsStore = useCardsStore();
@@ -60,14 +60,13 @@ definePageMeta({
 
 await callOnce("cards", cardsStore.getAllCards);
 
-const selectedCard = ref<iDriverCard | null>(null);
+const selectedCard = ref<iDriverCard | iConstructorCard | null>(null);
 
 const { allCards } = storeToRefs(cardsStore);
 
 const { open: openCardInfoModal, close: closeCardInfoModal, patchOptions } = useModal({
   component: CardInfoModal,
   attrs: {
-    cardData: selectedCard.value,
     close: () => closeCardInfoModal(),
   }
 });

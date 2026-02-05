@@ -1,30 +1,75 @@
 <template>
   <VueFinalModal
     class="flex justify-center items-center"
-    :overlay-style="{ backgroundColor: 'rgba(0,0,0,0.9)' }"
-    content-class="flex flex-col p-10 bg-gray-600 shadow-inner-custom rounded-lg space-y-4 modal-container"
+    :overlay-style="{ backgroundColor: 'rgba(0,0,0,0.97)' }"
+    content-class="modal-container"
   >
     <div v-if="cardData">
+      <p 
+        class="text-center font-f1 text-sm tracking-wide"
+        :class="{
+          'text-common': userData?.rarity === iCardRarity.COMMON,
+          'text-uncommon': userData?.rarity === iCardRarity.UNCOMMON,
+          'text-rare': userData?.rarity === iCardRarity.RARE,
+          'text-legendary': userData?.rarity === iCardRarity.LEGENDARY
+        }"
+      >
+        {{ userData?.rarity }}
+      </p>
       <p class="font-f1 text-2xl font-bold text-center text-gray-200 mb-4">{{ cardData.cardName }}</p>
-      <div class="grid grid-cols-2 gap-4">
-        <div class="w-56 mx-auto mb-6">
-          <Card :card="cardData" />
+      <div class="flex flex-col md:flex-row items-center gap-4 mb-6">
+        <div class="w-56 mx-auto">
+          <UserCard v-if="userData" :card="cardData" :rarity="userData.rarity" :level="userData.level" :quantity="userData.quantity" hideUserData />
+          <Card v-else :card="cardData" />
         </div>
-        <div class="w-56">
-          <div class="text-sm font-semibold text-gray-300 space-y-2">
+        <div class="w-56 text-sm font-bold text-gray-300">
+          <div class="space-y-1">
             <p>Nationality: <span class="font-normal">{{ cardData.nationality }}</span></p>
-            <p>Team: <span class="font-normal">{{ cardData.teamName }}</span></p>
+            <p v-if="cardData.type === CardType.DRIVER">Team: <span class="font-normal">{{ cardData.teamName }}</span></p>
           </div>
           <hr class="my-2 opacity-25"/>
-          <div class="text-sm font-semibold text-gray-300 space-y-2">
-            <p>Average Qualifying Pos: <span class="font-normal">{{ cardData.stats.averageQualifyingPosition }}</span></p>
-            <p>Average Race Pos: <span class="font-normal">{{ cardData.stats.averageRacePosition }}</span></p>
+          <div class="space-y-1">
+            <p>Average Qualifying Pos: <span class="font-normal">P{{ cardData.stats.averageQualifyingPosition }}</span></p>
+            <p>Average Race Pos: <span class="font-normal">P{{ cardData.stats.averageRacePosition }}</span></p>
             <p>DNF's: <span class="font-normal">{{ cardData.stats.numberOfDNFs }}</span></p>
           </div>
           <hr class="my-2 opacity-25"/>
-          <div class="text-sm font-semibold text-gray-300 space-y-2">
+          <div class="space-y-2">
             <p>Home Races:</p>
-            <p class="font-normal" v-for="race in cardData.homeRaces">Round. {{ race.round }} - {{ race.raceName }}</p> 
+            <p v-if="cardData.homeRaces.length" v-for="race in cardData.homeRaces">
+              Round. {{ race.round }} - <span class="font-normal text-xs">{{ race.raceName }} ({{ prettyRaceDate(race.raceStart) }})</span>
+            </p>
+            <p v-else class="italic font-normal opacity-40">
+              This card has no home races
+            </p>
+          </div>
+          <hr class="my-2 opacity-25"/>
+          <div v-if="userData" class="mt-4 flex gap-6 items-center font-f1 text-2xl">
+            <div class="flex items-center gap-2">
+              <Icon name="bi:stack" />
+              <p>x{{ userData.quantity }}</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <Icon name="game-icons:steering-wheel" />
+              <p>{{ userData.xp }}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 mt-2">
+            <template v-if="userData?.inCollection">
+              <Icon 
+                name="lets-icons:book-check-fill" 
+                class="text-2xl"
+                :customize="customizeIcon"
+              />
+              <p>Collected on ???</p>
+            </template>
+            <template v-else>
+              <Icon 
+                name="lets-icons:book-check" 
+                class="opacity-40 text-2xl"
+              />
+              <p class="italic font-normal opacity-40">Not in collection</p>
+            </template>
           </div>
         </div>
       </div>
@@ -38,24 +83,51 @@
 </template>
 
 <script setup lang="ts">
+import dayjs from "dayjs";
+import type { Timestamp } from "firebase/firestore";
 import { VueFinalModal } from "vue-final-modal";
-import type { iPack } from "~/types/pack";
-import { iCardRarity, type iCardInUsersCards, type iConstructorCard, type iDriverCard } from '~/types/card';
-import type { Ref } from 'vue'
-
-const userStore = useUserStore();
-
-const { userObj } = storeToRefs(userStore);
+import { CardType, iCardRarity, type iCardInUsersCards, type iConstructorCard, type iDriverCard } from '~/types/card';
 
 const props = defineProps<{
-  cardData: iDriverCard | iConstructorCard | null;
-  userData?: iCardInUsersCards | null;
+  cardData?: iDriverCard | iConstructorCard;
+  userData?: iCardInUsersCards
   close?: () => void;
 }>();
+
+const prettyRaceDate = (date: Timestamp) => {
+  const jsDate = dayjs(date.toDate())
+  return jsDate.format('DD/MM/YYYY - HH:mm')
+}
+
+const customizeIcon = (content: string) => {
+  return content
+    .replace(/fill="[^"]*"/g, `fill="#84cc16"`) // Change fill color to red
+    .replace(/stroke="[^"]*"/g, `stroke="#84cc16"`) // Change stroke color to red
+
+}
 
 </script>
 
 <style scoped></style>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.modal-container {
+  max-height: 90vh;
+  max-width: 100%;
+  overflow: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    outline: 1px solid slategrey;
+    border-radius: 3px
+  }
+}
 </style>

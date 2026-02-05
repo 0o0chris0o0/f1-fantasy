@@ -1,8 +1,8 @@
 <template>
   <VueFinalModal
     class="flex justify-center items-center"
-    :overlay-style="{ backgroundColor: 'rgba(0,0,0,0.9)' }"
-    content-class="flex flex-col p-10 bg-gray-600 shadow-inner-custom rounded-lg space-y-4 modal-container"
+    :overlay-style="{ backgroundColor: 'rgba(0,0,0,0.96)' }"
+    content-class="flex flex-col p-10 space-y-4 modal-container"
   >
     <div v-if="pack">
       <div class="mb-6">

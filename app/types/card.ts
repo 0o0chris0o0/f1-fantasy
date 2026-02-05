@@ -33,6 +33,8 @@ export interface iDriverCardStats {
 
 export interface iCardInUsersCards {
   cardData: iDriverCard | iConstructorCard
+  inCollection: boolean;
+  collectedOn: Timestamp | null;
   level: number;
   quantity: number;
   rarity: iCardRarity;

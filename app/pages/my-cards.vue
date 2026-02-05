@@ -12,7 +12,7 @@
         No cards...
       </p>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-x-2 gap-y-3 mb-6">
-        <button v-for="card in userObj?.cards">
+        <button v-for="card in userObj?.cards" @click="handleSelectCard(card)">
           <UserCard :card="card.cardData" :rarity="card.rarity" :level="card.level" :quantity="card.quantity" />
         </button>
       </div>
@@ -22,9 +22,10 @@
 
 <script setup lang="ts">
 // Components
-import type { iDriverCard } from "~/types/card";
+import { useModal } from "vue-final-modal";
+import CardInfoModal from "~/components/modals/CardInfoModal.vue";
+import type { iCardInUsersCards } from "~/types/card";
 
-const cardsStore = useCardsStore();
 const userStore = useUserStore();
 
 const { userObj } = storeToRefs(userStore);
@@ -33,8 +34,24 @@ definePageMeta({
   middleware: "auth",
 });
 
-const selectedCard = ref<iDriverCard | null>(null);
-const cardsInView = ref<iDriverCard[]>([]);
+const { open: openCardInfoModal, close: closeCardInfoModal, patchOptions } = useModal({
+  component: CardInfoModal,
+  attrs: {
+    close: () => closeCardInfoModal(),
+  }
+});
+
+const handleSelectCard = async (card: iCardInUsersCards) => {
+  // Update the modal attributes explicitly if it's already "created"
+  patchOptions({
+    attrs: {
+      cardData: card.cardData,
+      userData: card,
+    },
+  });
+  
+  openCardInfoModal();
+}
 </script>
 
 <style lang="scss" scoped>

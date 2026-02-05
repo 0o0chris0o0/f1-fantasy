@@ -75,6 +75,7 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
   &.rarity-common {
     background: var(--color-common);
     background: linear-gradient(130deg,rgba(245, 245, 245, 1) 0%, rgba(192, 192, 196, 1) 50%, rgba(245, 245, 245, 1) 99%);
+    color: white;
   }
 
   &.rarity-uncommon {

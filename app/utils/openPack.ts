@@ -171,6 +171,8 @@ export function createLootCards(
 
       const newUserCard: iCardInUsersCards = {
         cardData: cardInSlot,
+        inCollection: false, // TODO: set this value
+        collectedOn: null,
         quantity: 1,
         rarity: selectedRarity,
         level: userCardHistory.level,

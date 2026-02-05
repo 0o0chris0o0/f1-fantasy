@@ -31,6 +31,7 @@
   "devDependencies": {
     "@iconify-json/bi": "^1.2.7",
     "@iconify-json/circle-flags": "^1.2.10",
+    "@iconify-json/game-icons": "^1.2.3",
     "@nuxt/icon": "^2.2.1",
     "@vitejs/plugin-vue": "^6.0.4",
     "@vue/test-utils": "^2.4.6",
