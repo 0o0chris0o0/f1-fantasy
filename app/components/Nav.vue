@@ -44,9 +44,6 @@
           <li>
             <NuxtLink to="/collection" class="main-link">Collection</NuxtLink>
           </li>
-          <li>
-            <NuxtLink to="/latest-results" class="main-link">Scores</NuxtLink>
-          </li>
         </template>
         <template v-else>
           <li>

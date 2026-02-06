@@ -10,9 +10,9 @@
             v-for="n in gridSizes"
             :key="n"
             :class="[
-              'flex gap-0.5 px-2 py-3 border-2 border-gray-500 rounded justify-center card-size', 
+              'flex gap-0.5 px-2 py-3 border-2 border-gray-500 rounded-xl justify-center card-size', 
               { 
-                'opacity-50': gridSize === n,
+                'opacity-50 bg-gray-600': gridSize === n,
               }
             ]"
             @click="changeGridSize(n as '2' | '3')"
@@ -44,7 +44,9 @@
         No cards...
       </p>
       <div class="mb-4 text-sm">Showing {{ filteredCards.length }} / {{ userObj?.cards?.length || 0 }}</div>
-      <div
+      <TransitionGroup
+        name="cards"
+        tag="div"
         class="grid gap-x-2 gap-y-3 mb-6"
         :class="{
           'grid-cols-2': gridSize === '2',
@@ -58,7 +60,7 @@
         >
           <UserCard :card="card.cardData" :rarity="card.rarity" :level="card.level" :quantity="card.quantity" />
         </button>
-      </div>
+      </TransitionGroup>
     </div>
   </div>
 </template>
@@ -189,5 +191,24 @@ const resetFilters = () => {
     border-radius: 3px;
     border: 2px solid white;
   }
+}
+
+/* 1. THE MOVE ANIMATION (for sorting) */
+.cards-move, 
+.cards-enter-active,
+.cards-leave-active {
+  transition: all 0.4s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+/* 2. THE ENTER/LEAVE ANIMATIONS (for filtering) */
+.cards-enter-from,
+.cards-leave-to {
+  opacity: 0;
+  transform: scale(0.6) translateY(20px);
+}
+
+/* 3. ENSURE LEAVING ITEMS ARE TAKEN OUT OF FLOW (so others can slide) */
+.cards-leave-active {
+  position: absolute;
 }
 </style>
