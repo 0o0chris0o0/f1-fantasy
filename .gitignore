@@ -24,3 +24,4 @@ logs
 !.env.example
 
 /saved-data
+service-account.json
