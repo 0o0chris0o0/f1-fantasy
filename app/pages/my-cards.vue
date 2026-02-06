@@ -51,7 +51,11 @@
           'grid-cols-3': gridSize === '3'
         }"
       >
-        <button v-for="card in filteredCards" :key="card.cardData.cardId" @click="handleSelectCard(card)">
+        <button 
+          v-for="card in filteredCards" 
+          :key="`${card.cardData.cardId}-${card.rarity}`" 
+          @click="handleSelectCard(card)"
+        >
           <UserCard :card="card.cardData" :rarity="card.rarity" :level="card.level" :quantity="card.quantity" />
         </button>
       </div>
@@ -115,7 +119,7 @@ const filteredCards = computed(() => {
     return true;
   });
 
-   const compareMulti = (a: any, b: any) => {
+   const compareMulti = (a: iCardInUsersCards, b: iCardInUsersCards) => {
     // allow comma-separated criteria like "rarity:desc,name" or "name,level:asc"
     const criteria = String(sortBy.value || 'name').split(',').map(s => s.trim()).filter(Boolean);
 
