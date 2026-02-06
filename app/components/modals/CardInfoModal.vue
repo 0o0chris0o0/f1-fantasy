@@ -5,6 +5,9 @@
     content-class="modal-container"
   >
     <div v-if="cardData">
+      <button class="absolute top-1 right-1" @click="close">
+        <Icon name="ic:outline-close" color="white" class="text-4xl" />
+      </button>
       <p 
         class="text-center font-f1 text-sm tracking-wide"
         :class="{

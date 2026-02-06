@@ -1,12 +1,15 @@
 <template>
   <VueFinalModal
     class="flex justify-center items-center"
-    :overlay-style="{ backgroundColor: 'rgba(0,0,0,0.9)' }"
-    content-class="flex flex-col p-6 bg-gray-600 shadow-inner-custom rounded-lg space-y-4 modal-container"
+    :overlay-style="{ backgroundColor: 'rgba(0,0,0,0.97)' }"
+    content-class="text-gray-200 modal-container"
   >
     <div v-if="pack">
-      <p class="font-f1 text-2xl font-bold text-center text-gray-200">{{ pack.packName }}</p>
-      <p class="mb-2 text-center italic">Includes {{ pack.cardsIncluded }} card{{ pack.cardsIncluded > 1 ? 's' : ''}}
+      <button class="absolute top-1 right-1" @click="close">
+        <Icon name="ic:outline-close" color="white" class="text-4xl" />
+      </button>
+      <p class="font-f1 text-2xl font-bold text-center">{{ pack.packName }}</p>
+      <p class="mb-2 text-center italic text-sm">Includes {{ pack.cardsIncluded }} card{{ pack.cardsIncluded > 1 ? 's' : ''}}
       </p>
       <div v-for="(slot, i) in pack.slots" :key="i" class="text-sm gap-1 rarity-grid">
         <div class="w-14">
@@ -22,10 +25,10 @@
             {{ toCamel(slot.forcedRarity) }}
           </p>
           <p v-else class="flex space-x-2">
-            <span v-if="slot.rarityChances[iCardRarity.COMMON]" class="text-common">Common: {{ slot.rarityChances[iCardRarity.COMMON] }}%</span>
-            <span v-if="slot.rarityChances[iCardRarity.UNCOMMON]" class="text-uncommon">Uncommon: {{ slot.rarityChances[iCardRarity.UNCOMMON] }}%</span>
-            <span v-if="slot.rarityChances[iCardRarity.RARE]" class="text-rare">Rare: {{ slot.rarityChances[iCardRarity.RARE] }}%</span>
-            <span v-if="slot.rarityChances[iCardRarity.LEGENDARY]" class="text-legendary">Legendary: {{ slot.rarityChances[iCardRarity.LEGENDARY] }}%</span>
+            <span v-if="slot.rarityChances[iCardRarity.COMMON]" class="text-common">{{ slot.rarityChances[iCardRarity.COMMON] }}% Common</span>
+            <span v-if="slot.rarityChances[iCardRarity.UNCOMMON]" class="text-uncommon">{{ slot.rarityChances[iCardRarity.UNCOMMON] }}% Uncommon</span>
+            <span v-if="slot.rarityChances[iCardRarity.RARE]" class="text-rare">{{ slot.rarityChances[iCardRarity.RARE] }}% Rare</span>
+            <span v-if="slot.rarityChances[iCardRarity.LEGENDARY]" class="text-legendary">{{ slot.rarityChances[iCardRarity.LEGENDARY] }}% Legendary</span>
           </p>
         </div>
       </div>
