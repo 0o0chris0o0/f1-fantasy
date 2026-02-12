@@ -6,7 +6,7 @@ export interface iFBUser {
   cards: iCardInUsersCards[];
   cardsHistory: Record<string, iUserCardHistory>;
   cardsInCollection: number;
-  collection: iCardInCollection[];
+  collection: Record<string, iCardInCollection[]>;
   collectionCompletion: number;
   currentRank: number;
   currentScore: number;
@@ -16,7 +16,9 @@ export interface iFBUser {
   money: number;
   packs: Record<string, iPackInUser>;
   prevRank: number;
+  progressInRewardTrack: number;
   results: iResult[];
+  rewardLevel: number;
 }
 
 interface iCurrentTeam {

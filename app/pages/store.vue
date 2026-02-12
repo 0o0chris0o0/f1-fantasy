@@ -1,5 +1,4 @@
 <template>
-  <Loader v-if="isLoading"/>
   <div v-if="userObj">
     <div class="grid grid-cols-12 px-4 mb-6 first:items-center">
       <PageHeader class="col-span-6 col-start-4"> Store </PageHeader>
@@ -35,7 +34,6 @@ definePageMeta({
   middleware: "auth",
 });
 
-const isLoading = ref(false);
 const availablePacks = useState<iPack[]>('availablePacks', () => []);
 
 const {

@@ -4,7 +4,7 @@ const newPlayerStarterObj: iFBUser = {
   cards: [],
   cardsInCollection: 0,
   cardsHistory: {},
-  collection: [],
+  collection: {},
   collectionCompletion: 0,
   currentRank: 0,
   currentScore: 0,
@@ -21,7 +21,9 @@ const newPlayerStarterObj: iFBUser = {
   money: 500,
   packs: {},
   prevRank: 0,
+  progressInRewardTrack: 0,
   results: [],
+  rewardLevel: 1,
 };
 
 export default newPlayerStarterObj;

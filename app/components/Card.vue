@@ -68,6 +68,7 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
   display: flex;
   flex-direction: column;
   padding: 3px;
+  font-size: 12px;
 
   background: var(--color-common);
   background: linear-gradient(130deg,rgba(245, 245, 245, 1) 0%, rgba(192, 192, 196, 1) 50%, rgba(245, 245, 245, 1) 99%);
@@ -125,6 +126,7 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
 }
 
 .card-icons {
+  display: none;
   padding: 0.4em;
   gap: 0.2em;
 
@@ -210,6 +212,16 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
   container-type: inline-size;
   container-name: card;
   max-width: 400px;
+}
+
+@container card (min-width: 100px) {
+  .card {
+    font-size: 16px;
+  }
+
+  .card-icons {
+    display: block;
+  }
 }
 
 @container card (min-width: 200px) {
