@@ -2,7 +2,7 @@
   <VueFinalModal
     class="flex justify-center items-center"
     :overlay-style="{ backgroundColor: 'rgba(0,0,0,0.97)' }"
-    content-class="modal-container"
+    content-class="w-full md:w-auto modal-container"
   >
     <div v-if="cardData">
       <button class="absolute top-1 right-1" @click="close">
@@ -115,22 +115,8 @@ const customizeIcon = (content: string) => {
 
 <style lang="scss">
 .modal-container {
-  max-height: 90vh;
-  max-width: 100%;
+  max-height: 100vh;
   overflow: auto;
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background-color: #ccc;
-    outline: 1px solid slategrey;
-    border-radius: 3px
-  }
+  padding: 2rem 0;
 }
 </style>
