@@ -6,7 +6,7 @@ export interface iFBUser {
   cards: iCardInUsersCards[];
   cardsHistory: Record<string, iUserCardHistory>;
   cardsInCollection: number;
-  collection: Record<string, iCardInCollection[]>;
+  collection: Record<string, iCardInCollection>;
   collectionCompletion: number;
   currentRank: number;
   currentScore: number;

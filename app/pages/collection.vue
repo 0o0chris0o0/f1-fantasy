@@ -41,30 +41,39 @@
   </div>
   <div class="grid grid-cols-4 gap-2">
     <template v-for="card in allCards">
-      <template v-for="rarity in Object.values(iCardRarity)">
-        <div class="relative">
-          <div class="absolute inset-0 z-10 text-3xl grid place-content-center gap-2">
-            <Icon 
-              v-if="!userStore.doesUserHaveCardInCollection(card.cardId, rarity)" 
-              name="uis:padlock"
-            />
-            <button
-              v-if="userStore.doesUserHaveCard(card.cardId, rarity) && !userStore.doesUserHaveCardInCollection(card.cardId, rarity)" 
-              @click="handleAddToCollection(card, rarity)"
-            >
+      <template v-for="rarity in [iCardRarity.COMMON, iCardRarity.UNCOMMON, iCardRarity.RARE, iCardRarity.LEGENDARY]">
+        <div>
+          <div class="relative">
+            <div class="absolute inset-0 z-10 text-3xl grid place-content-center gap-2">
               <Icon 
-                name="material-symbols:add-circle"
-                color="#008236"
+                v-if="!userStore.doesUserHaveCardInCollection(card.cardId, rarity)" 
+                name="uis:padlock"
               />
-            </button>
+              <button
+                v-if="userStore.doesUserHaveCard(card.cardId, rarity) && !userStore.doesUserHaveCardInCollection(card.cardId, rarity)" 
+                @click="handleAddToCollection(card.cardId, rarity)"
+              >
+                <Icon 
+                  name="material-symbols:add-circle"
+                  color="#008236"
+                />
+              </button>
+            </div>
+            <Card 
+              :card="card" 
+              :rarity="rarity" 
+              :class="{ 
+                'opacity-25': !userStore.doesUserHaveCardInCollection(card.cardId, rarity),
+              }"
+            />
           </div>
-          <Card 
-            :card="card" 
-            :rarity="rarity" 
-            :class="{ 
-              'opacity-25': !userStore.doesUserHaveCardInCollection(card.cardId, rarity),
-            }"
-          />
+          <div 
+            v-if="userStore.doesUserHaveCard(card.cardId, rarity) && !userStore.doesUserHaveCardInCollection(card.cardId, rarity)"
+            class="flex items-center justify-center gap-1 text-xs sm:text-sm pt-1 font-f1 font-bold"
+          >
+            <Icon name="bi:stack" />
+            <p>x{{ userStore.getXCardFromUserObj(card.cardId, rarity)?.quantity }}</p>
+          </div>
         </div>
       </template>
     </template>
@@ -74,10 +83,11 @@
 <script setup lang="ts">
 import type {
   QueryDocumentSnapshot} from "firebase/firestore";
-import { collection, doc, getDocs, setDoc, Timestamp, updateDoc, increment, getDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, Timestamp, updateDoc, increment, getDoc } from 'firebase/firestore';
 import { useModal } from "vue-final-modal";
 import AddToCollectionConfirmation from "~/components/modals/AddToCollectionConfirmation.vue";
-import { iCardRarity, type iCardInUsersCards, type iConstructorCard, type iDriverCard } from '~/types/card';
+import RewardsInfo from "~/components/modals/RewardsInfo.vue";
+import { iCardRarity, type iConstructorCard, type iDriverCard } from '~/types/card';
 import { sortCardsForCollection } from "~/utils/filteringSorting";
 
 definePageMeta({
@@ -87,7 +97,7 @@ definePageMeta({
 const db = useFirestore();
 const userStore = useUserStore();
 
-const { userObj, userDocRef } = storeToRefs(userStore);
+const { userObj } = storeToRefs(userStore);
 
 const isLoading = ref(false);
 const allCards = useState<(iDriverCard | iConstructorCard)[]>('allCards', () => []);
@@ -115,37 +125,22 @@ const confirmAddToCollection = async (cardId: string, rarity: iCardRarity) => {
 
   isLoading.value = true;
 
-  if (!userDocRef.value) return;
+  await addCardToCollection(cardId, rarity, totalCards.value);
 
-  const userCards = userObj.value?.cards;
-  const indexOfSelectedCard = userCards?.findIndex((c) => c.cardData.cardId === cardId && c.rarity === rarity);
+  // if we've completed a reward level give the user the reward
+  if (userObj.value?.progressInRewardTrack === 0) {
+    const rewardObject = rewardObj[userObj.value.rewardLevel]
+    if (!rewardObject) return;
+    await giveUserReward(rewardObject);
+    
+    patchRewardsInfoModal({
+      attrs: {
+        rewardObj: rewardObject,
+      },
+    });
 
-  if (indexOfSelectedCard === undefined) {
-    return;
+    openRewardInfoModal();
   }
-
-  userCards?.splice(indexOfSelectedCard, 1);
-
-  const newCardCount = (userObj.value?.cardsInCollection ?? 0) + 1;
-  const calcedCompletion = Math.round(newCardCount / totalCards.value * 100);
-
-  const { progress: progressInRewardTrack, level: rewardLevel } = calcProgressForRewardTrack(totalCards.value, newCardCount)
-
-  if (rewardLevel > 1 && progressInRewardTrack === 0) {
-    // TODO: award user
-  }
-
-  await updateDoc(userDocRef.value, {
-    cards: userCards,
-    cardsInCollection: increment(1),
-    collectionCompletion: calcedCompletion,
-    progressInRewardTrack,
-    rewardLevel,
-    [`collection.${cardId}_${rarity}`]: {
-      cardId,
-      collectedOn: Timestamp.now()
-    }
-  });
 
   isLoading.value = false;
 }
@@ -153,7 +148,7 @@ const confirmAddToCollection = async (cardId: string, rarity: iCardRarity) => {
 const { 
   open: openAddToCollectionConfirmationModal, 
   close: closeAddToCollectionConfirmationModal, 
-  patchOptions 
+  patchOptions: patchAddToCollectionConfirmationModal 
 } = useModal({
   component: AddToCollectionConfirmation,
   attrs: {
@@ -164,16 +159,32 @@ const {
   },
 });
 
-const handleAddToCollection = (card: iConstructorCard | iDriverCard, cardRarity: iCardRarity) => {
-  patchOptions({
+const handleAddToCollection = (cardId: string, cardRarity: iCardRarity) => {
+
+  const userCardObj = userStore.getXCardFromUserObj(cardId, cardRarity);
+
+  patchAddToCollectionConfirmationModal({
     attrs: {
-      card: card,
+      card: userCardObj,
       rarity: cardRarity,
     },
   });
   
   openAddToCollectionConfirmationModal();
 }
+
+const { 
+  open: openRewardInfoModal, 
+  close: closeRewardInfoModal, 
+  patchOptions: patchRewardsInfoModal,
+} = useModal({
+  component: RewardsInfo,
+  attrs: {
+    close: () => {
+      closeRewardInfoModal();
+    },
+  },
+});
 </script>
 
 <style lang="scss" scoped>
@@ -194,6 +205,4 @@ const handleAddToCollection = (card: iConstructorCard | iDriverCard, cardRarity:
   top: 50%;
   transform: translate(-50%, -50%);
 }
-
-
 </style>

@@ -45,7 +45,8 @@ export enum iCardRarity {
   COMMON = 'COMMON',
   UNCOMMON = 'UNCOMMON',
   RARE = 'RARE',
-  LEGENDARY = 'LEGENDARY'
+  LEGENDARY = 'LEGENDARY',
+  MYTHIC = 'MYTHIC',
 }
 
 export interface iCardInCollection {

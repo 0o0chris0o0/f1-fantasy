@@ -2,13 +2,11 @@ import { doc, setDoc } from "firebase/firestore";
 import type { iPack, iPackInUser } from "@/types/pack";
 
 export async function giveUserPack(pack: iPack) {
-  const user = useCurrentUser();
-  const db = useFirestore();
   const userStore = useUserStore();
 
   const { userObj, userDocRef } = storeToRefs(userStore);
 
-  if (!user.value || !userObj.value || !userDocRef.value) return;
+  if (!userObj.value || !userDocRef.value) return;
 
   const packs = userObj.value.packs as Record<string, iPackInUser>;
 

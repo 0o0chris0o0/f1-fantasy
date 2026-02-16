@@ -11,10 +11,10 @@
       <div class="shadow-xl">
         <Card :card="card" :rarity="rarity" />
       </div>
-      <div v-if="!hideUserData" class="flex items-center justify-center gap-2 text-xs sm:text-sm pt-1 font-f1 font-bold">
+      <div v-if="!hideUserData" class="flex items-center justify-center gap-1 text-xs sm:text-sm pt-1 font-f1 font-bold">
         <Icon name="bi:stack" />
         <p>x{{ quantity }}</p>
-        <div class="w-0.5 h-4 bg-white opacity-90"></div>
+        <div class="w-0.5 h-4 mx-1 bg-white opacity-90"></div>
         <div class="text-lg collected-icon">
           <Icon 
             v-if="inCollection"

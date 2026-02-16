@@ -1,5 +1,5 @@
 import { collection, doc, getDoc, where, query, getDocs, updateDoc, writeBatch } from "firebase/firestore";
-import type { iCardInUsersCards, iCardRarity, iConstructorCard, iDriverCard } from "~/types/card";
+import type { iCardInCollection, iCardInUsersCards, iCardRarity, iConstructorCard, iDriverCard } from "~/types/card";
 import type { iPack, iPackInUser, iSlot } from "~/types/pack";
 import type { iUserCardHistory } from "~/types/user";
 
@@ -39,7 +39,7 @@ export async function openPack(packId: string) {
   // pick random cards based on pack data
   const pickedCards = pickCardsForUser(allCards, packData.cardsIncluded);
 
-  const newCards = createLootCards(pickedCards, packData, userObj.value.cards, userObj.value.cardsHistory)
+  const newCards = createLootCards(pickedCards, packData, userObj.value.cards, userObj.value.cardsHistory, userObj.value.collection)
 
   // create users card obj, includes adding rarity, level & xp
   const newCardsForUsers = mergeNewCardsWithCurrentUserCards(newCards, userObj.value.cards);
@@ -134,7 +134,8 @@ export function createLootCards(
   pickedCards: (iDriverCard | iConstructorCard)[],
   packData: iPack,
   usersCurrentCards: iCardInUsersCards[],
-  usersCardHistory: Record<string, iUserCardHistory>
+  usersCardHistory: Record<string, iUserCardHistory>,
+  usersCollection: Record<string, iCardInCollection>
 ){
   const newCards: iCardInUsersCards[] = [];
 
@@ -169,10 +170,12 @@ export function createLootCards(
         }
       }
 
+      const usersCardFromCollection = usersCollection[`${cardInSlot.cardId}_${selectedRarity}`];
+
       const newUserCard: iCardInUsersCards = {
         cardData: cardInSlot,
-        inCollection: false, // TODO: set this value
-        collectedOn: null,
+        inCollection: !!usersCardFromCollection,
+        collectedOn: usersCardFromCollection?.collectedOn ? usersCardFromCollection.collectedOn : null,
         quantity: 1,
         rarity: selectedRarity,
         level: userCardHistory.level,

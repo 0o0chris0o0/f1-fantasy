@@ -58,7 +58,13 @@
           :key="`${card.cardData.cardId}-${card.rarity}`" 
           @click="handleSelectCard(card)"
         >
-          <UserCard :card="card.cardData" :rarity="card.rarity" :level="card.level" :quantity="card.quantity" />
+          <UserCard 
+            :card="card.cardData" 
+            :rarity="card.rarity" 
+            :level="card.level" 
+            :quantity="card.quantity" 
+            :in-collection="card.inCollection"
+          />
         </button>
       </TransitionGroup>
     </div>

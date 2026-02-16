@@ -39,8 +39,13 @@ describe('calcProgressForRewardTrack', () => {
     expect(result).toStrictEqual({ progress: 0, level: 3 });
   });
 
+  it('should return the correct obj for 130 cards', () => {
+    const result = calcProgressForRewardTrack(totalCards, 130)
+    expect(result).toStrictEqual({ progress: 11, level: 10 });
+  });
+
   it('should return the correct obj for 132 cards', () => {
     const result = calcProgressForRewardTrack(totalCards, 132)
-    expect(result).toStrictEqual({ progress: 0, level: 10 });
+    expect(result).toStrictEqual({ progress: 0, level: 11 });
   });
 });

@@ -68,5 +68,9 @@ export const useUserStore = defineStore('user', () => {
     return !!userObj.value?.collection[`${cardId}_${cardRarity}`];
   }
 
-  return { userObj, userDocRef, userPacksCount, shouldUserSeeEmergencyPacks, emergencyPacksAvailableToUser, getUserData, doesUserHaveCard, doesUserHaveCardInCollection };
+  const getXCardFromUserObj = (cardId: string, rarity: iCardRarity) => {
+    return userObj.value?.cards.find((c) => c.cardData.cardId === cardId && c.rarity === rarity);
+  }
+
+  return { userObj, userDocRef, userPacksCount, shouldUserSeeEmergencyPacks, emergencyPacksAvailableToUser, getUserData, doesUserHaveCard, doesUserHaveCardInCollection, getXCardFromUserObj };
 })

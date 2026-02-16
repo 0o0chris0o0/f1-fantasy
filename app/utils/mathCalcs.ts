@@ -8,6 +8,13 @@ export function calcProgressForRewardTrack(totalCards: number, cardCount: number
     progress: 0,
     level: 1
   };
+
+  if (totalCards === cardCount) {
+    return {
+      progress: 0,
+      level: 11
+    }
+  }
   
   for (let level = 1; level <= 10; level++) {
     const cardsInThisLevel = level <= extraCards ? baseCardsPerLevel + 1 : baseCardsPerLevel;
