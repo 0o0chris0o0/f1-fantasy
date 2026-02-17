@@ -8,11 +8,14 @@
       ]"
     >
       <ClientOnly>
-        <img 
+        <NuxtImg 
           :alt="card.type"
           :src="`/img/${card.type === CardType.CONSTRUCTOR ? 'constructors' : 'drivers'}/${card.cardId}-${rarity.toLowerCase()}.png`" 
           class="rounded-lg" 
-          @error="loadDefaultImage($event, card.type, rarity.toLowerCase())"
+          :placeholder="`/img/${card.type === CardType.CONSTRUCTOR ? 'constructors' : 'drivers'}/generic-${rarity.toLowerCase()}.png`"
+          loading="lazy"
+          width="490px"
+          height="740px"
         />
       </ClientOnly>
       <div class="absolute right-0 flex flex-col card-icons">
@@ -47,8 +50,6 @@
 
 <script setup lang="ts">
 import { CardType, iCardRarity, type iConstructorCard, type iDriverCard } from "~/types/card";
-
-import loadDefaultImage from "~/utils/loadDefaultImage";
 
 const { rarity = iCardRarity.COMMON } = defineProps<{
   card: iDriverCard | iConstructorCard;

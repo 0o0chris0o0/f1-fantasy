@@ -3,7 +3,13 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
-  modules: ['nuxt-vuefire', "@pinia/nuxt", '@nuxt/icon', "@nuxtjs/tailwindcss"],
+  modules: [
+    'nuxt-vuefire',
+    "@pinia/nuxt",
+    '@nuxt/icon',
+    "@nuxtjs/tailwindcss",
+    '@nuxt/image',
+  ],
 
   css: ['vue-final-modal/style.css'],
 
