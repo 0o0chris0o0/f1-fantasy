@@ -11,11 +11,17 @@ export async function addCardToCollection(cardId: string, rarity: iCardRarity, t
   const userCards = userObj.value?.cards;
   const indexOfSelectedCard = userCards?.findIndex((c) => c.cardData.cardId === cardId && c.rarity === rarity);
 
-  if (indexOfSelectedCard === undefined) {
+  if (!userCards || indexOfSelectedCard === undefined) {
     return;
   }
 
-  userCards?.splice(indexOfSelectedCard, 1);
+  if (userCards[indexOfSelectedCard] && userCards[indexOfSelectedCard]?.quantity > 1) {
+    // reduce card quantity
+    userCards[indexOfSelectedCard].quantity -= 1;
+  } else {
+    // remove card from the users card obj
+    userCards?.splice(indexOfSelectedCard, 1);
+  }
 
   const newCardCount = (userObj.value?.cardsInCollection ?? 0) + 1;
   const calcedCompletion = Math.round(newCardCount / totalCards * 100);
