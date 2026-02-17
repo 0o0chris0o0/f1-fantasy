@@ -25,7 +25,7 @@
           required
         />
         <div class="text-center">
-          <Button type="submit" version="green" text-color-class="text-green-500">Sign in</Button>
+          <Button type="submit" version="green">Sign in</Button>
         </div>
       </div>
     </form>

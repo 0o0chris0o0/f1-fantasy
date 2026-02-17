@@ -30,7 +30,6 @@
           <Button
             type="submit"
             version="green"
-            text-color-class="text-green-500"
             :disabled="loading"
             :aria-busy="loading"
           >
