@@ -84,12 +84,10 @@
 import type {
   QueryDocumentSnapshot} from "firebase/firestore";
 import { collection, doc, getDocs, getDoc } from 'firebase/firestore';
-import { storeToRefs } from "pinia";
 import { useModal } from "vue-final-modal";
-import { useFirestore } from "vuefire";
 import AddToCollectionConfirmation from "~/components/modals/AddToCollectionConfirmation.vue";
 import RewardsInfo from "~/components/modals/RewardsInfo.vue";
-import { CardType, iCardRarity, type iConstructorCard, type iDriverCard } from '~/types/card';
+import { iCardRarity, type iConstructorCard, type iDriverCard } from '~/types/card';
 import { sortCardsForCollection } from "~/utils/filteringSorting";
 
 definePageMeta({
@@ -121,18 +119,6 @@ await callOnce(async () => {
   totalCards.value = miscSnap.get('totalCards') * 4;
   allCards.value = sortCardsForCollection(cardDocs);
 });
-
-onMounted(() => {
-  let imgUrls: string[] = [];
-
-  ['common', 'uncommon', 'rare', 'legendary'].forEach((rarity) => {
-    imgUrls.push(...allCards.value.map((c) => `/img/${c.type === CardType.CONSTRUCTOR ? 'constructors' : 'drivers'}/${c.cardId}-${rarity}.png`))
-  });
-  
-  const { startPreloading } = useImagePreloader(imgUrls);
-  // Start preloading after the main page is interactive
-  requestIdleCallback(() => startPreloading(2));
-})
 
 const confirmAddToCollection = async (cardId: string, rarity: iCardRarity) => {
   closeAddToCollectionConfirmationModal();

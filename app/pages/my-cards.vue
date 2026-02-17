@@ -77,7 +77,7 @@ import { useModal } from "vue-final-modal";
 import { storeToRefs } from "pinia";
 import CardInfoModal from "~/components/modals/CardInfoModal.vue";
 import FiltersDrawer from "~/components/FiltersDrawer.vue";
-import { CardType, type iCardInUsersCards } from "~/types/card";
+import { type iCardInUsersCards } from "~/types/card";
 import { ref, computed } from 'vue';
 
 const userStore = useUserStore();
@@ -96,21 +96,6 @@ const showFilters = ref(false);
 definePageMeta({
   middleware: "auth",
 });
-
-onMounted(() => {
-  let imgUrls: string[] = [];
-
-  if (userObj.value?.cards.length) {
-    ['common', 'uncommon', 'rare', 'legendary'].forEach((rarity) => {
-      if (!userObj.value) return;
-      imgUrls.push(...userObj.value.cards.map((c) => `/img/${c.cardData.type === CardType.CONSTRUCTOR ? 'constructors' : 'drivers'}/${c.cardData.cardId}-${rarity}.png`))
-    });
-    
-    const { startPreloading } = useImagePreloader(imgUrls);
-    // Start preloading after the main page is interactive
-    requestIdleCallback(() => startPreloading(2));
-  }
-})
 
 const teams = computed(() => {
   const t = new Set<string>();
