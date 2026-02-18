@@ -1,7 +1,7 @@
 <template>
   <div class="relative card-container">
     <div class="card">
-      <div class="absolute card-level">
+      <div v-if="level" class="absolute card-level">
         <div class="segmented-circle" :style="calcLevelCirc"></div>
         <p class="text-black font-f1 font-bold card-level__text">
           <span>Lvl</span>
@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { iCardRarity, type iConstructorCard, type iDriverCard } from "~/types/card";
 
-const { rarity = iCardRarity.COMMON, level = 1, quantity = 1, hideUserData = false } = defineProps<{
+const { rarity = iCardRarity.COMMON, level, quantity = 0, hideUserData = false } = defineProps<{
   card: iDriverCard | iConstructorCard;
   rarity?: iCardRarity;
   level?: number;

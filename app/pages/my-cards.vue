@@ -79,6 +79,7 @@ import CardInfoModal from "~/components/modals/CardInfoModal.vue";
 import FiltersDrawer from "~/components/FiltersDrawer.vue";
 import { type iCardInUsersCards } from "~/types/card";
 import { ref, computed } from 'vue';
+import { sortCardsForMyCards } from "~/utils/filteringSorting";
 
 const userStore = useUserStore();
 
@@ -112,50 +113,7 @@ const changeGridSize = (newSize: '2' | '3') => {
 const filteredCards = computed(() => {
   const cards = userObj.value?.cards || [];
 
-  let out = cards.filter((c: iCardInUsersCards) => {
-    const name = c.cardData.cardName?.toLowerCase() || '';
-    const team = c.cardData.teamName?.toLowerCase() || '';
-    const q = searchText.value.trim().toLowerCase();
-
-    if (q) {
-      if (!(name.includes(q) || team.includes(q))) return false;
-    }
-
-    if (selectedRarity.value !== 'ALL' && c.rarity !== selectedRarity.value) return false;
-
-    if (selectedTeam.value !== 'ALL' && c.cardData.teamName !== selectedTeam.value) return false;
-
-    return true;
-  });
-
-   const compareMulti = (a: iCardInUsersCards, b: iCardInUsersCards) => {
-    // allow comma-separated criteria like "rarity:desc,name" or "name,level:asc"
-    const criteria = String(sortBy.value || 'name').split(',').map(s => s.trim()).filter(Boolean);
-
-    for (const crit of criteria) {
-      const [rawKey, rawDir] = crit.split(':').map(s => s && s.trim());
-      const key = rawKey || 'name';
-      const dir = (rawDir || 'asc').toLowerCase();
-
-      const va = getFilterKey(a, key);
-      const vb = getFilterKey(b, key);
-
-      let res = 0;
-      if (typeof va === 'string' && typeof vb === 'string') {
-        res = va.localeCompare(vb);
-      } else {
-        res = (Number(va) || 0) - (Number(vb) || 0);
-      }
-
-      if (res !== 0) return dir === 'desc' ? -res : res;
-    }
-
-    return 0;
-  };
-
-  out = out.sort((a: any, b: any) => compareMulti(a, b));
-
-  return out;
+  return sortCardsForMyCards(cards, searchText.value, selectedRarity.value, selectedTeam.value, sortBy.value)
 });
 
 const { open: openCardInfoModal, close: closeCardInfoModal, patchOptions } = useModal({

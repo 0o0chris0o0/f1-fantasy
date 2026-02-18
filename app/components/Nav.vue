@@ -5,18 +5,20 @@
   >
     <div class="p-6">
       <ul class="space-y-3">
-        <li v-if="userLoggedIn">
-          <div class="flex justify-between mb-4 -ml-1">
-            <NuxtLink to="/profile" class="flex items-center">
-              <Icon name="bi:person" size="1.5em" />
-              <p class="ml-2 font-f1 leading-tight">{{ userObj ? userObj.displayName : "User" }}</p>
-            </NuxtLink>
-            <div class="flex items-center">
-              <Icon name="bi:cash-coin" class="text-yellow-500" size="1.5em" />
-              <p class="font-f1 font-semibold text-sm text-yellow-500 ml-1">{{ userObj?.money }}</p>
+        <ClientOnly>
+          <li v-if="userLoggedIn">
+            <div class="flex justify-between mb-4 -ml-1">
+              <NuxtLink to="/profile" class="flex items-center">
+                <Icon name="bi:person" size="1.5em" />
+                <p class="ml-2 font-f1 leading-tight">{{ userObj ? userObj.displayName : "User" }}</p>
+              </NuxtLink>
+              <div class="flex items-center">
+                <Icon name="bi:cash-coin" class="text-yellow-500" size="1.5em" />
+                <p class="font-f1 font-semibold text-sm text-yellow-500 ml-1">{{ userObj?.money }}</p>
+              </div>
             </div>
-          </div>
-        </li>
+          </li>
+        </ClientOnly>
         <li class="mt-3"><hr class="invisible my-3" ></li>
         <li>
           <NuxtLink :to="userLoggedIn ? '/home' : '/'" class="main-link">
