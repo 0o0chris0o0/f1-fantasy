@@ -61,7 +61,8 @@ export function createCardsForCollection(allCards: (iDriverCard | iConstructorCa
     return constructors.map((card: iConstructorCard) => ({
       ...card,
       rarity: iCardRarity[rarity],
-      quantity: userCardsById[`${card.cardId}_${rarity}`]?.quantity || 0
+      quantity: userCardsById[`${card.cardId}_${rarity}`]?.quantity || 0,
+      userHasInCollection: userCardsById[`${card.cardId}_${rarity}`]?.inCollection || false
     }))
   })
 
@@ -69,7 +70,8 @@ export function createCardsForCollection(allCards: (iDriverCard | iConstructorCa
     return drivers.map((card: iDriverCard) => ({
       ...card,
       rarity: iCardRarity[rarity],
-      quantity: userCardsById[`${card.cardId}_${rarity}`]?.quantity || 0
+      quantity: userCardsById[`${card.cardId}_${rarity}`]?.quantity || 0,
+      userHasInCollection: userCardsById[`${card.cardId}_${rarity}`]?.inCollection || false
     }))
   })
 
@@ -146,14 +148,14 @@ export function defaultCollectionSorting(
   const constructorsByTeam: Record<string, iConstructorCollectionCard[]> = {};
   constructorCards.forEach((c) => {
     if (!constructorsByTeam[c.teamId]) constructorsByTeam[c.teamId] = [];
-    constructorsByTeam[c.teamId]?.push(c);
+    constructorsByTeam[c.teamId]?.push(c as iConstructorCollectionCard);
   });
 
   // group drivers by their teamId for quick lookup
   const driversByTeam: Record<string, iDriverCollectionCard[]> = {};
   driverCards.forEach((d) => {
     if (!driversByTeam[d.teamId]) driversByTeam[d.teamId] = [];
-    driversByTeam[d.teamId]?.push(d);
+    driversByTeam[d.teamId]?.push(d as iDriverCollectionCard);
   });
 
   const returnObj: (iDriverCollectionCard | iConstructorCollectionCard)[] = [];
@@ -177,7 +179,6 @@ export function sortCardsForCollection(
   onlyOwnedCards: boolean,
   sortBy: string
 ){
-  console.log(onlyOwnedCards);
   let out = cards.filter((c) => {
     const name = c.cardName?.toLowerCase() || '';
     const team = c.teamName?.toLowerCase() || '';
@@ -191,7 +192,7 @@ export function sortCardsForCollection(
 
     if (selectedTeam !== 'ALL' && c.teamName !== selectedTeam) return false;
 
-    if (onlyOwnedCards && !c.quantity) return false;
+    if (onlyOwnedCards && (!c.quantity || c.userHasInCollection)) return false;
 
     return true;
   });

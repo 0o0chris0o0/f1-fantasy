@@ -19,8 +19,16 @@ export interface iConstructorCard extends iDriverCard {
   drivers: iDriverCard[]
 }
 
-export type iDriverCollectionCard = iDriverCard & { rarity: iCardRarity; quantity: number }
-export type iConstructorCollectionCard = iConstructorCard & { rarity: iCardRarity; quantity: number }
+export type iDriverCollectionCard = iDriverCard & { 
+  rarity: iCardRarity; 
+  quantity: number;
+  userHasInCollection: boolean;
+}
+export type iConstructorCollectionCard = iConstructorCard & { 
+  rarity: iCardRarity;
+  quantity: number;
+  userHasInCollection: boolean;
+}
 
 export enum CardType {
   DRIVER = 'driver',

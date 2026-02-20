@@ -28,6 +28,9 @@
           />
         </div>
       </div>
+      <div v-if="isNew" class="pt-1">
+        <p class="text-xs font-f1 font-bold uppercase text-yellow-950 inline-block bg-amber-400 shadow shadow-yellow-300 rounded px-1.5 pt-0.5">New</p>
+      </div>
     </div>
   </div>
 </template>
@@ -35,13 +38,14 @@
 <script setup lang="ts">
 import { iCardRarity, type iConstructorCard, type iDriverCard } from "~/types/card";
 
-const { rarity = iCardRarity.COMMON, level, quantity = 0, hideUserData = false } = defineProps<{
+const { rarity = iCardRarity.COMMON, level = 0, quantity = 0 } = defineProps<{
   card: iDriverCard | iConstructorCard;
   rarity?: iCardRarity;
   level?: number;
   quantity?: number;
   inCollection?: boolean;
   hideUserData?: boolean;
+  isNew?: boolean
 }>();
 
 const levelColors: Record<number, string> = {

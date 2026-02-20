@@ -32,8 +32,8 @@
 
         <div>
           <label class="flex gap-2 items-center" labelFor="onlyOwned">
-            <p>Only show cards I own</p>
-            <input 
+            <p>Only show cards to add</p>
+            <input
               id="onlyOwned"
               name="onlyOwned"
               type="checkbox"

@@ -3,7 +3,7 @@
     <h2 class="text-center mb-6 text-lg">My Cards</h2>
 
     <div class="flex items-end justify-between mb-4 border-b border-gray-700 pb-4">
-      <div class="">
+      <div>
         <p class="text-sm mb-1">Grid size</p>
         <div class="grid grid-cols-2 gap-2">
           <button

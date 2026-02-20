@@ -124,6 +124,23 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
       border-color: color.adjust(#ffc927, $lightness: 10%);
     }
   }
+
+  &.rarity-mythic {
+    background: linear-gradient(
+      130deg,
+    #8b0000 0%,
+    #ff4d4d 25%,
+    #5e0000 50%,
+    #ff4d4d 75%,
+    #3b0000 100%
+    );
+    box-shadow: 0 0 20px rgba(255, 68, 0, 0.6), inset 0 0 10px rgba(255, 68, 0, 0.5);
+    color: var(--color-mythic);
+
+    hr {
+      border-color: color.adjust(rgb(255, 68, 0), $lightness: 10%);
+    }
+  }
 }
 
 .card-icons {

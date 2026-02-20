@@ -12,7 +12,8 @@ export const rewardObj: Record<string, iReward> = {
   },
   '3': {
     rewardType: RewardType.PACK,
-    key: 'normal'
+    key: 'normal',
+    rewardName: 'Grand Prix'
   },
   '4': {
     rewardType: RewardType.COINS,
@@ -24,7 +25,8 @@ export const rewardObj: Record<string, iReward> = {
   },
   '6': {
     rewardType: RewardType.PACK,
-    key: 'gold'
+    key: 'premium',
+    rewardName: 'Gold'
   },
   '7': {
     rewardType: RewardType.COINS,
@@ -36,7 +38,8 @@ export const rewardObj: Record<string, iReward> = {
   },
   '9': {
     rewardType: RewardType.PACK,
-    key: 'collector'
+    key: 'collector',
+    rewardName: 'Collector'
   },
   '10': {
     rewardType: RewardType.CARDS,

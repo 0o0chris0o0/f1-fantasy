@@ -32,17 +32,42 @@
         :count="userObj.rewardLevel <= 2 ? 14 : 13" 
         :activeCount="userObj.progressInRewardTrack" 
       />
-      <img 
-        :src="`/img/pack-normal.png`"
-        class="absolute w-20 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-        @error="loadFallbackPackImage($event)"
-      >
+      <div class="absolute w-20 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <RewardImage :rewardObj="rewardObj[userObj.rewardLevel]" />
+      </div>
     </div>
   </div>
 
-  <div class="flex items-end justify-end mb-4 border-b border-gray-700 pb-4">
+  <div class="flex items-end justify-between mb-4 border-b border-gray-700 pb-4">
     <div>
-      <Button size="small" @click="toggleFilters">Show Filters</Button>
+      <p class="text-sm mb-1">Grid size</p>
+      <div class="grid grid-cols-3 gap-1">
+        <button
+          v-for="n in gridSizes"
+          :key="n"
+          :class="[
+            'flex gap-0.5 px-1 py-3 border-2 border-gray-500 rounded-xl justify-center card-size', 
+            { 
+              'opacity-50 bg-gray-600': gridSize === n,
+            }
+          ]"
+          @click="changeGridSize(n as '2' | '3')"
+          :aria-pressed="gridSize === n"
+          :disabled="gridSize === n"
+          :title="`Set grid to ${n} columns`"
+        >
+          <span v-for="i in Number(n)" :key="i"></span>
+        </button>
+      </div>
+    </div>
+    <div class="relative">
+      <Button size="small" @click="toggleFilters">
+        <Icon name="mi:filter" class="text-2xl" />
+      </Button>
+      <div 
+        v-if="areFiltersActive"
+        class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full">
+      </div>  
     </div>
   </div>
 
@@ -61,7 +86,12 @@
     <TransitionGroup
       name="cards"
       tag="div"
-      class="grid grid-cols-4 gap-2" 
+      class="grid gap-2" 
+      :class="{
+        'grid-cols-2': gridSize === '2',
+        'grid-cols-3': gridSize === '3',
+        'grid-cols-4': gridSize === '4'
+      }"
     >
       <template v-for="card in filteredCards" :key="`${card.cardId}-${card.rarity}`">
         <div>
@@ -110,7 +140,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { useModal } from "vue-final-modal";
 import AddToCollectionConfirmation from "~/components/modals/AddToCollectionConfirmation.vue";
 import RewardsInfo from "~/components/modals/RewardsInfo.vue";
-import { iCardRarity, type iCardInUsersCards, type iConstructorCard, type iConstructorCollectionCard, type iDriverCard, type iDriverCollectionCard } from '~/types/card';
+import { iCardRarity, type iConstructorCard, type iConstructorCollectionCard, type iDriverCard, type iDriverCollectionCard } from '~/types/card';
 
 definePageMeta({
   middleware: "auth",
@@ -127,6 +157,8 @@ const selectedRarity = ref('ALL');
 const selectedTeam = ref('ALL');
 const sortBy = ref('default');
 const onlyOwnedCards = ref(false);
+const gridSize = ref<'2' | '3' | '4'>('4');
+const gridSizes = ['4', '3', '2'] as const;
 const showFilters = ref(false);
 
 const isLoading = ref(false);
@@ -159,6 +191,10 @@ await callOnce(async () => {
   allCards.value = createCardsForCollection(cardDocs, userObj.value?.cards || []);
 });
 
+const changeGridSize = (newSize: '2' | '3') => {
+  gridSize.value = newSize;
+}
+
 const filteredCards = computed(() => {
   const cards = allCards.value || [];
 
@@ -183,11 +219,12 @@ const confirmAddToCollection = async (cardId: string, rarity: iCardRarity) => {
   if (userObj.value?.progressInRewardTrack === 0) {
     const rewardObject = rewardObj[userObj.value.rewardLevel]
     if (!rewardObject) return;
-    await giveUserReward(rewardObject);
+    const rewardCards = await giveUserReward(rewardObject);
     
     patchRewardsInfoModal({
       attrs: {
         rewardObj: rewardObject,
+        rewardCards
       },
     });
 
@@ -232,6 +269,7 @@ const {
 } = useModal({
   component: RewardsInfo,
   attrs: {
+    rewardObj: rewardObj['2'],
     close: () => {
       closeRewardInfoModal();
     },
@@ -248,13 +286,17 @@ const resetFilters = () => {
   selectedTeam.value = 'ALL';
   sortBy.value = 'default';
 }
+
+const areFiltersActive = computed(() => {
+  return !!searchText.value || selectedRarity.value !== 'ALL' || selectedTeam.value !== 'ALL' || sortBy.value !== 'default' || onlyOwnedCards.value
+})
 </script>
 
 <style lang="scss" scoped>
 .card-size {
   span {
     display: inline-block;
-    width: 10px;
+    width: 9px;
     height: 16px;
     border-radius: 3px;
     border: 2px solid white;

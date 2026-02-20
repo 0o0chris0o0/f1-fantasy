@@ -9,4 +9,5 @@ export enum RewardType {
 export interface iReward {
   rewardType: RewardType,
   key: string | number | iCardRarity;
+  rewardName?: string;
 }

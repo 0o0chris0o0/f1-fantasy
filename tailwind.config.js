@@ -14,6 +14,7 @@ module.exports = {
         uncommon: '#a1e9ff',
         rare: '#f128ff',
         legendary: '#ffc927',
+        mythic: '#ff4400'
       },
       boxShadow: {
         'inner-custom': 'inset 0 0 10px rgba(0,0,0,0.5);'

@@ -16,7 +16,7 @@
 <script setup lang="ts">
 defineProps<{
   type?: "button" | "submit";
-  size?: "small" | "medium"; 
+  size?: "x-small" | "small" | "medium"; 
   version?: string;
   classes?: string;
   textColorClass?: string;
@@ -46,5 +46,9 @@ button:disabled {
 
 .small {
   @apply py-2 px-5 text-sm;
+}
+
+.x-small {
+  @apply py-1 px-3 text-xs;
 }
 </style>

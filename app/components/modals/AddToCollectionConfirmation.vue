@@ -8,7 +8,7 @@
       <div class="mb-6 w-52 mx-auto text-white">
         <UserCard :card="card.cardData" :rarity="rarity" :level="card.level" :quantity="card.quantity" />
       </div>
-      <p class="font-f1 text-xl text-center text-gray-200 mb-4">
+      <p class="font-f1 text-xl text-center text-gray-200 mb-4 px-4">
         Adding <span :class="['font-bold', `text-${enumToText(iCardRarity, card.rarity)}`]">{{ card.cardData.cardName }} - {{ toCamel(enumToText(iCardRarity, rarity)) }}</span> to your collection
       </p>
       <div class="grid grid-cols-1 text-center gap-4">
