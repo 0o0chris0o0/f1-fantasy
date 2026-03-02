@@ -25,7 +25,7 @@
 
 <script lang="ts" setup>
 import type { ComponentPublicInstance } from "vue";
-import { ModalsContainer } from 'vue-final-modal'
+import { ModalsContainer } from 'vue-final-modal';
 
 const user = useCurrentUser();
 const userStore = useUserStore();
@@ -35,6 +35,8 @@ const nav = ref<ComponentPublicInstance | null>(null);
 const contentContainer = ref<HTMLElement | null>(null);
 const navOpen = ref(false);
 const navWidth = ref(0);
+
+
 
 const { pending: userDataFetchPending } = await useAsyncData('my-unique-key', async () => {
   await userStore.getUserData();

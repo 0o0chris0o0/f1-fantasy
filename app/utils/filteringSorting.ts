@@ -1,4 +1,5 @@
 import { CardType, iCardRarity, type iCardInCollection, type iCardInUsersCards, type iConstructorCard, type iConstructorCollectionCard, type iDriverCard, type iDriverCollectionCard } from "~/types/card";
+import type { iCurrentTeam } from "~/types/user";
 
 const rarityOrder: Record<string, number> = {
   LEGENDARY: 4,
@@ -37,7 +38,11 @@ export function getFilterKeyForCollection(item: iDriverCollectionCard | iConstru
   }
 };
 
-export function createCardsForCollection(allCards: (iDriverCard | iConstructorCard)[], userCards: iCardInUsersCards[]): (iDriverCollectionCard | iConstructorCollectionCard)[] {
+export function createCardsForCollection(
+  allCards: (iDriverCard | iConstructorCard)[], 
+  userCards: iCardInUsersCards[],
+  userCollection: Record<string, iCardInCollection>
+): (iDriverCollectionCard | iConstructorCollectionCard)[] {
   const constructors = allCards.filter(
     (c) => (c as any).type === 'constructor'
   ) as iConstructorCard[];
@@ -62,7 +67,7 @@ export function createCardsForCollection(allCards: (iDriverCard | iConstructorCa
       ...card,
       rarity: iCardRarity[rarity],
       quantity: userCardsById[`${card.cardId}_${rarity}`]?.quantity || 0,
-      userHasInCollection: userCardsById[`${card.cardId}_${rarity}`]?.inCollection || false
+      userHasInCollection: !!userCollection[`${card.cardId}_${rarity}`]
     }))
   })
 
@@ -71,7 +76,7 @@ export function createCardsForCollection(allCards: (iDriverCard | iConstructorCa
       ...card,
       rarity: iCardRarity[rarity],
       quantity: userCardsById[`${card.cardId}_${rarity}`]?.quantity || 0,
-      userHasInCollection: userCardsById[`${card.cardId}_${rarity}`]?.inCollection || false
+      userHasInCollection: !!userCollection[`${card.cardId}_${rarity}`]
     }))
   })
 
@@ -192,8 +197,9 @@ export function sortCardsForCollection(
 
     if (selectedTeam !== 'ALL' && c.teamName !== selectedTeam) return false;
 
+    // shows only cards that can be added
     if (onlyOwnedCards && (!c.quantity || c.userHasInCollection)) return false;
-
+ 
     return true;
   });
 
@@ -229,4 +235,56 @@ export function sortCardsForCollection(
   out = out.sort((a: any, b: any) => compareMulti(a, b));
 
   return out;
+}
+
+export function filterCardsForMyTeam(editing: keyof iCurrentTeam, allCards: iCardInUsersCards[]) {
+  let returnCards: iCardInUsersCards[] = [...allCards];
+
+  switch (editing) {
+    case 'commonDriver':
+      returnCards = allCards.filter(c => c.rarity === iCardRarity.COMMON && c.cardData.type === CardType.DRIVER)
+      break;
+
+    case 'commonConstructor':
+      returnCards = allCards.filter(c => c.rarity === iCardRarity.COMMON && c.cardData.type === CardType.CONSTRUCTOR)
+      break;
+
+    case 'uncommonDriver':
+      returnCards = allCards.filter(c => (c.rarity === iCardRarity.COMMON || c.rarity === iCardRarity.UNCOMMON) && c.cardData.type === CardType.DRIVER)
+      break;
+
+    case 'uncommonConstructor':
+      returnCards = allCards.filter(c => (c.rarity === iCardRarity.COMMON || c.rarity === iCardRarity.UNCOMMON) && c.cardData.type === CardType.CONSTRUCTOR)
+      break;
+
+    case 'rareLegendaryDriver':
+      returnCards = allCards.filter(c => c.cardData.type === CardType.DRIVER)
+      break;
+
+    case 'rareLegendaryConstructor':
+      returnCards = allCards.filter(c => c.cardData.type === CardType.CONSTRUCTOR)
+      break;
+  }
+
+  returnCards = returnCards.sort((a, b) => {
+    const rarityA = rarityOrder[a.rarity] || 0;
+    const rarityB = rarityOrder[b.rarity] || 0;
+
+    if (rarityA !== rarityB) {
+      return rarityB - rarityA; // higher rarity first
+    }
+
+    const nameA = a.cardData.cardName || '';
+    const nameB = b.cardData.cardName || '';
+
+    return nameA.localeCompare(nameB); // sort by name if same rarity
+  }).sort((a, b) => {
+    const pointsA = a.cardData.stats?.currentFantasyPoints || 0;
+    const pointsB = b.cardData.stats?.currentFantasyPoints || 0;
+
+    return pointsB - pointsA; // higher points first
+  });
+
+  return returnCards;
+
 }

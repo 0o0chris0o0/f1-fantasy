@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="text-center mb-6 text-lg">My Cards</h2>
+    <PageHeader class="mb-6">My Cards</PageHeader>
 
     <div class="flex items-end justify-between mb-4 border-b border-gray-700 pb-4">
       <div>

@@ -1,4 +1,4 @@
-import { arrayUnion, collection, doc, getDoc, getDocs, increment, QueryDocumentSnapshot, updateDoc } from "firebase/firestore";
+import { arrayUnion, collection, doc, getDoc, getDocs, increment, QueryDocumentSnapshot, updateDoc, writeBatch } from "firebase/firestore";
 import type { iPack } from "@/types/pack";
 import { RewardType, type iReward } from "~/types/reward";
 import { CardType, iCardRarity, type iCardInUsersCards, type iConstructorCard, type iDriverCard } from "~/types/card";
@@ -11,6 +11,8 @@ export async function giveUserReward(rewardObject: iReward) {
 
   const { userObj, userDocRef } = storeToRefs(userStore);
 
+  const batch = writeBatch(db);
+
   if (!userDocRef.value) return;
 
   // this will be returned in the function so we can show 
@@ -19,7 +21,7 @@ export async function giveUserReward(rewardObject: iReward) {
 
   switch (rewardObject.rewardType) {
     case RewardType.COINS:
-      await updateDoc(
+      batch.update(
         userDocRef.value,
         {
           money: increment(rewardObject.key as number)
@@ -91,7 +93,7 @@ export async function giveUserReward(rewardObject: iReward) {
       const newCardsForUsers = mergeNewCardsWithCurrentUserCards(cardsToAdd, userObj.value.cards);
 
       // update the user object within the DB
-      await updateDoc(userDocRef.value, {
+      batch.update(userDocRef.value, {
         cards: toRaw(newCardsForUsers),
         cardsHistory
       })
@@ -105,6 +107,12 @@ export async function giveUserReward(rewardObject: iReward) {
       await giveUserPack(packData);
       break;
   }
+
+  batch.update(userDocRef.value, {
+    rewardLevel: increment(1)
+  })
+
+  await batch.commit();
 
   return additionalRewardDetails;
 }

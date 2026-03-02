@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { doc, DocumentReference, getDoc } from "firebase/firestore";
 
-import type { iFBUser } from '@/types/user';
+import type { iCurrentTeam, iFBUser } from '@/types/user';
 import type { iCardRarity } from '~/types/card';
 
 export const useUserStore = defineStore('user', () => {
@@ -72,5 +72,9 @@ export const useUserStore = defineStore('user', () => {
     return userObj.value?.cards.find((c) => c.cardData.cardId === cardId && c.rarity === rarity);
   }
 
-  return { userObj, userDocRef, userPacksCount, shouldUserSeeEmergencyPacks, emergencyPacksAvailableToUser, getUserData, doesUserHaveCard, doesUserHaveCardInCollection, getXCardFromUserObj };
+  const getCurrentCardOnTeam = (key: keyof iCurrentTeam) => {
+    return userObj.value?.currentTeam[key];
+  }
+
+  return { userObj, userDocRef, userPacksCount, shouldUserSeeEmergencyPacks, emergencyPacksAvailableToUser, getUserData, doesUserHaveCard, doesUserHaveCardInCollection, getXCardFromUserObj, getCurrentCardOnTeam };
 })

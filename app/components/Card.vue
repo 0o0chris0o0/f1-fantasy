@@ -3,7 +3,7 @@
     <div 
       class="max-w-full rounded-lg card" 
       :class="[
-        rarity !== undefined && `rarity-${rarity.toLowerCase()}`,
+        `rarity-${rarity.toLowerCase()}`,
         { 'opacity-25': !card.enabled }
       ]"
     >

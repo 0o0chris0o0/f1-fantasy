@@ -41,6 +41,9 @@
             </NuxtLink>
           </li>
           <li>
+            <NuxtLink to="/my-team" class="main-link">My Team</NuxtLink>
+          </li>
+          <li>
             <NuxtLink to="/my-cards" class="main-link">My Cards</NuxtLink>
           </li>
           <li>

@@ -21,13 +21,13 @@ export interface iFBUser {
   rewardLevel: number;
 }
 
-interface iCurrentTeam {
-  rareLegendaryDriver: iDriverCard | null;
-  rareLegendaryConstructor: iConstructorCard | null;
-  uncommonDriver: iDriverCard | null;
-  uncommonConstructor: iConstructorCard | null;
-  commonDriver: iDriverCard | null;
-  commonConstructor: iConstructorCard | null;
+export interface iCurrentTeam {
+  rareLegendaryDriver: iCardInUsersCards | null;
+  rareLegendaryConstructor: iCardInUsersCards | null;
+  uncommonDriver: iCardInUsersCards | null;
+  uncommonConstructor: iCardInUsersCards | null;
+  commonDriver: iCardInUsersCards | null;
+  commonConstructor: iCardInUsersCards | null;
 }
 
 export interface iResult {
@@ -40,11 +40,11 @@ export interface iResult {
 
 interface iCurrentTeamScores {
   rareLegendaryDriver: iDriverScore;
-  rareLegendaryConstructor: number;
+  rareLegendaryConstructor: iConstructorScore;
   uncommonDriver: iDriverScore;
-  uncommonConstructor: number;
+  uncommonConstructor: iConstructorScore;
   commonDriver: iDriverScore;
-  commonConstructor: number;
+  commonConstructor: iConstructorScore;
 }
 
 export interface iDriverScore {

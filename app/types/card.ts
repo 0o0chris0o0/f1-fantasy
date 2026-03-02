@@ -9,7 +9,6 @@ export interface iDriverCard {
   teamName: string;
   nationality: string;
   nationalityCode: string;
-  homeRaceLocationId: string | null;
   homeRaces: iRace[];
   type: CardType;
   stats: iDriverCardStats;

@@ -32,7 +32,7 @@
 
         <div>
           <label class="flex gap-2 items-center" labelFor="onlyOwned">
-            <p>Only show cards to add</p>
+            <p>Only show cards I can add</p>
             <input
               id="onlyOwned"
               name="onlyOwned"
