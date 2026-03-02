@@ -89,8 +89,6 @@
 </template>
 
 <script setup lang="ts">
-import dayjs from "dayjs";
-import type { Timestamp } from "firebase/firestore";
 import { VueFinalModal } from "vue-final-modal";
 import { CardType, iCardRarity, type iCardInUsersCards, type iConstructorCard, type iDriverCard } from '~/types/card';
 
@@ -101,18 +99,12 @@ const props = defineProps<{
   addToTeam?: (card: iCardInUsersCards) => void;
 }>();
 
-const prettyRaceDate = (date: Timestamp) => {
-  const jsDate = dayjs(date.toDate())
-  return jsDate.format('DD/MM/YYYY - HH:mm')
-}
-
 const customizeIcon = (content: string) => {
   return content
     .replace(/fill="[^"]*"/g, `fill="#84cc16"`) // Change fill color to red
     .replace(/stroke="[^"]*"/g, `stroke="#84cc16"`) // Change stroke color to red
 
 }
-
 </script>
 
 <style scoped></style>

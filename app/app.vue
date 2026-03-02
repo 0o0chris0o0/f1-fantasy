@@ -36,8 +36,6 @@ const contentContainer = ref<HTMLElement | null>(null);
 const navOpen = ref(false);
 const navWidth = ref(0);
 
-
-
 const { pending: userDataFetchPending } = await useAsyncData('my-unique-key', async () => {
   await userStore.getUserData();
   return true; // useAsyncData expects a return value

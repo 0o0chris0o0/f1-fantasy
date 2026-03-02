@@ -5,7 +5,7 @@
 
     <div v-if="roundInfo" class="mb-4 text-center">
       <p class="text-xl">Round {{ roundInfo.currentRound }} - {{ roundInfo.nextRaceName }}</p>
-      <p>{{ prettyRaceDate(roundInfo.nextRaceStart) }}</p>
+      <p>{{ raceDateV2(roundInfo.nextRaceStart) }}</p>
     </div>
 
     <div class="mb-10 p-4 rounded-lg border-2 border-gray-600 shadow-inner-custom">
@@ -52,16 +52,12 @@
 import { ref } from 'vue';
 import { useModal } from "vue-final-modal";
 import { storeToRefs } from "pinia";
-import dayjs from "dayjs";
-import advancedFormat from 'dayjs/plugin/advancedFormat';
-import { doc, getDoc, Timestamp } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
 import { CardType, type iCardInUsersCards } from "~/types/card";
 import type { iCurrentTeam } from "~/types/user";
 import AddToTeamConfirmation from "~/components/modals/AddToTeamConfirmation.vue";
 import type { iRoundInfo } from "~/types/appData";
-
-dayjs.extend(advancedFormat);
 
 const db = useFirestore();
 const userStore = useUserStore();
@@ -139,11 +135,6 @@ const isCardInTeam = (cardId: string) => {
   const cardsInTeam = Object.values(userObj.value?.currentTeam).map((c: iCardInUsersCards | null) => c && c.cardData.cardId).filter(Boolean)  
 
   return cardsInTeam.includes(cardId);
-}
-
-const prettyRaceDate = (date: Timestamp) => {
-  const jsDate = dayjs(date.toDate())
-  return jsDate.format('dddd, Do MMM, YYYY - HH:mm')
 }
 
 const teamCounts = () => {
