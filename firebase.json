@@ -8,10 +8,6 @@
         "firebase-debug.log",
         "firestore-debug.log"
       ],
-      "predeploy": [
-        "pnpm --filter @f1pick6/shared build",
-        "pnpm --filter @f1pick6/functions build"
-      ],
       "source": "apps/functions"
     }
   ],
