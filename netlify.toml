@@ -1,6 +1,6 @@
 [build]
   base = "/"
-  command = "pnpm --filter @f1pick6/web nuxi prepare && pnpm --filter @f1pick6/web build"
+  command = "pnpm --filter web build"
   publish = "apps/web/.output/public"
 
 [build.environment]
