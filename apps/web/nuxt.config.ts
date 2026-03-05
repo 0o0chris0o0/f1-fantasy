@@ -3,6 +3,10 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
+  build: {
+    transpile: ['@f1pick6/shared']
+  },
+
   modules: [
     'nuxt-vuefire',
     "@pinia/nuxt",
