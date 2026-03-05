@@ -11,12 +11,6 @@ export default defineNuxtConfig({
     '@nuxt/image',
   ],
 
-  typescript: {
-    tsConfig: {
-      extends: "../../tsconfig.base.json"
-    }
-  },
-
   css: ['vue-final-modal/style.css'],
 
   icon: {
