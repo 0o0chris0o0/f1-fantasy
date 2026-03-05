@@ -7,6 +7,10 @@ export default defineNuxtConfig({
     transpile: ['@f1pick6/shared']
   },
 
+  nitro: {
+    preset: 'netlify'
+  },
+
   modules: [
     'nuxt-vuefire',
     "@pinia/nuxt",
