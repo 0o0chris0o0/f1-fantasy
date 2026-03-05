@@ -1,0 +1,126 @@
+import { describe, expect, it } from "vitest";
+import { Timestamp } from "firebase/firestore";
+import { calcCurrentModifierScore } from "../cardScoreModifierCalcs.js";
+import { CardType, iCardRarity } from "../../types";
+const currentRound = 1;
+const testDriverCardData = {
+    cardId: 'testDriver',
+    cardName: 'Test Driver',
+    enabled: true,
+    teamId: 'testTeam',
+    teamName: 'Test Team',
+    nationality: 'United Kingdom',
+    nationalityCode: 'GB',
+    homeRaces: [{
+            raceName: 'Test Race',
+            round: 2,
+            raceStart: Timestamp.fromDate(new Date()),
+            locationCountry: 'United Kingdom',
+        }],
+    type: CardType.DRIVER,
+    stats: {
+        currentFantasyPoints: 0,
+        averageQualifyingPosition: 0,
+        averageRacePosition: 0,
+        numberOfDNFs: 0,
+    }
+};
+const testConstructorCardData = {
+    cardId: 'testConstructor',
+    cardName: 'Test Constructor',
+    enabled: true,
+    teamId: 'testTeam2',
+    teamName: 'Test Team 2',
+    nationality: 'United Kingdom',
+    nationalityCode: 'GB',
+    homeRaces: [{
+            raceName: 'Test Race',
+            round: 2,
+            raceStart: Timestamp.fromDate(new Date()),
+            locationCountry: 'United Kingdom',
+        }],
+    type: CardType.CONSTRUCTOR,
+    drivers: [
+        testDriverCardData
+    ],
+    stats: {
+        currentFantasyPoints: 0,
+        averageQualifyingPosition: 0,
+        averageRacePosition: 0,
+        numberOfDNFs: 0,
+    }
+};
+const testCardInTeam = {
+    cardData: testDriverCardData,
+    inCollection: false,
+    collectedOn: Timestamp.fromDate(new Date()),
+    level: 1,
+    quantity: 1,
+    rarity: iCardRarity.COMMON,
+    xp: 0,
+};
+const testCurrentTeam = {
+    rareLegendaryDriver: null,
+    rareLegendaryConstructor: null,
+    uncommonDriver: null,
+    uncommonConstructor: null,
+    commonDriver: testCardInTeam,
+    commonConstructor: Object.assign(Object.assign({}, testCardInTeam), { cardData: testConstructorCardData }),
+};
+describe('calcCurrentModifierScore - rarities', () => {
+    it('should calculate the correct modifier based on the card rarity', () => {
+        const expectedResults = [0, 0.1, 0.2, 0.3, 1];
+        [iCardRarity.COMMON, iCardRarity.UNCOMMON, iCardRarity.RARE, iCardRarity.LEGENDARY, iCardRarity.MYTHIC].forEach((rarity, i) => {
+            const result = calcCurrentModifierScore(Object.assign(Object.assign({}, testCardInTeam), { rarity }), currentRound, testCurrentTeam);
+            expect(result).toStrictEqual({
+                totalScoreModifier: expectedResults[i],
+                rarityModifier: expectedResults[i],
+                levelModifier: 0,
+                homeRaceModifier: 0,
+                teamMatchModifier: 0
+            });
+        });
+    });
+});
+describe('calcCurrentModifierScore - home race', () => {
+    it('should calculate a modifier score of 0.1 for a common card with a home race boost', () => {
+        const result = calcCurrentModifierScore(testCardInTeam, 2, testCurrentTeam);
+        expect(result).toStrictEqual({
+            totalScoreModifier: 0.1,
+            rarityModifier: 0,
+            levelModifier: 0,
+            homeRaceModifier: 0.1,
+            teamMatchModifier: 0
+        });
+    });
+});
+describe('calcCurrentModifierScore - level', () => {
+    it('should calculate the correct modifier based on the card level', () => {
+        const expectedResults = [0, 0.1, 0.2, 0.3];
+        [1, 2, 3, 4].forEach((level, i) => {
+            const result = calcCurrentModifierScore(Object.assign(Object.assign({}, testCardInTeam), { level }), currentRound, testCurrentTeam);
+            expect(result).toStrictEqual({
+                totalScoreModifier: expectedResults[i],
+                rarityModifier: 0,
+                levelModifier: expectedResults[i],
+                homeRaceModifier: 0,
+                teamMatchModifier: 0
+            });
+        });
+    });
+});
+describe('calcCurrentModifierScore - home race', () => {
+    it('should calculate the correct modifier score when a team boost is present', () => {
+        const newTestTeam = Object.assign({}, testCurrentTeam);
+        newTestTeam.commonConstructor.cardData = Object.assign(Object.assign({}, testConstructorCardData), { teamId: 'testTeam' });
+        const result = calcCurrentModifierScore(testCardInTeam, currentRound, newTestTeam);
+        expect(result).toStrictEqual({
+            totalScoreModifier: 0.1,
+            rarityModifier: 0,
+            levelModifier: 0,
+            homeRaceModifier: 0,
+            teamMatchModifier: 0.1
+        });
+    });
+});
+//# sourceMappingURL=cardScoreModifierCalcs.test.js.map
