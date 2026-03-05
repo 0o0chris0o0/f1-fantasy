@@ -1,6 +1,6 @@
 [build]
   base = "/"
-  command = "pnpm --filter web build"
+  command = "pnpm build"
   publish = "apps/web/.output/public"
   functions = "apps/web/.output/server"
 
