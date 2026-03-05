@@ -1,5 +1,5 @@
-import { CardType, iCardRarity, type iCardInCollection, type iCardInUsersCards, type iConstructorCard, type iConstructorCollectionCard, type iDriverCard, type iDriverCollectionCard } from "@f1pick6/shared";
-import type { iCurrentTeam } from "@f1pick6/shared";
+import { CardType, iCardRarity } from "@f1pick6/shared/types";
+import type { iCurrentTeam, iCardInCollection, iCardInUsersCards, iConstructorCard, iConstructorCollectionCard, iDriverCard, iDriverCollectionCard } from "@f1pick6/shared/types";
 
 const rarityOrder: Record<string, number> = {
   LEGENDARY: 4,

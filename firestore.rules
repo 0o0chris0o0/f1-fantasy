@@ -30,6 +30,10 @@ service cloud.firestore {
       allow create, write, read: if true;
     }
 
+    match /schedule/{raceid} {
+      allow create, write, read: if true;
+    }
+
     match /cards/{cardId} {
       allow create, write, read: if true;
     }
@@ -38,15 +42,11 @@ service cloud.firestore {
       allow create, write, read: if true;
     }
 
-    match /appData/roundInfo {
-      allow create, write, read: if true;
-    }
-
     match /appData/misc {
       allow create, write, read: if true;
     }
 
-    match /schedule/{roundNumber} {
+    match /appData/roundInfo {
       allow create, write, read: if true;
     }
 

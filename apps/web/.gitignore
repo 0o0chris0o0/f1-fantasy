@@ -23,6 +23,5 @@ logs
 .env.*
 !.env.example
 
-/saved-data
-service-account.json
-app/pages/db-utils/
+db-utils/
+saved-data/

@@ -54,10 +54,9 @@ import { useModal } from "vue-final-modal";
 import { storeToRefs } from "pinia";
 import { doc, getDoc } from "firebase/firestore";
 
-import { CardType, type iCardInUsersCards } from "@f1pick6/shared";
-import type { iCurrentTeam } from "@f1pick6/shared";
 import AddToTeamConfirmation from "~/components/modals/AddToTeamConfirmation.vue";
-import type { iRoundInfo } from "@f1pick6/shared";
+import { CardType  } from "@f1pick6/shared/types";
+import type { iRoundInfo, iCurrentTeam, iCardInUsersCards } from "@f1pick6/shared/types";
 
 const db = useFirestore();
 const userStore = useUserStore();

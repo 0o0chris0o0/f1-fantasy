@@ -1,16 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "lib",
-    "rootDir": "src"
-  },
-  "references": [
-    {
-      "path": "../../packages/shared"
-    }
-  ],
   "include": [
-    "src",
     ".eslintrc.js"
   ]
 }

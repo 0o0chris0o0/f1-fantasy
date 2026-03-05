@@ -1,18 +1,10 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": ".",
-    "composite": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "declaration": true,
-    "strict": true,
-    "noUnusedLocals": false
+    "rootDir": "src",
+    "outDir": "dist"
   },
   "include": [
-    "index.ts",
-    "types",
-    "utils"
+    "src/**/*"
   ]
 }

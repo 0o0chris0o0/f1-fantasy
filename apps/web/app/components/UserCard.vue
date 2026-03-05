@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { iCardRarity, type iConstructorCard, type iDriverCard } from "@f1pick6/shared";
+import { iCardRarity, type iConstructorCard, type iDriverCard } from "@f1pick6/shared/types";
 
 const { rarity = iCardRarity.COMMON, level = 0, quantity = 0 } = defineProps<{
   card: iDriverCard | iConstructorCard;

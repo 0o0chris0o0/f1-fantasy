@@ -29,8 +29,8 @@
 </template>
 
 <script setup lang="ts">
-import { iCardRarity } from '@f1pick6/shared';
-import type { iCurrentTeam, iCardInUsersCards } from '@f1pick6/shared';
+import { iCardRarity } from '@f1pick6/shared/types';
+import type { iCurrentTeam, iCardInUsersCards } from '@f1pick6/shared/types';
 
 const userStore = useUserStore();
 

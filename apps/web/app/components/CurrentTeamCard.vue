@@ -109,7 +109,7 @@
 </template>
 
 <script setup lang="ts">
-import { iCardRarity, type iCardInUsersCards } from '@f1pick6/shared';
+import { iCardRarity, type iCardInUsersCards } from '@f1pick6/shared/types';
 
 const props = defineProps<{
   type: 'Driver' | 'Constructor';

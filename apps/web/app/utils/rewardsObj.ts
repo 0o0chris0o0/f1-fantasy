@@ -1,5 +1,5 @@
-import { iCardRarity, RewardType } from "@f1pick6/shared"
-import type { iReward } from "@f1pick6/shared"
+import { iCardRarity, RewardType } from "@f1pick6/shared/types"
+import type { iReward } from "@f1pick6/shared/types"
 
 export const rewardObj: Record<string, iReward> = {
   '1': {

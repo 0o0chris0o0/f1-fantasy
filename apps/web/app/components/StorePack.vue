@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import type { iPack } from '@f1pick6/shared';
+import type { iPack } from '@f1pick6/shared/types';
 import { loadFallbackPackImage } from "~/utils/loadDefaultImage";
 import PackInfoModal from './modals/PackInfoModal.vue';
 import { useModal } from 'vue-final-modal';

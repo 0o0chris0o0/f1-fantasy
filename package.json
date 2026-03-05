@@ -1,18 +1,22 @@
 {
-  "name": "f1pick6",
-  "private": true,
+  "name": "f1-fantasy-mono",
   "version": "1.0.0",
-  "description": "A fantasy F1 game built with Nuxt and Firebase",
-  "packageManager": "pnpm@10.30.3",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build"
+    "build": "pnpm -r build",
+    "lint": "eslint .",
+    "dev:web": "pnpm --filter web dev",
+    "dev:functions": "pnpm --filter functions dev",
+    "emulators": "pnpm --filter web emulators"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.30.3",
   "devDependencies": {
-    "turbo": "^2.0.0"
-  },
-  "engines": {
-    "node": ">=20.0.0",
-    "pnpm": ">=9.0.0"
+    "@nuxt/eslint-config": "^1.15.2",
+    "eslint": "^10.0.2",
+    "typescript-eslint": "^8.56.1"
   }
 }

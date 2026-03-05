@@ -87,7 +87,7 @@
 
 <script setup lang="ts">
 import { VueFinalModal } from "vue-final-modal";
-import { CardType, iCardRarity, type iCardInUsersCards, type iConstructorCard, type iDriverCard } from '@f1pick6/shared';
+import { CardType, iCardRarity, type iCardInUsersCards, type iConstructorCard, type iDriverCard } from '@f1pick6/shared/types';
 
 const props = defineProps<{
   cardData?: iDriverCard | iConstructorCard;

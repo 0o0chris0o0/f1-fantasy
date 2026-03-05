@@ -1,8 +1,6 @@
 import { collection, doc, getDoc, getDocs, increment, QueryDocumentSnapshot, writeBatch } from "firebase/firestore";
-import { CardType, iCardRarity, type iCardInUsersCards, type iConstructorCard, type iDriverCard } from "@f1pick6/shared";
-import type { iUserCardHistory } from "@f1pick6/shared";
-import { RewardType } from "@f1pick6/shared";
-import type { iPack, iLoot, iReward } from "@f1pick6/shared";
+import { RewardType, CardType, iCardRarity, } from "@f1pick6/shared/types";
+import type { iPack, iLoot, iReward, iUserCardHistory, iCardInUsersCards, iConstructorCard, iDriverCard } from "@f1pick6/shared/types";
 
 export async function giveUserReward(rewardObject: iReward) {
   const db = useFirestore();

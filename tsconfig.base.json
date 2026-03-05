@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@f1pick6/shared/types": [
+        "packages/shared/src/types/index.ts"
+      ],
+      "@f1pick6/shared/utils": [
+        "packages/shared/src/utils/index.ts"
+      ]
+    }
+  }
+}

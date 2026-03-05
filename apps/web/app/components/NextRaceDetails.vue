@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { doc, getDoc } from 'firebase/firestore';
-import type { iRoundInfo } from '@f1pick6/shared';
+import type { iRoundInfo } from '@f1pick6/shared/types';
 import { timeToEdit } from '~/utils/dateFuncs';
 
 const db = useFirestore();

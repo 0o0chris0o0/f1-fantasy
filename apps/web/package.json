@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "web",
   "type": "module",
   "private": true,
   "scripts": {
@@ -9,8 +9,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "emulators": "firebase emulators:start --import=./saved-data --export-on-exit",
-    "test": "vitest"
+    "emulators": "firebase emulators:start --import=./saved-data --export-on-exit"
   },
   "dependencies": {
     "@f1pick6/shared": "workspace:*",

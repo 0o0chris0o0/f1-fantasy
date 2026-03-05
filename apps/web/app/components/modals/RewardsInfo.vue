@@ -57,9 +57,8 @@
 
 <script setup lang="ts">
 import { VueFinalModal } from "vue-final-modal";
-import { iCardRarity } from "@f1pick6/shared";
-import { RewardType } from "@f1pick6/shared";
-import type { iLoot, iReward } from "@f1pick6/shared";
+import { iCardRarity, RewardType } from "@f1pick6/shared/types";
+import type { iLoot, iReward } from "@f1pick6/shared/types";
 
 const props = defineProps<{
   rewardObj?: iReward;

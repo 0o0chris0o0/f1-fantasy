@@ -38,8 +38,8 @@
 
 <script setup lang="ts">
 import { VueFinalModal } from "vue-final-modal";
-import type { iPack } from "@f1pick6/shared";
-import { iCardRarity } from '@f1pick6/shared';
+import type { iPack } from "@f1pick6/shared/types";
+import { iCardRarity } from '@f1pick6/shared/types';
 
 
 const props = defineProps<{
