@@ -1,7 +1,8 @@
 [build]
   base = "/"
   command = "pnpm --filter web build"
-  publish = ".output/public"
+  publish = "apps/web/.output/public"
+  functions = "apps/web/.output/server"
 
 [build.environment]
   # Crucial for Nuxt + pnpm on Netlify
