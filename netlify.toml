@@ -10,4 +10,4 @@
   # Crucial for Nuxt + pnpm on Netlify
   PNPM_FLAGS = "--shamefully-hoist"
   # Set the Node version to match your local environment
-  NODE_VERSION = "24" 
+  NODE_VERSION = "20" 
