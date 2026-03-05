@@ -7,7 +7,6 @@
     "build": "tsc"
   },
   "exports": {
-    ".": "./dist/types/index.js",
-    "./types": "./dist/types/index.js"
+    "./types": "./src/types/index.ts"
   }
 }
