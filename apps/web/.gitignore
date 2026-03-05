@@ -25,3 +25,4 @@ logs
 
 db-utils/
 saved-data/
+.netlify
