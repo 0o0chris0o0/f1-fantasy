@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "build": "tsc"
+  },
   "exports": {
-    "./types": "./src/types/index.ts",
-    "./utils": "./src/utils/index.ts"
+    ".": "./dist/types/index.js",
+    "./types": "./dist/types/index.js"
   }
 }
