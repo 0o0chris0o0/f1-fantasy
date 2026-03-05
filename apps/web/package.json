@@ -6,6 +6,7 @@
     "build": "nuxt build --dotenv .env.production",
     "dev": "nuxt dev --dotenv .env.development",
     "dev:prod": "nuxt dev --dotenv .env.production",
+    "prepare": "nuxi prepare",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",

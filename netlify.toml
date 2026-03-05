@@ -1,7 +1,8 @@
 [build]
   base = "/"
-  command = "pnpm build"
+  command = "pnpm --filter web prepare && pnpm --filter web build"
   publish = "apps/web/dist"
+  functions = "apps/web/.netlify/functions-internal"
 
 [build.environment]
   # Crucial for Nuxt + pnpm on Netlify
