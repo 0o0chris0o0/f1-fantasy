@@ -1,9 +1,6 @@
 [build]
-  # Tell Netlify to run the build from the root
   base = "/"
-  # Use the pnpm filter to build only the web app
-  command = "pnpm run build"
-  # Point to the Nuxt output directory relative to the root
+  command = "pnpm --filter @f1pick6/web nuxi prepare && pnpm --filter @f1pick6/web build"
   publish = "apps/web/.output/public"
 
 [build.environment]
