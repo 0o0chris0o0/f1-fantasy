@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { pickCardsForUser, createLootCards } from '../openPack.js';
-import { type iConstructorCard, type iDriverCard } from '../../../../../packages/shared/types/card';
-import type { iPack } from '../../../../../packages/shared/types/pack';
+import type { iPack, iConstructorCard, iDriverCard } from '@f1pick6/shared/types';
 
 import { mockDriverCards } from '../__mocks__/mockDriverCards.js';
 import { mockConstructorCards } from '../__mocks__/mockConstructorCards.js';

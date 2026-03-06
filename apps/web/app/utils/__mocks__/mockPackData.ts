@@ -1,5 +1,5 @@
-import { iCardRarity } from "../../../../../packages/shared/types/card";
-import type { iPack } from "../../../../../packages/shared/types/pack";
+import { iCardRarity } from "@f1pick6/shared/types";
+import type { iPack } from "@f1pick6/shared/types";
 
 export const mockPackData: iPack = {
     "cost": 250,
@@ -14,7 +14,8 @@ export const mockPackData: iPack = {
                 "COMMON": 0,
                 "UNCOMMON": 0,
                 "RARE": 0,
-                "LEGENDARY": 0
+                "LEGENDARY": 0,
+                "MYTHIC": 0
             }
         },
         "2": {
@@ -23,7 +24,8 @@ export const mockPackData: iPack = {
                 "COMMON": 0,
                 "UNCOMMON": 0,
                 "RARE": 0,
-                "LEGENDARY": 0
+                "LEGENDARY": 0,
+                "MYTHIC": 0
             }
         },
         "3": {
@@ -32,7 +34,8 @@ export const mockPackData: iPack = {
                 "COMMON": 0,
                 "UNCOMMON": 0,
                 "RARE": 0,
-                "LEGENDARY": 0
+                "LEGENDARY": 0,
+                "MYTHIC": 0
             }
         },
         "4": {
@@ -41,7 +44,8 @@ export const mockPackData: iPack = {
                 "COMMON": 0,
                 "UNCOMMON": 0,
                 "RARE": 0,
-                "LEGENDARY": 0
+                "LEGENDARY": 0,
+                "MYTHIC": 0
             }
         },
         "5": {
@@ -50,7 +54,8 @@ export const mockPackData: iPack = {
                 "COMMON": 50,
                 "UNCOMMON": 50,
                 "RARE": 0,
-                "LEGENDARY": 0
+                "LEGENDARY": 0,
+                "MYTHIC": 0
             }
         },
         "6": {
@@ -59,7 +64,8 @@ export const mockPackData: iPack = {
                 "COMMON": 0,
                 "UNCOMMON": 0,
                 "RARE": 70,
-                "LEGENDARY": 30
+                "LEGENDARY": 30,
+                "MYTHIC": 0
             }
         }
     },

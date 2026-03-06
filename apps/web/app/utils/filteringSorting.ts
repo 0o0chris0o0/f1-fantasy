@@ -2,6 +2,7 @@ import { CardType, iCardRarity } from "@f1pick6/shared/types";
 import type { iCurrentTeam, iCardInCollection, iCardInUsersCards, iConstructorCard, iConstructorCollectionCard, iDriverCard, iDriverCollectionCard } from "@f1pick6/shared/types";
 
 const rarityOrder: Record<string, number> = {
+  MYTHIC: 5,
   LEGENDARY: 4,
   RARE: 3,
   UNCOMMON: 2,
@@ -287,4 +288,10 @@ export function filterCardsForMyTeam(editing: keyof iCurrentTeam, allCards: iCar
 
   return returnCards;
 
+}
+
+export function sortCardsForPackOpening(cards: iCardInUsersCards[]) {
+  cards.sort((a, b) => (rarityOrder[a.rarity] || 0) > (rarityOrder[b.rarity] || 0) ? 1 : -1) 
+
+  return cards;
 }

@@ -8,8 +8,12 @@
  */
 
 import {setGlobalOptions} from "firebase-functions";
+import {initializeApp} from "firebase-admin/app";
 import {onRequest} from "firebase-functions/https";
 import * as logger from "firebase-functions/logger";
+import getResults from "./getResults";
+import { generateFantasyScores } from "./generateFantasyScores";
+import { updatePlayerScores } from "./updatePlayerScores";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -26,7 +30,48 @@ import * as logger from "firebase-functions/logger";
 // this will be the maximum concurrent request count.
 setGlobalOptions({ maxInstances: 10 });
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+initializeApp();
+
+if (process.env.FUNCTIONS_EMULATOR) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
+
+const performUpdate = async (round?: string): Promise<string> => {
+  // get latest results
+  const { raceResults, round: updatedRound } = await getResults(round);
+
+  if (raceResults && updatedRound) {
+    // generate fantasy scores based on results
+    const fantasyScores = generateFantasyScores(raceResults);
+
+    logger.log("Fantasy Scores Generated:");
+    logger.log(fantasyScores);
+
+    // Update all players scores
+    await updatePlayerScores(fantasyScores, updatedRound);
+
+    // Update the leaderboard
+
+    // Remove all used players cards 
+
+    // Update the next race details & round number
+
+
+    return `Update performed for round ${round || "latest"}`;
+  } else {
+    return 'No update performed - no results found for the specified round';
+  }
+};
+
+export const run = onRequest(async (request, response) => {
+  let result;
+
+  if (request.query.round && typeof request.query.round === "string") {
+    result = await performUpdate(request.query.round);
+  } else {
+    result = await performUpdate();
+  }
+
+  logger.info(result);
+  response.send(result);
+});

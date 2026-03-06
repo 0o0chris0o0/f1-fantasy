@@ -1,4 +1,4 @@
-import { iCardRarity, type iCardInUsersCards } from "../../../../../packages/shared/types/card";
+import { iCardRarity, type iCardInUsersCards } from "@f1pick6/shared/types";
 import { mockDriverCards } from "./mockDriverCards.js";
 
 export const mockUsersCurrentCards: iCardInUsersCards[] = [

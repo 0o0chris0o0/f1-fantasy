@@ -1,5 +1,5 @@
 import { Timestamp } from "firebase/firestore";
-import { CardType, type iDriverCard } from "../../../../../packages/shared/types/card";
+import { CardType, type iDriverCard } from "@f1pick6/shared";
 
 export const mockDriverCards: iDriverCard[] = [
     {
@@ -12,7 +12,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "Thailand",
         "nationalityCode": "TH",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -29,7 +28,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "Spain",
         "nationalityCode": "ES",
-        "homeRaceLocationId": "spain",
         "homeRaces": [
             {
                 "raceName": "Spanish Grand Prix",
@@ -54,7 +52,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "Italy",
         "nationalityCode": "IT",
-        "homeRaceLocationId": "italy",
         "homeRaces": [
             {
                 "raceName": "Italian Grand Prix",
@@ -85,7 +82,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "United Kingdom",
         "nationalityCode": "GB",
-        "homeRaceLocationId": "uk",
         "homeRaces": [
             {
                 "raceName": "British Grand Prix",
@@ -110,7 +106,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "Brazil",
         "nationalityCode": "BR",
-        "homeRaceLocationId": "brazil",
         "homeRaces": [
             {
                 "raceName": "São Paulo Grand Prix",
@@ -136,7 +131,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "Finland",
         "nationalityCode": "FI",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -154,7 +148,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "",
         "nationalityCode": "",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -172,7 +165,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "France",
         "nationalityCode": "FR",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -190,7 +182,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "France",
         "nationalityCode": "FR",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -208,7 +199,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "United Kingdom",
         "nationalityCode": "GB",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -226,7 +216,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "Germany",
         "nationalityCode": "DE",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -244,7 +233,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "New Zealand",
         "nationalityCode": "NZ",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -280,7 +268,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "United Kingdom",
         "nationalityCode": "GB",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -298,7 +285,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "Netherlands",
         "nationalityCode": "NL",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -316,7 +302,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "United Kingdom",
         "nationalityCode": "GB",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -334,7 +319,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "France",
         "nationalityCode": "FR",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -352,7 +336,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "Mexico",
         "nationalityCode": "MX",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,

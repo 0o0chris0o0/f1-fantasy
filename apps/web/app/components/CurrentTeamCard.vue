@@ -109,6 +109,7 @@
 </template>
 
 <script setup lang="ts">
+import { calcCurrentModifierScore } from '@f1pick6/shared/utils';
 import { iCardRarity, type iCardInUsersCards } from '@f1pick6/shared/types';
 
 const props = defineProps<{

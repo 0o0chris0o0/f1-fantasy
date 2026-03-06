@@ -185,7 +185,7 @@ export function createLootCards(
   }
 
   // return new cards
-  return newCards;
+  return sortCardsForPackOpening(newCards);
 }
 
 /**
