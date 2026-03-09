@@ -4,6 +4,9 @@ import { logger } from "firebase-functions";
 export function generateFantasyScores(results: iJolpicaResult[]) {
   const returnObj: { [key: string]: iDriverFantasyScore | iConstructorFantasyScore } = {};
 
+  const driverCount = results.length;
+
+  // loop through each drivers result
   results.forEach((result) => {
     const driverId = result.Driver.driverId;
     const teamId = result.Constructor.constructorId;
@@ -12,7 +15,7 @@ export function generateFantasyScores(results: iJolpicaResult[]) {
     const finishingStatus = getFinishingStatus(result.status.toUpperCase());
     const didDnf = finishingStatus !== FinishingStatus.FINISHED;
 
-    const {raceFantasyPoints, qualFantasyPoints} = calculateFantasyPoints(finishingPosition, startingPosition, didDnf);
+    const {raceFantasyPoints, qualFantasyPoints} = calculateFantasyPoints(finishingPosition, startingPosition, driverCount, didDnf);
     
     const driverScore: iDriverFantasyScore = {
       driverId,
@@ -69,41 +72,32 @@ function getFinishingStatus(status: string) {
   }
 }
 
-function calculateFantasyPoints(finishingPosition: number, startingPosition: number, didDnf: boolean) {
+function calculateFantasyPoints(finishingPosition: number, startingPosition: number, driverCount: number, didDnf: boolean) {
   let returnObj = {
     raceFantasyPoints: 0,
     qualFantasyPoints: 0
   }
 
+  /**
+   * QUALIFICATION
+   */
   // 10pts for front row (1st or 2nd)
   // 5pts for 3rd-10th,
-  // 2pts for 11th-15th, 
-  // 1pt for the rest of the grid
   if (startingPosition <= 2) {
     returnObj.qualFantasyPoints = 10;
   } else if (startingPosition <= 10) {
     returnObj.qualFantasyPoints = 5;
-  } else if (startingPosition <= 15) {
-    returnObj.qualFantasyPoints = 2;
-  } else {
-    returnObj.qualFantasyPoints = 1;
   }
 
+  /**
+   * RACE
+   */
   // -5pts for DNF, 
-  // 20pts for podium (top 3),
-  // 10pts for 4th-10th,
-  // 5pts for 11th-15th, 
-  // 1pt for the rest of the grid
+  // 2pts for last place, then +2pts for each position after that
   if (didDnf) {
     returnObj.raceFantasyPoints = -5;
-  } else if (finishingPosition <= 3) {
-    returnObj.raceFantasyPoints = 20;
-  } else if (finishingPosition <= 10) {
-    returnObj.raceFantasyPoints = 10;
-  } else if (finishingPosition <= 15) {
-    returnObj.raceFantasyPoints = 5;
   } else {
-    returnObj.raceFantasyPoints = 1;
+    returnObj.raceFantasyPoints += (driverCount * 2 + 1) - finishingPosition
   }
 
   return returnObj;

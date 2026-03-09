@@ -42,12 +42,14 @@ const performUpdate = async (round?: string): Promise<string> => {
 
   if (raceResults && updatedRound) {
     // generate fantasy scores based on results
+    // no modifiers are applied here
     const fantasyScores = generateFantasyScores(raceResults);
 
     logger.log("Fantasy Scores Generated:");
     logger.log(fantasyScores);
 
     // Update all players scores
+    // including adding modifiers
     await updatePlayerScores(fantasyScores, updatedRound);
 
     // Update the leaderboard

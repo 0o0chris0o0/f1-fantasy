@@ -71,10 +71,9 @@ describe('createLootCards', () => {
 
   it('adds new cards when user does not have any', () => {
     const newCards = pickCardsForUser(mockAllCards, 6);
-    const result = createLootCards(newCards, mockPackData, [], {});
+    const result = createLootCards(newCards, mockPackData, [], {}, {});
 
     expect(result).toHaveLength(6);
-    expect(result[0]!.cardData.cardId).toBe(newCards[0]!.cardId);
     expect(result[0]!.rarity).toBe('COMMON');
     expect(result[0]!.quantity).toBe(1);
   });
@@ -83,7 +82,13 @@ describe('createLootCards', () => {
     // force random card to be first available (will gurantee albon selection)
     vi.spyOn(Math, 'random').mockReturnValue(0);
     const newCards = pickCardsForUser(mockAllCards, 6);
-    const result = createLootCards(newCards, mockPackData, mockUsersCurrentCards, mockUsersCardHistory);
+    const result = createLootCards(
+      newCards, 
+      mockPackData, 
+      mockUsersCurrentCards, 
+      mockUsersCardHistory,
+    {}
+    );
 
     const albonCard = result.find((card) => card.cardData.cardId === 'albon');
 

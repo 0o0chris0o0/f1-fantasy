@@ -1,8 +1,9 @@
 import type { Timestamp } from "firebase/firestore";
 
 export interface iRace {
-  raceName: string;
-  round: number;
-  raceStart: Timestamp;
+  firstPractice: Timestamp;
   locationCountry: string;
+  raceName: string;
+  raceStart: Timestamp;
+  round: number;
 }

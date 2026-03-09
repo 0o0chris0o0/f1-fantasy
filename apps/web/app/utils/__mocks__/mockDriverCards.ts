@@ -33,6 +33,7 @@ export const mockDriverCards: iDriverCard[] = [
                 "raceName": "Spanish Grand Prix",
                 "round": 9,
                 "raceStart": Timestamp.fromDate(new Date('2026-12-01')),
+                "firstPractice": Timestamp.fromDate(new Date('2026-12-01')),
                 "locationCountry": "spain"
             }
         ],
@@ -57,12 +58,14 @@ export const mockDriverCards: iDriverCard[] = [
                 "raceName": "Italian Grand Prix",
                 "round": 16,
                 "raceStart": Timestamp.fromDate(new Date('2026-12-01')),
+                "firstPractice": Timestamp.fromDate(new Date('2026-12-01')),
                 "locationCountry": "italy"
             },
             {
                 "raceName": "Emilia Romagna Grand Prix",
                 "round": 7,
                 "raceStart": Timestamp.fromDate(new Date('2026-12-01')),
+                "firstPractice": Timestamp.fromDate(new Date('2026-12-01')),
                 "locationCountry": "italy"
             }
         ],
@@ -87,6 +90,7 @@ export const mockDriverCards: iDriverCard[] = [
                 "raceName": "British Grand Prix",
                 "round": 12,
                 "raceStart": Timestamp.fromDate(new Date('2026-12-01')),
+                "firstPractice": Timestamp.fromDate(new Date('2026-12-01')),
                 "locationCountry": "uk"
             }
         ],
@@ -111,6 +115,7 @@ export const mockDriverCards: iDriverCard[] = [
                 "raceName": "São Paulo Grand Prix",
                 "round": 21,
                 "raceStart": Timestamp.fromDate(new Date('2026-12-01')),
+                "firstPractice": Timestamp.fromDate(new Date('2026-12-01')),
                 "locationCountry": "brazil"
             }
         ],
@@ -250,7 +255,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "",
         "nationalityCode": "",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -353,7 +357,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "Australia",
         "nationalityCode": "AU",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -371,7 +374,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "United Kingdom",
         "nationalityCode": "GB",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -389,7 +391,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "Spain",
         "nationalityCode": "ES",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -407,7 +408,6 @@ export const mockDriverCards: iDriverCard[] = [
         "type": CardType.DRIVER,
         "nationality": "Canada",
         "nationalityCode": "CA",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,

@@ -1,6 +1,7 @@
 import { collection, doc, getDoc, where, query, getDocs, updateDoc, writeBatch } from "firebase/firestore";
 import type { iCardInCollection, iCardInUsersCards, iCardRarity, iConstructorCard, iDriverCard } from "@f1pick6/shared";
-import type { iUserCardHistory, iPack, iPackInUser, iSlot } from "@f1pick6/shared";
+import type { iUserCardHistory, iPack, iPackInUser } from "@f1pick6/shared";
+import { sortCardsForPackOpening } from './filteringSorting';
 
 export async function openPack(packId: string) {
   const db = useFirestore();

@@ -1,5 +1,5 @@
 import { Timestamp } from "firebase/firestore";
-import { CardType, type iConstructorCard, type iDriverCard } from "../../../../../packages/shared/types/card";
+import { CardType, type iConstructorCard } from "@f1pick6/shared/types";
 
 export const mockConstructorCards: iConstructorCard[] = [
     {
@@ -12,7 +12,6 @@ export const mockConstructorCards: iConstructorCard[] = [
         "type": CardType.CONSTRUCTOR,
         "nationality": "France",
         "nationalityCode": "FR",
-        "homeRaceLocationId": null,
         "drivers": [
             {
                 "homeRaces": [],
@@ -24,7 +23,6 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "",
                 "nationalityCode": "",
-                "homeRaceLocationId": null,
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
@@ -42,7 +40,6 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "France",
                 "nationalityCode": "FR",
-                "homeRaceLocationId": null,
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
@@ -67,12 +64,12 @@ export const mockConstructorCards: iConstructorCard[] = [
         "type": CardType.CONSTRUCTOR,
         "nationality": "United Kingdom",
         "nationalityCode": "GB",
-        "homeRaceLocationId": "uk",
         "homeRaces": [
             {
                 "raceName": "British Grand Prix",
                 "round": 12,
                 "raceStart": Timestamp.fromDate(new Date('2026-12-01')),
+                "firstPractice": Timestamp.fromDate(new Date('2026-12-01')),
                 "locationCountry": "uk"
             }
         ],
@@ -87,7 +84,6 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "Spain",
                 "nationalityCode": "ES",
-                "homeRaceLocationId": null,
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
@@ -105,7 +101,7 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "Canada",
                 "nationalityCode": "CA",
-                "homeRaceLocationId": null,
+
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
@@ -132,7 +128,6 @@ export const mockConstructorCards: iConstructorCard[] = [
         "type": CardType.CONSTRUCTOR,
         "nationality": "Germany",
         "nationalityCode": "DE",
-        "homeRaceLocationId": null,
         "stats": {
             "currentFantasyPoints": 0,
             "averageQualifyingPosition": 0,
@@ -150,24 +145,26 @@ export const mockConstructorCards: iConstructorCard[] = [
         "type": CardType.CONSTRUCTOR,
         "nationality": "United States",
         "nationalityCode": "US",
-        "homeRaceLocationId": "usa",
         "homeRaces": [
             {
                 "raceName": "United States Grand Prix",
                 "round": 19,
                 "raceStart": Timestamp.fromDate(new Date('2026-12-01')),
+                "firstPractice": Timestamp.fromDate(new Date('2026-12-01')),
                 "locationCountry": "usa"
             },
             {
                 "raceName": "Las Vegas Grand Prix",
                 "round": 22,
                 "raceStart": Timestamp.fromDate(new Date('2026-12-01')),
+                "firstPractice": Timestamp.fromDate(new Date('2026-12-01')),
                 "locationCountry": "usa"
             },
             {
                 "raceName": "Miami Grand Prix",
                 "round": 6,
                 "raceStart": Timestamp.fromDate(new Date('2026-12-01')),
+                "firstPractice": Timestamp.fromDate(new Date('2026-12-01')),
                 "locationCountry": "usa"
             }
         ],
@@ -188,7 +185,6 @@ export const mockConstructorCards: iConstructorCard[] = [
         "type": CardType.CONSTRUCTOR,
         "nationality": "Italy",
         "nationalityCode": "IT",
-        "homeRaceLocationId": null,
         "drivers": [
             {
                 "homeRaces": [],
@@ -200,7 +196,6 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "United Kingdom",
                 "nationalityCode": "GB",
-                "homeRaceLocationId": null,
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
@@ -218,7 +213,6 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "",
                 "nationalityCode": "",
-                "homeRaceLocationId": null,
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
@@ -244,7 +238,7 @@ export const mockConstructorCards: iConstructorCard[] = [
         "type": CardType.CONSTRUCTOR,
         "nationality": "United States",
         "nationalityCode": "US",
-        "homeRaceLocationId": null,
+        
         "drivers": [
             {
                 "homeRaces": [],
@@ -256,7 +250,7 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "United Kingdom",
                 "nationalityCode": "GB",
-                "homeRaceLocationId": null,
+                
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
@@ -274,7 +268,7 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "France",
                 "nationalityCode": "FR",
-                "homeRaceLocationId": null,
+                
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
@@ -300,7 +294,7 @@ export const mockConstructorCards: iConstructorCard[] = [
         "type": CardType.CONSTRUCTOR,
         "nationality": "United Kingdom",
         "nationalityCode": "GB",
-        "homeRaceLocationId": null,
+        
         "drivers": [
             {
                 "homeRaces": [],
@@ -312,7 +306,7 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "United Kingdom",
                 "nationalityCode": "GB",
-                "homeRaceLocationId": null,
+                
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
@@ -330,7 +324,7 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "Australia",
                 "nationalityCode": "AU",
-                "homeRaceLocationId": null,
+                
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
@@ -356,7 +350,7 @@ export const mockConstructorCards: iConstructorCard[] = [
         "type": CardType.CONSTRUCTOR,
         "nationality": "Germany",
         "nationalityCode": "DE",
-        "homeRaceLocationId": null,
+        
         "drivers": [
             {
                 "homeRaces": [],
@@ -368,7 +362,7 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "Italy",
                 "nationalityCode": "IT",
-                "homeRaceLocationId": null,
+                
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
@@ -386,7 +380,7 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "United Kingdom",
                 "nationalityCode": "GB",
-                "homeRaceLocationId": null,
+                
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
@@ -412,7 +406,7 @@ export const mockConstructorCards: iConstructorCard[] = [
         "type": CardType.CONSTRUCTOR,
         "nationality": "Italy",
         "nationalityCode": "IT",
-        "homeRaceLocationId": null,
+        
         "drivers": [
             {
                 "homeRaces": [],
@@ -424,7 +418,7 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "France",
                 "nationalityCode": "FR",
-                "homeRaceLocationId": null,
+                
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
@@ -450,7 +444,7 @@ export const mockConstructorCards: iConstructorCard[] = [
         "type": CardType.CONSTRUCTOR,
         "nationality": "Austria",
         "nationalityCode": "AT",
-        "homeRaceLocationId": null,
+        
         "drivers": [
             {
                 "homeRaces": [],
@@ -462,7 +456,7 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "New Zealand",
                 "nationalityCode": "NZ",
-                "homeRaceLocationId": null,
+                
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
@@ -480,7 +474,7 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "Netherlands",
                 "nationalityCode": "NL",
-                "homeRaceLocationId": null,
+                
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
@@ -506,7 +500,7 @@ export const mockConstructorCards: iConstructorCard[] = [
         "type": CardType.CONSTRUCTOR,
         "nationality": "United Kingdom",
         "nationalityCode": "GB",
-        "homeRaceLocationId": null,
+        
         "drivers": [
             {
                 "homeRaces": [],
@@ -518,7 +512,7 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "Thailand",
                 "nationalityCode": "TH",
-                "homeRaceLocationId": null,
+                
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
@@ -536,7 +530,7 @@ export const mockConstructorCards: iConstructorCard[] = [
                 "type": CardType.DRIVER,
                 "nationality": "Spain",
                 "nationalityCode": "ES",
-                "homeRaceLocationId": null,
+                
                 "stats": {
                     "currentFantasyPoints": 0,
                     "averageQualifyingPosition": 0,
