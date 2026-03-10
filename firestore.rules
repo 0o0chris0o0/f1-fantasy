@@ -46,6 +46,10 @@ service cloud.firestore {
       allow create, write, read: if true;
     }
 
+     match /leaderboard/{playerId} {
+      allow create, write, read: if true;
+    }
+
     // forbid everything else
     match /{document=**} {
       allow read, write: if false;

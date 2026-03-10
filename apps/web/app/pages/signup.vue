@@ -44,7 +44,7 @@
 
 <script lang="ts" setup>
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { arrayUnion, doc, setDoc, writeBatch } from "firebase/firestore";
+import { arrayUnion, collection, doc, setDoc, writeBatch } from "firebase/firestore";
 import { useFirebaseAuth } from "vuefire";
 
 // Utils
@@ -129,7 +129,7 @@ const createUser = async () => {
     }
 
     const playerRef = doc(db, 'players', userCred.user.uid);
-    const leaderboardRef = doc(db, 'appData', 'leaderboard');
+    const leaderboardRef = doc(db, 'leaderboard', playerRef.id);
 
     batch.set(playerRef, newUserObj)
 
@@ -144,7 +144,7 @@ const createUser = async () => {
       raceScore: 0
     }
 
-    batch.set(leaderboardRef, { [playerRef.id]: leaderBoardEntry })
+    batch.set(leaderboardRef, leaderBoardEntry)
 
     await batch.commit();
 

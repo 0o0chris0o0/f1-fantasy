@@ -57,11 +57,17 @@ const performUpdate = async (round?: string): Promise<string> => {
     // update each players results
     const playerResultsForLeaderboard: Record<string, Omit<iLeaderboardScore, 'currentRank' | 'prevRank'>> = await updatePlayerScores(fantasyScores, roundData);
 
-    logger.log("Leaderboard Scores Generated:");
+    logger.log("Leaderboard scores generated:");
     logger.log(playerResultsForLeaderboard);
 
     // Update the leaderboard
-    updateLeaderboard(playerResultsForLeaderboard);
+    const newLeaderboard = await updateLeaderboard(playerResultsForLeaderboard);
+    
+    logger.log("Leaderboard updated:");
+    logger.log(newLeaderboard)
+
+    // update all cards including those in the players objs
+    
 
     // Update the next race details & round number
 

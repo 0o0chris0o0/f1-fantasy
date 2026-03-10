@@ -6,18 +6,16 @@ import axios from 'axios';
 import type { iJolpicaResult, iRoundInfo } from "@f1pick6/shared/types";
 
 export default async function getResults(forceRound?: string) {
+  const firestore = getFirestore();
+  const docSnap = await firestore.doc("appData/roundInfo").get();
+  const roundDataFromDb = docSnap.data() as iRoundInfo;
+
+  let roundData: iRoundInfo = roundDataFromDb;
+
   try {
     const currentYear = 2025;
-    let roundData: iRoundInfo = {} as iRoundInfo;
     
     if (!forceRound) {
-      // get current week from DB
-      const firestore = getFirestore();
-      const docSnap = await firestore.doc("appData/roundInfo").get();
-      const roundDataFromDb = docSnap.data() as iRoundInfo;
-
-      roundData = roundDataFromDb;
-
       logger.info(`No round provided, using DB value: ${roundData.currentRound}`);
     } else {
       roundData.currentRound = parseInt(forceRound);

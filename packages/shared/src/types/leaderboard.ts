@@ -1,5 +1,5 @@
 export interface iLeaderBoard {
-  [playerName: string]: iLeaderboardScore
+  [playerId: string]: iLeaderboardScore
 }
 
 export interface iLeaderboardScore {
