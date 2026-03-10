@@ -6,7 +6,6 @@ const newPlayerStarterObj: iFBUser = {
   cardsHistory: {},
   collection: {},
   collectionCompletion: 0,
-  currentRank: 0,
   currentScore: 0,
   currentTeam: {
     rareLegendaryDriver: null,
@@ -20,7 +19,6 @@ const newPlayerStarterObj: iFBUser = {
   latestResult: null,
   money: 1200,
   packs: {},
-  prevRank: 0,
   progressInRewardTrack: 0,
   results: [],
   rewardLevel: 1,

@@ -63,26 +63,3 @@ export interface iCardInCollection {
   cardId: string;
   collectedOn: false | Timestamp;
 }
-
-// export interface iCardWithQuantity extends iCard {
-//   quantity: number;
-//   tyres: number;
-// }
-
-// export interface iCardWithIsNew extends iCard {
-//   isNew: boolean;
-// }
-
-// export interface iCardWithCollected extends iCardWithQuantity {
-//   collectedOn: false | Timestamp;
-// }
-
-// export interface iCollectionGroup {
-//   teamId: string;
-//   teamName: string;
-//   car: iCardWithCollected;
-//   teamPrinciple: iCardWithCollected[];
-//   drivers: iCardWithCollected[];
-//   cardsCollected: number;
-//   totalCards: number;
-// }

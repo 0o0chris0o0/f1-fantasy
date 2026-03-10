@@ -1,11 +1,13 @@
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import { generatePlayerScores } from "./generatePlayerScores";
-import { iCardInUsersCards, iConstructorFantasyScore, iCurrentTeam, iDriverFantasyScore, iUserCardHistory } from "@f1pick6/shared/types";
+import { iCardInUsersCards, iConstructorFantasyScore, iCurrentTeam, iDriverFantasyScore, iLeaderBoard, iLeaderboardScore, iResult, iRoundInfo, iUserCardHistory } from "@f1pick6/shared/types";
 
-export async function updatePlayerScores(fantasyScores: Record<string, iDriverFantasyScore | iConstructorFantasyScore>, round: number) {
+export async function updatePlayerScores(fantasyScores: Record<string, iDriverFantasyScore | iConstructorFantasyScore>, roundData: iRoundInfo) {
   const firestore = getFirestore();
   const writeBatch = firestore.batch();
+
+  const returnObj: Record<string, Omit<iLeaderboardScore, 'currentRank' | 'prevRank'>> = {};
 
   // get all players
   const playersSnap = await firestore.collection("players").get();
@@ -16,9 +18,29 @@ export async function updatePlayerScores(fantasyScores: Record<string, iDriverFa
     const playerTeam = player.get('currentTeam') as iCurrentTeam
 
     // generate the players score object
-    const playerScores = generatePlayerScores(playerTeam, fantasyScores, round);
-    logger.info(`${player.get('displayName')}'s scores`, playerScores);
+    const playerScores = generatePlayerScores(playerTeam, fantasyScores, roundData.currentRound);
+    logger.info(`${player.get('displayName')}'s scores`, {
+      baseScore: playerScores.baseFantasyScore,
+      baseRaceScore: playerScores.baseRaceScore,
+      baseQualifyingScore: playerScores.baseQualifyingScore,
+      modifiedScore: playerScores.totalModifiedScore
+    });
 
+    const playersResultObj: iResult = {
+      ...playerScores,
+      raceName: roundData.nextRaceName,
+      raceStart: roundData.nextRaceStart,
+      round: roundData.currentRound,
+    }
+
+    const playersLeaderboardObj: Omit<iLeaderboardScore, 'currentRank' | 'prevRank'> = {
+      playerId: player.id,
+      playerName: player.get('displayName'),
+      currentScore: playerScores.totalModifiedScore,
+      qualifyingScore: playerScores.baseQualifyingScore,
+      raceScore: playerScores.baseRaceScore,
+      modifierScore: playerScores.totalModifiedScore - playerScores.baseFantasyScore
+    }
     
     // get the players current cards
     const playersCurrentCards = player.get('cards') as iCardInUsersCards[];
@@ -32,9 +54,13 @@ export async function updatePlayerScores(fantasyScores: Record<string, iDriverFa
     cardIds.forEach(cardId => {
       // check if we need to reduce the quantity or remove each card selected
       const indexOfCard = playersCurrentCards.findIndex((c: iCardInUsersCards) => c.cardData.cardId === cardId);
-      const cardQuantity = playersCurrentCards[indexOfCard].quantity
+      const cardQuantity = playersCurrentCards[indexOfCard].quantity;
+
       if (cardQuantity > 1) {
         playersCurrentCards[indexOfCard].quantity -= 1;
+        // update xp values as well
+        playersCurrentCards[indexOfCard].xp += 1;
+        playersCurrentCards[indexOfCard].level += playersCurrentCards[indexOfCard].level === 4 ? 0 : 1
       } else {
         playersCurrentCards.splice(indexOfCard, 1);
       }
@@ -56,7 +82,10 @@ export async function updatePlayerScores(fantasyScores: Record<string, iDriverFa
     writeBatch.update(player.ref, {
       cards: playersCurrentCards,
       cardsHistory: playersCurrentCardHistory,
-      currentScore: FieldValue.increment(playerScores.totalFantasy),
+      currentScore: FieldValue.increment(playerScores.totalModifiedScore),
+      money: FieldValue.increment(playerScores.totalModifiedScore),
+      latestResult: playersResultObj,
+      results: FieldValue.arrayUnion(playersResultObj),
       currentTeam: {
         commonConstructor: null,
         commonDriver: null,
@@ -67,7 +96,10 @@ export async function updatePlayerScores(fantasyScores: Record<string, iDriverFa
       }
     })
 
+    returnObj[player.id] = playersLeaderboardObj;
   })
 
   await writeBatch.commit();
+
+  return returnObj;
 };

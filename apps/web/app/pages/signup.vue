@@ -44,7 +44,7 @@
 
 <script lang="ts" setup>
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { arrayUnion, doc, setDoc, writeBatch } from "firebase/firestore";
 import { useFirebaseAuth } from "vuefire";
 
 // Utils
@@ -55,10 +55,11 @@ import { useUserStore } from "@/stores/user";
 
 // Types
 import type { FirebaseError } from "firebase/app";
+import type { iLeaderboardScore } from "@f1pick6/shared";
 
 const db = useFirestore();
 const auth = useFirebaseAuth()!; // only exists on client side
-const userStore = useUserStore();
+const batch = writeBatch(db);
 
 const username = ref<string>("");
 const email = ref<string>("");
@@ -127,7 +128,25 @@ const createUser = async () => {
       newUserObj.displayName = userCred.user.displayName;
     }
 
-    await setDoc(doc(db, "players", userCred.user.uid), newUserObj);
+    const playerRef = doc(db, 'players', userCred.user.uid);
+    const leaderboardRef = doc(db, 'appData', 'leaderboard');
+
+    batch.set(playerRef, newUserObj)
+
+    const leaderBoardEntry: iLeaderboardScore = {
+      playerName: newUserObj.displayName,
+      playerId: playerRef.id,
+      currentScore: 0,
+      currentRank: 1,
+      prevRank: 1,
+      qualifyingScore: 0,
+      modifierScore: 0,
+      raceScore: 0
+    }
+
+    batch.set(leaderboardRef, { [playerRef.id]: leaderBoardEntry })
+
+    await batch.commit();
 
     // clear sensitive data
     password.value = "";

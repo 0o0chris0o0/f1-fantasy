@@ -6,6 +6,7 @@ export * from './race';
 export * from './reward';
 export * from './user';
 export * from './fantasyScores';
+export * from './leaderboard';
 
 export * from './jolpica/constructorStandings';
 export * from './jolpica/constructors';

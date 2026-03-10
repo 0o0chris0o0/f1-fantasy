@@ -1,83 +1,74 @@
-import { calcCurrentModifierScore, CardType, iCardInUsersCards, iConstructorFantasyScore, iDriverFantasyScore, type iCurrentTeam } from "@f1pick6/shared";
+import { calcCurrentModifierScore, CardType, iConstructorFantasyScore, iCurrentTeamScores, iDriverFantasyScore, iResult, type iCurrentTeam } from "@f1pick6/shared";
 import { logger } from "firebase-functions";
 
-type SlotKeys = 'common' | 'uncommon' | 'rareLegendary';
-
-interface iPlayerBaseScores {
-  baseScore: number;
-  totalFantasy: number;
-}
-
-interface iPlayerCardScore {
-  driverBaseScore: number;
-  driverModifiedScore: number;
-  driverModifierValue: number;
-  constructorBaseScore: number;
-  constructorModifiedScore: number;
-  constructorModifierValue: number;
-}
-
-type iPlayerScore = iPlayerBaseScores & Record<SlotKeys, iPlayerCardScore>
-
 export function generatePlayerScores(currentTeam: iCurrentTeam, fantasyScores: Record<string, iDriverFantasyScore | iConstructorFantasyScore>, round: number) {
-  let returnObj: iPlayerScore = {
-    baseScore: 0,
-    totalFantasy: 0,
-    common: {} as iPlayerCardScore,
-    uncommon: {} as iPlayerCardScore,
-    rareLegendary: {} as iPlayerCardScore
+  let returnObj: Omit<iResult, 'raceName' | 'raceStart' | 'round'> = {
+    baseFantasyScore: 0,
+    cards: {} as iCurrentTeamScores,
+    baseQualifyingScore: 0,
+    baseRaceScore: 0,
+    totalModifiedScore: 0
   };
-  
-  const slotKeys = ['common', 'uncommon', 'rareLegendary'];
 
-  // for each rarity slot
-  slotKeys.forEach((slotKey) => {
-    // get the driver
-    const selectedSlotDriver = currentTeam[`${slotKey}Driver` as keyof iCurrentTeam];
-    // get the constructor
-    const selectedSlotConstructor = currentTeam[`${slotKey}Constructor` as keyof iCurrentTeam];
+  for (const key in currentTeam) {
+    if (!Object.hasOwn(currentTeam, key)) continue;
+    
+    const card = currentTeam[key as keyof iCurrentTeam];
+    if (card) {
+      const selectedCardScore = fantasyScores[card?.cardData.cardId];
+      const cardModifierValues = calcCurrentModifierScore(card, round, currentTeam);
+      const cardModifier = 1 + cardModifierValues.totalScoreModifier;
 
-    [selectedSlotDriver, selectedSlotConstructor].forEach((card) => {
-      // add slot driver
-      if (card) {
-        const selectedCardScore = fantasyScores[card?.cardData.cardId] as iDriverFantasyScore;
-        const cardModifierValues = calcCurrentModifierScore(card, round, currentTeam);
-        const cardModifier = 1 + cardModifierValues.totalScoreModifier;
+      // does the driver have a score
+      if (selectedCardScore) {
+        const cardBaseScore = selectedCardScore.totalFantasyPoints;
+        const cardModifiedScore = Math.round(selectedCardScore.totalFantasyPoints * cardModifier)
 
-        // does the driver have a score
-        if (selectedCardScore) {
-          const cardBaseScore = selectedCardScore.totalFantasyPoints;
-          const cardModifiedScore = Math.round(selectedCardScore.totalFantasyPoints * cardModifier)
+        returnObj.cards[key as keyof iCurrentTeamScores] = {
+          ...card,
+          cardModifierValue: cardModifier,
+          fantasyQualScore: selectedCardScore.qualFantasyPoints,
+          fantasyRaceScore: selectedCardScore.raceFantasyPoints,
+          modifiedFantasyScore: cardModifiedScore,
+          baseFantasyScore: cardBaseScore,
+          wasDNF: selectedCardScore.dnf
+        }
 
-          returnObj.baseScore += cardBaseScore;
-          returnObj.totalFantasy += cardModifiedScore;
-
-          if (card.cardData.type === CardType.DRIVER) {
-            returnObj[slotKey as SlotKeys].driverBaseScore = cardBaseScore;
-            returnObj[slotKey as SlotKeys].driverModifiedScore = cardModifiedScore;
-            returnObj[slotKey as SlotKeys].driverModifierValue = cardModifier;
-          } else {
-            returnObj[slotKey as SlotKeys].constructorBaseScore = cardBaseScore;
-            returnObj[slotKey as SlotKeys].constructorModifiedScore = cardModifiedScore;
-            returnObj[slotKey as SlotKeys].constructorModifierValue = cardModifier;
-          }
-          // returnObj.drivers.push(selectedSlotDriver)
+        if (card.cardData.type === CardType.CONSTRUCTOR) {
+          const constructorScore = selectedCardScore as iConstructorFantasyScore;
+          returnObj.cards[key as keyof iCurrentTeamScores].driverScores = constructorScore.driverScores
         } else {
-          logger.warn(`Player's ${slotKey} card, ${card.cardData.cardName}, didn't have a score`)
-          if (card.cardData.type === CardType.DRIVER) {
-            returnObj[slotKey as SlotKeys].driverBaseScore = 0;
-            returnObj[slotKey as SlotKeys].driverModifiedScore = 0;
-            returnObj[slotKey as SlotKeys].driverModifierValue = cardModifier;
-          } else {
-            returnObj[slotKey as SlotKeys].constructorBaseScore = 0;
-            returnObj[slotKey as SlotKeys].constructorModifiedScore = 0;
-            returnObj[slotKey as SlotKeys].constructorModifierValue = cardModifier;
-          }
+          const driverScore = selectedCardScore as iDriverFantasyScore;
+          returnObj.cards[key as keyof iCurrentTeamScores].realRacePosition = driverScore.raceEndPosition;
+          returnObj.cards[key as keyof iCurrentTeamScores].realStartingPosition = driverScore.raceStartPosition;
+        }
+
+        // add to total values
+        returnObj.baseQualifyingScore += selectedCardScore.qualFantasyPoints;
+        returnObj.baseRaceScore += selectedCardScore.raceFantasyPoints;
+        returnObj.baseFantasyScore += cardBaseScore;
+        returnObj.totalModifiedScore += cardModifiedScore;
+      } else {
+        logger.warn(`Player's ${key} card, ${card.cardData.cardName}, didn't have a score`)
+        returnObj.cards[key as keyof iCurrentTeamScores] = {
+          ...card,
+          cardModifierValue: cardModifier,
+          fantasyQualScore: 0,
+          fantasyRaceScore: 0,
+          modifiedFantasyScore: 0,
+          baseFantasyScore: 0,
+          wasDNF: false
+        }
+
+        if (card.cardData.type === CardType.CONSTRUCTOR) {
+          returnObj.cards[key as keyof iCurrentTeamScores].driverScores = [];
+        } else {
+          returnObj.cards[key as keyof iCurrentTeamScores].realRacePosition = '';
+          returnObj.cards[key as keyof iCurrentTeamScores].realStartingPosition = '';
         }
       }
-    })
-
-  })
+    }
+  }
 
   return returnObj;
 };

@@ -1,6 +1,7 @@
 import type { Timestamp } from "firebase/firestore";
-import type { iCardInUsersCards, iCardInCollection, iCardRarity } from "./card.ts";
+import type { iCardInUsersCards, iCardInCollection } from "./card.ts";
 import type { iPackInUser } from './pack.ts';
+import { iDriverFantasyScore } from "./fantasyScores.js";
 
 export interface iFBUser {
   cards: iCardInUsersCards[];
@@ -8,14 +9,12 @@ export interface iFBUser {
   cardsInCollection: number;
   collection: Record<string, iCardInCollection>;
   collectionCompletion: number;
-  currentRank: number;
   currentScore: number;
   currentTeam: iCurrentTeam;
   displayName: string;
   latestResult: iResult | null;
   money: number;
   packs: Record<string, iPackInUser>;
-  prevRank: number;
   progressInRewardTrack: number;
   results: iResult[];
   rewardLevel: number;
@@ -31,48 +30,58 @@ export interface iCurrentTeam {
 }
 
 export interface iResult {
+  baseFantasyScore: number;
   cards: iCurrentTeamScores;
   raceName: string;
   raceStart: Timestamp,
   round: number;
-  score: number;
+  totalModifiedScore: number;
+  baseQualifyingScore: number;
+  baseRaceScore: number;
 }
 
-interface iCurrentTeamScores {
-  rareLegendaryDriver: iDriverScore;
-  rareLegendaryConstructor: iConstructorScore;
-  uncommonDriver: iDriverScore;
-  uncommonConstructor: iConstructorScore;
-  commonDriver: iDriverScore;
-  commonConstructor: iConstructorScore;
+export interface iCurrentTeamScores {
+  rareLegendaryDriver: iCardScore;
+  rareLegendaryConstructor: iCardScore;
+  uncommonDriver: iCardScore;
+  uncommonConstructor: iCardScore;
+  commonDriver: iCardScore;
+  commonConstructor: iCardScore;
 }
 
-export interface iDriverScore {
-  cardId: string;
-  cardName: string;
-  cardRarity: iCardRarity;
+export interface iCardScore extends iCardInUsersCards {
+  cardModifierValue: number;
   fantasyQualScore: number;
   fantasyRaceScore: number;
-  fastestLap: boolean;
-  realRacePosition: number;
-  realStartingPosition: number;
-  teamId: string;
-  teamName: string;
-  totalFantasyScore: number;
+  realRacePosition?: string;
+  realStartingPosition?: string;
+  driverScores?: iDriverFantasyScore[],
+  baseFantasyScore: number;
+  modifiedFantasyScore: number;
   wasDNF: boolean;
-}
-
-export interface iConstructorScore {
-  cardId: string;
-  cardName: string;
-  cardRarity: iCardRarity;
-  drivers: Record<string, iDriverScore>
-  fantasyQualScore: number;
-  fantasyRaceScore: number;
-  totalFantasyScore: number;
 }
 
 export interface iUserCardHistory {
   xp: number;
   level: number;
 }
+
+// export type SlotKeys = 'common' | 'uncommon' | 'rareLegendary';
+
+// interface iPlayerBaseScores {
+//   baseScore: number;
+//   totalFantasy: number;
+//   totalRaceScore: number;
+//   totalQualifyingScore: number;
+// }
+
+// export interface iPlayerCardScore {
+//   driverBaseScore: number;
+//   driverModifiedScore: number;
+//   driverModifierValue: number;
+//   constructorBaseScore: number;
+//   constructorModifiedScore: number;
+//   constructorModifierValue: number;
+// }
+
+// export type iPlayerScore = iPlayerBaseScores & Record<SlotKeys, iPlayerCardScore>

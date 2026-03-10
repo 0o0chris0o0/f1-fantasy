@@ -42,11 +42,7 @@ service cloud.firestore {
       allow create, write, read: if true;
     }
 
-    match /appData/misc {
-      allow create, write, read: if true;
-    }
-
-    match /appData/roundInfo {
+    match /appData/{document=**} {
       allow create, write, read: if true;
     }
 
