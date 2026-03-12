@@ -16,6 +16,8 @@ import { generateFantasyScores } from "./generateFantasyScores";
 import { updatePlayerScores } from "./updatePlayerScores";
 import { iConstructorFantasyScore, iDriverFantasyScore, iLeaderBoard, iLeaderboardScore } from "@f1pick6/shared/types";
 import { updateLeaderboard } from "./updateLeaderboard";
+import { updateAllCards } from "./updateAllCards";
+import { updateNextRaceDetails } from "./updateNextRaceDetails";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -47,7 +49,7 @@ const performUpdate = async (round?: string): Promise<string> => {
     // no modifiers are applied here
     const fantasyScores: { [key: string]: iDriverFantasyScore | iConstructorFantasyScore } = generateFantasyScores(raceResults);
 
-    logger.log("Fantasy Scores Generated:");
+    logger.info("Fantasy Scores Generated");
     logger.log(fantasyScores);
 
     // Update all players scores
@@ -57,19 +59,18 @@ const performUpdate = async (round?: string): Promise<string> => {
     // update each players results
     const playerResultsForLeaderboard: Record<string, Omit<iLeaderboardScore, 'currentRank' | 'prevRank'>> = await updatePlayerScores(fantasyScores, roundData);
 
-    logger.log("Leaderboard scores generated:");
-    logger.log(playerResultsForLeaderboard);
-
     // Update the leaderboard
     const newLeaderboard = await updateLeaderboard(playerResultsForLeaderboard);
     
-    logger.log("Leaderboard updated:");
+    logger.info("Leaderboard updated:");
     logger.log(newLeaderboard)
 
     // update all cards including those in the players objs
-    
+    await updateAllCards(fantasyScores, roundData.currentRound);
 
     // Update the next race details & round number
+    await updateNextRaceDetails(roundData.currentRound);
+    logger.info('Next race details updated')
 
 
     return `Update performed for round ${round || "latest"}`;

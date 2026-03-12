@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-gray-950 rounded p-4 text-center"
+    class="text-center"
   >
     <NuxtLink to="/my-team">
       <h2 class="text-lg font-semibold mb-2 font-f1">Your Team</h2>

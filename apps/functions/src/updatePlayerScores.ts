@@ -48,13 +48,13 @@ export async function updatePlayerScores(fantasyScores: Record<string, iDriverFa
     const playersCurrentCardHistory = player.get('cardsHistory') as Record<string, iUserCardHistory> 
     
     // get an array of card id's of the players team
-    const cardIds = Object.values(playerTeam).map((card: iCardInUsersCards) => card.cardData.cardId)
+    const cardIds = Object.values(playerTeam).map((card: iCardInUsersCards) => card && card.cardData.cardId).filter(Boolean)
 
     // for each card in the players team
     cardIds.forEach(cardId => {
       // check if we need to reduce the quantity or remove each card selected
       const indexOfCard = playersCurrentCards.findIndex((c: iCardInUsersCards) => c.cardData.cardId === cardId);
-      const cardQuantity = playersCurrentCards[indexOfCard].quantity;
+      const cardQuantity = playersCurrentCards[indexOfCard]?.quantity;
 
       if (cardQuantity > 1) {
         playersCurrentCards[indexOfCard].quantity -= 1;

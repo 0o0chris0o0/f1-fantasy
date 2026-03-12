@@ -52,12 +52,12 @@
             @change="onSort"
             class="flex-1 px-3 py-2 border rounded"
           >
-            <option value="rarity:desc,name">Rarity (Legendary First)</option>
-            <option value="rarity:asc,name">Rarity (Common First)</option>
+            <option value="rarity:desc,points:desc,name">Rarity (Legendary First)</option>
+            <option value="rarity:asc,points:desc,name">Rarity (Common First)</option>
             <option value="name">Name (A-Z)</option>
             <option value="quantity:desc,rarity:desc,name">Quantity</option>
             <option value="level,rarity:desc,name">Level</option>
-            <option value="points,rarity:desc,name">Fantasy Points</option>
+            <option value="points:desc,rarity:desc,name">Fantasy Points</option>
           </select>
         </div>
 

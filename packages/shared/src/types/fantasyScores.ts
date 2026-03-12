@@ -3,9 +3,12 @@ export interface iDriverFantasyScore {
   dnf: boolean;
   totalFantasyPoints: number;
   raceFantasyPoints: number;
-  raceStartPosition: string;
-  raceEndPosition: string;
-  qualFantasyPoints: number;
+  raceStartPosition: number;
+  raceEndPosition: number;
+  qualFantasyPoints: number
+  finishingStatus: FinishingStatus
+  constructor: string;
+  constructorName: string;
 }
 
 export interface iConstructorFantasyScore {
@@ -20,4 +23,6 @@ export enum FinishingStatus {
   FINISHED = 'Finished',
   RETIRED = 'Retired',
   UNKNOWN = 'Unknown',
+  LAPPED = 'Lapped',
+  DISQUALIFIED = 'Disqualified'
 }

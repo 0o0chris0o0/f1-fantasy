@@ -20,7 +20,7 @@
         {{ userData?.rarity }}
       </p>
       <p class="font-f1 text-2xl font-bold text-center text-gray-200 mb-4">{{ cardData.cardName }}</p>
-      <div class="flex flex-col md:flex-row items-center gap-4 mb-6">
+      <div class="flex flex-col md:flex-row gap-4 mb-6">
         <div class="w-56 mx-auto">
           <UserCard v-if="userData" :card="cardData" :rarity="userData.rarity" :level="userData.level" :quantity="userData.quantity" hideUserData />
           <Card v-else :card="cardData" />
@@ -32,8 +32,11 @@
           </div>
           <hr class="my-2 opacity-25"/>
           <div class="space-y-1">
-            <p>Average Qualifying Pos: <span class="font-normal">P{{ cardData.stats.averageQualifyingPosition }}</span></p>
-            <p>Average Race Pos: <span class="font-normal">P{{ cardData.stats.averageRacePosition }}</span></p>
+            <p>Average Pts per round: <span class="font-normal">{{ cardData.stats.averageFantasyPoints }}<span class="text-xs">Pts</span></span></p>
+            <template v-if="cardData.type === CardType.DRIVER">
+              <p>Average Qualifying Pos: <span class="font-normal">P{{ (cardData.stats as iDriverStats).averageQualifyingPosition }}</span></p>
+              <p>Average Race Pos: <span class="font-normal">P{{ (cardData.stats as iDriverStats).averageRacePosition }}</span></p>
+            </template>
             <p>DNF's: <span class="font-normal">{{ cardData.stats.numberOfDNFs }}</span></p>
           </div>
           <hr class="my-2 opacity-25"/>
@@ -87,7 +90,8 @@
 
 <script setup lang="ts">
 import { VueFinalModal } from "vue-final-modal";
-import { CardType, iCardRarity, type iCardInUsersCards, type iConstructorCard, type iDriverCard } from '@f1pick6/shared/types';
+import { CardType, iCardRarity } from '@f1pick6/shared/types';
+import type { iCardInUsersCards, iConstructorCard, iDriverCard, iDriverStats } from '@f1pick6/shared/types';
 
 const props = defineProps<{
   cardData?: iDriverCard | iConstructorCard;

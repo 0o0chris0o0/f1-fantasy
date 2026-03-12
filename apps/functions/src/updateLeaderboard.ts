@@ -8,7 +8,7 @@ export async function updateLeaderboard(playerResultsForLeaderboard: Record<stri
   const newLeaderboard: iLeaderBoard = {};
 
   // sort leaderboard by score
-  const sortedLeaderboard = Object.values(playerResultsForLeaderboard).sort((a, b) => a.currentScore > b.currentScore ? 1 : -1);
+  const sortedLeaderboard = Object.values(playerResultsForLeaderboard).sort((a, b) => a.currentScore > b.currentScore ? -1 : 1);
 
   // get current leaderboard DB values
   const leaderboardSnap = await firestore.collection('leaderboard').get();

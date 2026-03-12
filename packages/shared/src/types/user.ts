@@ -1,7 +1,7 @@
 import type { Timestamp } from "firebase/firestore";
 import type { iCardInUsersCards, iCardInCollection } from "./card.ts";
 import type { iPackInUser } from './pack.ts';
-import { iDriverFantasyScore } from "./fantasyScores.js";
+import { FinishingStatus, iDriverFantasyScore } from "./fantasyScores.js";
 
 export interface iFBUser {
   cards: iCardInUsersCards[];
@@ -50,14 +50,15 @@ export interface iCurrentTeamScores {
 }
 
 export interface iCardScore extends iCardInUsersCards {
+  baseFantasyScore: number;
   cardModifierValue: number;
+  driverScores?: iDriverFantasyScore[],
   fantasyQualScore: number;
   fantasyRaceScore: number;
-  realRacePosition?: string;
-  realStartingPosition?: string;
-  driverScores?: iDriverFantasyScore[],
-  baseFantasyScore: number;
+  finishingStatus?: FinishingStatus;
   modifiedFantasyScore: number;
+  realRacePosition?: number;
+  realStartingPosition?: number;
   wasDNF: boolean;
 }
 

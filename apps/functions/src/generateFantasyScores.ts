@@ -21,10 +21,13 @@ export function generateFantasyScores(results: iJolpicaResult[]) {
       driverId,
       dnf: didDnf,
       totalFantasyPoints: raceFantasyPoints + qualFantasyPoints,
-      raceStartPosition: `P${startingPosition}`,
-      raceEndPosition: `P${finishingPosition}`,
+      raceStartPosition: startingPosition,
+      raceEndPosition: finishingPosition,
       raceFantasyPoints,
-      qualFantasyPoints
+      qualFantasyPoints,
+      finishingStatus,
+      constructor: result.Constructor.constructorId, // add this to check if the driver has moved teams
+      constructorName: result.Constructor.name // """"
     }
 
     const constructorScore: iConstructorFantasyScore = {
@@ -37,6 +40,7 @@ export function generateFantasyScores(results: iJolpicaResult[]) {
 
     returnObj[driverId] = driverScore;
     
+    // if it doesn't exist yet, create the constructor object
     if (!returnObj[teamId]) {
       returnObj[teamId] = {
         dnf: didDnf, // Teams can't DNF, but this will be used to indicate if both drivers DNFed

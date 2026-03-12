@@ -63,7 +63,7 @@
     </div>
     <div class="relative">
       <Button size="small" @click="toggleFilters">
-        <Icon name="mi:filter" class="text-2xl" />
+        <Icon name="mage:filter" class="text-2xl" />
       </Button>
       <div 
         v-if="areFiltersActive"

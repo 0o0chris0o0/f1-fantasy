@@ -8,7 +8,7 @@
       <p>{{ raceDateV2(roundInfo.nextRaceStart) }}</p>
     </div>
 
-    <div class="mb-10 p-4 rounded-lg border-2 border-gray-600 shadow-inner-custom">
+    <div class="mb-10">
       <CurrentTeamCards type="Driver" @begin-editing="beginEditing" :editMode="editMode" :editing="editing" :currentRound="roundInfo.currentRound" :count="teamCounts().driverCards" @remove-card="handleRemoveCard" />
       <hr class="block my-6 opacity-30 mx-auto max-w-[80%]"/>
       <CurrentTeamCards type="Constructor" @begin-editing="beginEditing" :editMode="editMode" :editing="editing" :currentRound="roundInfo.currentRound" :count="teamCounts().constructorCards" @remove-card="handleRemoveCard" />

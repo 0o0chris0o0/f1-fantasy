@@ -40,7 +40,7 @@
         <hr class="opacity-50" />
         <p class="opacity-75">{{ card.teamName }}</p>
       </div>
-      <div class="font-f1 text-right card-score">
+      <div v-if="!hideCardScore" class="font-f1 text-right card-score">
         <p class="card-score__number">{{ card.stats.currentFantasyPoints }}</p>
         <p class="card-score__text">Pts</p>
       </div>
@@ -55,6 +55,7 @@ import type { iConstructorCard, iDriverCard } from "@f1pick6/shared/types";
 const { rarity = iCardRarity.COMMON } = defineProps<{
   card: iDriverCard | iConstructorCard;
   rarity?: iCardRarity;
+  hideCardScore: boolean;
 }>();
 
 </script>
@@ -196,6 +197,7 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
   transform: rotate(-12deg);
   font-size: 0.6em;
   line-height: 1.2;
+  display: none;
 }
 
 .card-team {
@@ -238,6 +240,7 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
     font-size: 16px;
   }
 
+  .card-name,
   .card-icons {
     display: block;
   }

@@ -2,12 +2,14 @@
   <div>
     <PageHeader class="mb-4"> Home </PageHeader>
 
-    <div class="space-y-6">
+    <div class="space-y-10">
+      <p>Latest results...</p>
+
       <NextRaceDetails />
 
       <YourTeam />
 
-      <p>Leaderboard...</p>
+      <Leaderboard />
 
       <p>Collection Status...</p>
 

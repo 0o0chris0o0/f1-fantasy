@@ -47,6 +47,9 @@
             <NuxtLink to="/my-cards" class="main-link">My Cards</NuxtLink>
           </li>
           <li>
+            <NuxtLink :to="`/results/${user?.uid}`" class="main-link">Results</NuxtLink>
+          </li>
+          <li>
             <NuxtLink to="/collection" class="main-link">Collection</NuxtLink>
           </li>
         </template>

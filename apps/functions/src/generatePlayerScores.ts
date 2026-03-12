@@ -1,4 +1,4 @@
-import { calcCurrentModifierScore, CardType, iConstructorFantasyScore, iCurrentTeamScores, iDriverFantasyScore, iResult, type iCurrentTeam } from "@f1pick6/shared";
+import { calcCurrentModifierScore, CardType, FinishingStatus, iConstructorFantasyScore, iCurrentTeamScores, iDriverFantasyScore, iResult, type iCurrentTeam } from "@f1pick6/shared";
 import { logger } from "firebase-functions";
 
 export function generatePlayerScores(currentTeam: iCurrentTeam, fantasyScores: Record<string, iDriverFantasyScore | iConstructorFantasyScore>, round: number) {
@@ -31,7 +31,7 @@ export function generatePlayerScores(currentTeam: iCurrentTeam, fantasyScores: R
           fantasyRaceScore: selectedCardScore.raceFantasyPoints,
           modifiedFantasyScore: cardModifiedScore,
           baseFantasyScore: cardBaseScore,
-          wasDNF: selectedCardScore.dnf
+          wasDNF: selectedCardScore.dnf,
         }
 
         if (card.cardData.type === CardType.CONSTRUCTOR) {
@@ -41,6 +41,7 @@ export function generatePlayerScores(currentTeam: iCurrentTeam, fantasyScores: R
           const driverScore = selectedCardScore as iDriverFantasyScore;
           returnObj.cards[key as keyof iCurrentTeamScores].realRacePosition = driverScore.raceEndPosition;
           returnObj.cards[key as keyof iCurrentTeamScores].realStartingPosition = driverScore.raceStartPosition;
+          returnObj.cards[key as keyof iCurrentTeamScores].finishingStatus = driverScore.finishingStatus;
         }
 
         // add to total values
@@ -57,14 +58,15 @@ export function generatePlayerScores(currentTeam: iCurrentTeam, fantasyScores: R
           fantasyRaceScore: 0,
           modifiedFantasyScore: 0,
           baseFantasyScore: 0,
-          wasDNF: false
+          wasDNF: false,
+          finishingStatus: FinishingStatus.UNKNOWN
         }
 
         if (card.cardData.type === CardType.CONSTRUCTOR) {
           returnObj.cards[key as keyof iCurrentTeamScores].driverScores = [];
         } else {
-          returnObj.cards[key as keyof iCurrentTeamScores].realRacePosition = '';
-          returnObj.cards[key as keyof iCurrentTeamScores].realStartingPosition = '';
+          returnObj.cards[key as keyof iCurrentTeamScores].realRacePosition = 0;
+          returnObj.cards[key as keyof iCurrentTeamScores].realStartingPosition = 0;
         }
       }
     }

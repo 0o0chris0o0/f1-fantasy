@@ -46,7 +46,7 @@ service cloud.firestore {
       allow create, write, read: if true;
     }
 
-     match /leaderboard/{playerId} {
+    match /leaderboard/{playerId} {
       allow create, write, read: if true;
     }
 

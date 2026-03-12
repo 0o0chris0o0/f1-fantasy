@@ -9,7 +9,7 @@
         </p>
       </div>
       <div class="shadow-xl">
-        <Card :card="card" :rarity="rarity" />
+        <Card :card="card" :rarity="rarity" :hide-card-score="hideCardScore" />
       </div>
       <div v-if="!hideUserData" class="flex items-center justify-center gap-1 text-xs sm:text-sm text-white pt-1 font-f1 font-bold">
         <Icon name="bi:stack" />
@@ -45,6 +45,7 @@ const { rarity = iCardRarity.COMMON, level = 0, quantity = 0 } = defineProps<{
   quantity?: number;
   inCollection?: boolean;
   hideUserData?: boolean;
+  hideCardScore?: boolean;
   isNew?: boolean
 }>();
 
@@ -97,6 +98,7 @@ const customizeIcon = (content: string) => {
   z-index: 2;
   margin: 0.4em;
   width: 2em;
+  display: none;
 
   .segmented-circle {
     width: 100%;
@@ -139,14 +141,16 @@ const customizeIcon = (content: string) => {
   }
 }
 
-.collected-icon {
-  
-}
-
 .card-container {
   container-type: inline-size;
   container-name: card;
   max-width: 400px;
+}
+
+@container card (min-width: 100px) {
+  .card-level {
+    display: block;
+  }
 }
 
 @container card (min-width: 200px) {
