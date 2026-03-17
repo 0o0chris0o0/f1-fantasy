@@ -85,6 +85,7 @@ export async function updatePlayerScores(fantasyScores: Record<string, iDriverFa
       currentScore: FieldValue.increment(playerScores.totalModifiedScore),
       money: FieldValue.increment(playerScores.totalModifiedScore),
       latestResult: playersResultObj,
+      latestResultCleared: false,
       results: FieldValue.arrayUnion(playersResultObj),
       currentTeam: {
         commonConstructor: null,

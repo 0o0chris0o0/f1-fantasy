@@ -44,14 +44,11 @@
 
 <script lang="ts" setup>
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { arrayUnion, collection, doc, setDoc, writeBatch } from "firebase/firestore";
+import { doc, writeBatch } from "firebase/firestore";
 import { useFirebaseAuth } from "vuefire";
 
 // Utils
 import newPlayerStarterObj from "~/utils/newPlayerStarterObj";
-
-// Stores
-import { useUserStore } from "@/stores/user";
 
 // Types
 import type { FirebaseError } from "firebase/app";

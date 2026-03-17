@@ -2,8 +2,8 @@
   <div>
     <PageHeader class="mb-4"> Home </PageHeader>
 
-    <div class="space-y-10">
-      <p>Latest results...</p>
+    <div class="space-y-6">
+      <LatestResult v-if="userObj && userObj.latestResult && !userObj.latestResultCleared" :latestResult="userObj.latestResult"/>
 
       <NextRaceDetails />
 
@@ -22,6 +22,10 @@
 definePageMeta({
   middleware: "auth",
 });
+
+const userStore = useUserStore();
+
+const { userObj } = storeToRefs(userStore);
 </script>
 
 <style lang="scss" scoped></style>

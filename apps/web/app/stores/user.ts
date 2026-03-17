@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia';
 import { doc, DocumentReference, getDoc } from "firebase/firestore";
 
-import type { iCurrentTeam, iFBUser } from '@/types/user';
-import type { iCardRarity } from '@f1pick6/shared';
+import type { iCardRarity, iCurrentTeam, iFBUser } from '@f1pick6/shared';
 
 export const useUserStore = defineStore('user', () => {
   const user = useCurrentUser();

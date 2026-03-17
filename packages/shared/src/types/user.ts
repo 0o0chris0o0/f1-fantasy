@@ -13,6 +13,7 @@ export interface iFBUser {
   currentTeam: iCurrentTeam;
   displayName: string;
   latestResult: iResult | null;
+  latestResultCleared: boolean;
   money: number;
   packs: Record<string, iPackInUser>;
   progressInRewardTrack: number;

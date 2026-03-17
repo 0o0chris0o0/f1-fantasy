@@ -1,5 +1,5 @@
+import type { iPack, iPackInUser } from "@f1pick6/shared";
 import { doc, setDoc } from "firebase/firestore";
-import type { iPack, iPackInUser } from "@/types/pack";
 
 export async function giveUserPack(pack: iPack) {
   const userStore = useUserStore();

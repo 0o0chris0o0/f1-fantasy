@@ -55,7 +55,7 @@ import type { iConstructorCard, iDriverCard } from "@f1pick6/shared/types";
 const { rarity = iCardRarity.COMMON } = defineProps<{
   card: iDriverCard | iConstructorCard;
   rarity?: iCardRarity;
-  hideCardScore: boolean;
+  hideCardScore?: boolean;
 }>();
 
 </script>
