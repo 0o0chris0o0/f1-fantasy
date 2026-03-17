@@ -1,5 +1,6 @@
 export interface iDriverFantasyScore {
   driverId: string;
+  driverName: string;
   dnf: boolean;
   totalFantasyPoints: number;
   raceFantasyPoints: number;

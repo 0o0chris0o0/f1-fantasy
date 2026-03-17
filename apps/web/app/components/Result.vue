@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-900 p-4 rounded">
+  <div class="bg-gray-900 p-3 rounded">
     <button class="w-full text-left font-f1 flex gap-4 items-center" @click="toggleOpen">
       <span class="underline text-sm">Round {{ result.round }}<br/> {{ result.raceName }}</span>
       <span class="mx-auto font-semibold">{{ result.totalModifiedScore }} Pts</span>
@@ -13,59 +13,81 @@
         ]"
       />
     </button>
-    <div v-if="isOpen" class="mt-6">
+    <div v-if="isOpen" class="mt-4">
       <p class="font-f1 italic text-xs mb-2">Drivers</p>
       <div class="space-y-2">
-        <div v-for="card in drivers" class="grid grid-cols-12 gap-2 items-center">
-          <div class="col-span-2">
+        <div v-for="card in drivers" :class="`relative border-2 rounded-lg pr-3 overflow-hidden py-2 rarity-${card.rarity.toLowerCase()}`">
+          <div class="absolute w-20 transform -left-2 top-2">
             <UserCard :card="card.cardData" :rarity="card.rarity" :level="card.level" hide-user-data hide-card-score />
           </div>
-          <div class="col-span-6 flex-1 text-xs">
-            <p class="font-f1">{{ card.cardData.cardName }}</p>
-            <p class="opacity-50">Level {{card.level}} +{{ Math.round((card.cardModifierValue - 1) * 100) }}%</p>
-            <p class="flex items-center gap-1">
-              <span v-if="card.realStartingPosition" class="text-xs">Qualified P{{ card.realStartingPosition }} - </span>
-              <span v-else class="text-xs">Did not qualify - </span>
-              <span class="">{{ card.fantasyQualScore }}Pts</span>
-            </p>
-            <p class="flex items-center gap-1">
-              <span v-if="card.realRacePosition" class="text-xs">Finished P{{ card.realRacePosition }} - </span>
-              <span v-else class="text-xs">DNF - </span>
-              <span class="">{{ card.fantasyRaceScore }}Pts</span>
-            </p>
-          </div>
-          <div class="col-span-3">
-            <span class="text-3xl font-bold">{{ card.modifiedFantasyScore }}Pts</span>
+          <div class="pl-20 font-f1 text-sm flex-1">
+            <div class="flex items-center w-full justify-between mb-1">
+              <p class="uppercase text-xs">{{ card.cardData.cardName }}</p>
+              <p class="flex items-center tracking-tight">
+                <span class="text-xl">{{ card.modifiedFantasyScore }}</span>
+                <span class="text-[10px]">&nbsp;PTS</span>
+              </p>
+            </div>
+            <div class="grid grid-flow-col w-full items-center ">
+              <div class="flex-1 border-r border-gray-600 pr-2">
+                <div class="flex justify-center items-center mb-1">
+                  <Icon name="game-icons:stopwatch" class="mr-1 text-lg" />
+                  <p v-if="card.realStartingPosition" class="text-xs">(P{{ card.realStartingPosition }})</p>
+                </div>
+                <p class="flex items-center justify-center">
+                  <span>{{ card.fantasyQualScore }}</span>
+                  <span class="text-[10px]">&nbsp;PTS</span>
+                </p>
+              </div>
+              <div class="flex-1 border-r border-gray-600 px-2">
+                <div class="flex justify-center items-center mb-1">
+                  <Icon name="game-icons:checkered-flag" class="mr-1 text-lg" />
+                  <p v-if="card.fantasyRaceScore" class="text-xs">(P{{ card.realRacePosition }})</p>
+                  <p v-else class="text-xs">(DNF)</p>
+                </div>
+                <p class="flex items-center justify-center">
+                  <span>{{ card.fantasyRaceScore }}</span>
+                  <span class="text-[10px]">&nbsp;PTS</span>
+                </p>
+              </div>
+              <div class="flex pl-3 sm:pl-4">
+                <div class="text-center">
+                  <p>+ {{ Math.round((card.cardModifierValue - 1) * 100) }}%</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <p class="font-f1 italic text-xs mt-4 mb-2">Constructors</p>
+      <p class="font-f1 italic text-xs mt-6 mb-2">Constructors</p>
       <div class="space-y-2">
-        <div v-for="card in constructors" class="grid grid-cols-12 gap-2 items-center">
-          <div class="col-span-2">
+        <div v-for="card in constructors" :class="`relative border-2 rounded-lg pr-3 overflow-hidden py-2 rarity-${card.rarity.toLowerCase()}`">
+          <div class="absolute w-20 transform -left-2 top-2">
             <UserCard :card="card.cardData" :rarity="card.rarity" :level="card.level" hide-user-data hide-card-score />
           </div>
-          <div class="col-span-6 flex-1 text-xs">
-            <p class="font-f1">{{ card.cardData.cardName }}</p>
-            <p class="opacity-50">Level {{card.level}} +{{ Math.round((card.cardModifierValue - 1) * 100) }}%</p>
-            <p>Qualifying</p>
-            <div class="flex gap-2 items-center">
-              <p v-for="driverScore in card.driverScores">
-                P{{ driverScore.raceStartPosition }} ({{ driverScore.qualFantasyPoints }}Pts)
+          <div class="pl-20 font-f1 text-sm flex-1">
+            <div class="flex items-center w-full justify-between mb-1">
+              <p class="uppercase text-xs">{{ card.cardData.cardName }}</p>
+              <p class="flex items-center tracking-tight">
+                <span class="text-xl">{{ card.modifiedFantasyScore }}</span>
+                <span class="text-[10px]">&nbsp;PTS</span>
               </p>
             </div>
-            <p>Race</p>
-            <div class="flex gap-2 items-center">
-              <p v-for="driverScore in card.driverScores">
-                <span v-if="driverScore.dnf">DNF</span>
-                <span v-else>P{{ driverScore.raceEndPosition }}</span> 
-                ({{ driverScore.raceFantasyPoints }}Pts)
-              </p>
+            <div class="grid grid-cols-12 items-center gap-2">
+              <div class="col-span-9 grid grid-cols-12 items-center gap-y-1 border-r border-gray-600 py-1 pr-2">
+                <template v-for="driver in card.driverScores">
+                  <p class="col-span-8 text-xs italic opacity-60">{{ driver.driverName }}:&nbsp;</p>
+                  <p class="col-span-4 flex items-center">
+                    <span>{{ driver.totalFantasyPoints }}</span>
+                    <span class="text-[10px]">&nbsp;PTS</span>
+                  </p>
+                </template>
+              </div>
+              <div class="col-span-3 text-center">
+                <p>+ {{ Math.round((card.cardModifierValue - 1) * 100) }}%</p>
+              </div>
             </div>
-          </div>
-          <div class="col-span-3">
-            <span class="text-3xl font-bold">{{ card.modifiedFantasyScore }}Pts</span>
           </div>
         </div>
       </div>
@@ -81,9 +103,9 @@ const props = defineProps<{
   result: iResult
 }>();
 
-const isOpen = useState(() => false);
-const drivers: iCardScore[] = Object.values(props.result.cards).filter((card: iCardScore) => card.cardData.type === CardType.DRIVER)
-const constructors: iCardScore[] = Object.values(props.result.cards).filter((card: iCardScore) => card.cardData.type === CardType.CONSTRUCTOR)
+const isOpen = useState(props.result.raceName, () => false);
+const drivers: iCardScore[] = Object.values(props.result.cards).filter((card: iCardScore) => card.cardData.type === CardType.DRIVER).sort((a, b) => a.modifiedFantasyScore > b.modifiedFantasyScore ? -1 : 1)
+const constructors: iCardScore[] = Object.values(props.result.cards).filter((card: iCardScore) => card.cardData.type === CardType.CONSTRUCTOR).sort((a, b) => a.modifiedFantasyScore > b.modifiedFantasyScore ? -1 : 1)
 
 const toggleOpen = () => {
   isOpen.value = !isOpen.value;
@@ -91,5 +113,19 @@ const toggleOpen = () => {
 </script>
 
 <style scoped>
+.rarity-common {
+  @apply border-common;
+}
 
+.rarity-uncommon {
+  @apply border-uncommon;
+}
+
+.rarity-rare {
+  @apply border-rare;
+}
+
+.rarity-legendary {
+  @apply border-legendary;
+}
 </style>

@@ -50,6 +50,7 @@ export interface iCurrentTeamScores {
 }
 
 export interface iCardScore extends iCardInUsersCards {
+  driverName?: string;
   baseFantasyScore: number;
   cardModifierValue: number;
   driverScores?: iDriverFantasyScore[],

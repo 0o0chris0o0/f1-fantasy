@@ -19,6 +19,7 @@ export function generateFantasyScores(results: iJolpicaResult[]) {
     
     const driverScore: iDriverFantasyScore = {
       driverId,
+      driverName: `${result.Driver.givenName} ${result.Driver.familyName}`,
       dnf: didDnf,
       totalFantasyPoints: raceFantasyPoints + qualFantasyPoints,
       raceStartPosition: startingPosition,

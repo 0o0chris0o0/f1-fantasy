@@ -42,6 +42,7 @@ export function generatePlayerScores(currentTeam: iCurrentTeam, fantasyScores: R
           returnObj.cards[key as keyof iCurrentTeamScores].realRacePosition = driverScore.raceEndPosition;
           returnObj.cards[key as keyof iCurrentTeamScores].realStartingPosition = driverScore.raceStartPosition;
           returnObj.cards[key as keyof iCurrentTeamScores].finishingStatus = driverScore.finishingStatus;
+          returnObj.cards[key as keyof iCurrentTeamScores].driverName = card.cardData.cardName
         }
 
         // add to total values
