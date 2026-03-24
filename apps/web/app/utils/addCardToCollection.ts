@@ -1,5 +1,5 @@
 import { updateDoc, increment, Timestamp } from "firebase/firestore";
-import type { iCardRarity } from "@f1pick6/shared";
+import type { iCardInUsersCards, iCardRarity, iCurrentTeam } from "@f1pick6/shared";
 
 export async function addCardToCollection(cardId: string, rarity: iCardRarity, totalCards: number) {
   const userStore = useUserStore();
@@ -23,6 +23,23 @@ export async function addCardToCollection(cardId: string, rarity: iCardRarity, t
     userCards?.splice(indexOfSelectedCard, 1);
   }
 
+  // update the users current team quantities
+  const usersCurrentTeam: iCurrentTeam | undefined = userObj.value?.currentTeam;
+  if (usersCurrentTeam) {
+    const cardInUsersCurrentTeam = (Object.entries(usersCurrentTeam) as [keyof iCurrentTeam, iCardInUsersCards][]).find(
+    ([_, card]) => card?.cardData.cardId === cardId && card.rarity === rarity
+    );
+    
+    if (cardInUsersCurrentTeam) {
+      const [keyToUpdate, cardData] = cardInUsersCurrentTeam;
+      if (cardData.quantity > 1) {
+        usersCurrentTeam[keyToUpdate]!.quantity -= 1;
+      } else {
+        usersCurrentTeam[keyToUpdate] = null;
+      }
+    }
+  }
+
   const newCardCount = (userObj.value?.cardsInCollection ?? 0) + 1;
   const calcedCompletion = Math.round(newCardCount / totalCards * 100);
 
@@ -31,6 +48,7 @@ export async function addCardToCollection(cardId: string, rarity: iCardRarity, t
   // update the user doc
   await updateDoc(userDocRef.value, {
     cards: userCards,
+    currentTeam: usersCurrentTeam,
     cardsInCollection: increment(1),
     collectionCompletion: calcedCompletion,
     progressInRewardTrack,

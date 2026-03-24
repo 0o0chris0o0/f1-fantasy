@@ -140,6 +140,9 @@
                 <Icon name="bi:stack" />
                 <p>x{{ userStore.getXCardFromUserObj(card.cardId, card.rarity)?.quantity }}</p>
               </div>
+              <div v-if="userStore.isXCardInUsersCurrentTeam(card.cardId, card.rarity)">
+                <p class="font-f1 text-xs">IN TEAM</p>
+              </div>
             </div>
           </template>
         </div>

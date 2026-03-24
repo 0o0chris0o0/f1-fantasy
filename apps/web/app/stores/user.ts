@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { doc, DocumentReference, getDoc } from "firebase/firestore";
 
-import type { iCardRarity, iCurrentTeam, iFBUser } from '@f1pick6/shared';
+import type { iCardInUsersCards, iCardRarity, iFBUser } from '@f1pick6/shared';
 
 export const useUserStore = defineStore('user', () => {
   const user = useCurrentUser();
@@ -35,30 +35,6 @@ export const useUserStore = defineStore('user', () => {
     return packCount;
   })
 
-  const shouldUserSeeEmergencyPacks = computed(() => {
-    if (!userObj.value) {
-      return false;
-    }
-
-    // if user is missing a type of card
-    // const cardsStore = useCardsStore();
-    // if (!cardsStore.userCarCards || cardsStore.userDriverCards || cardsStore.userTpCards) {
-    //   return true;
-    // }
-  })
-
-  const emergencyPacksAvailableToUser = computed(() => {
-    const cardsStore = useCardsStore();
-    const returnAry: any[] = [];
-
-    if (!shouldUserSeeEmergencyPacks.value) {
-      return [];
-    }
-
-    return returnAry;
-  })
-
-
   const doesUserHaveCard = (cardId: string, cardRarity: iCardRarity) => {
     return !!userObj.value?.cards.find((c) => c.cardData.cardId === cardId && c.rarity === cardRarity);
   }
@@ -71,9 +47,20 @@ export const useUserStore = defineStore('user', () => {
     return userObj.value?.cards.find((c) => c.cardData.cardId === cardId && c.rarity === rarity);
   }
 
-  const getCurrentCardOnTeam = (key: keyof iCurrentTeam) => {
-    return userObj.value?.currentTeam[key];
+  const isXCardInUsersCurrentTeam = (cardId: string, rarity: iCardRarity): boolean => {
+    if (userObj.value?.currentTeam) {
+      return Object.values(userObj.value?.currentTeam).some((card: iCardInUsersCards) => card.cardData.cardId === cardId && card.rarity === rarity)
+    } else {
+      return false;
+    }
   }
 
-  return { userObj, userDocRef, userPacksCount, shouldUserSeeEmergencyPacks, emergencyPacksAvailableToUser, getUserData, doesUserHaveCard, doesUserHaveCardInCollection, getXCardFromUserObj, getCurrentCardOnTeam };
+  const idsOfCardsInCurrentTeam = (): string[] => {
+    if (!userObj.value?.currentTeam) {
+      return [];
+    }
+    return Object.values(userObj.value?.currentTeam).map((card: iCardInUsersCards)  => card.cardData.cardId);
+  }
+
+  return { userObj, userDocRef, userPacksCount, getUserData, doesUserHaveCard, doesUserHaveCardInCollection, getXCardFromUserObj, idsOfCardsInCurrentTeam, isXCardInUsersCurrentTeam };
 })
