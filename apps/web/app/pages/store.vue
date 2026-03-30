@@ -8,24 +8,26 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-12">
-      <StorePack v-for="pack in filteredPacks" :key="pack.packId" :pack="pack"/>
+    <div class="flex gap-3 mb-6 border-b border-gray-700">
+      <button 
+        v-for="mode in viewModes"
+        :key="mode"
+        class="p-2 text-left"
+        :class="{
+          'border-b-2': currentViewMode === mode
+        }"
+        @click="toggleViewMode(mode)"
+      >
+        {{ toTitleCase(mode.replace('-', ' ')) }}
+      </button>
     </div>
+
+    <StoreDailyDeals v-if="currentViewMode === 'daily-deals'"/>
+    <StorePacks v-if="currentViewMode === 'packs'"/>
   </div>
 </template>
 
 <script setup lang="ts">
-import type {
-  QueryDocumentSnapshot} from "firebase/firestore";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
-import type { iPack } from "@/types/pack";
-
-const db = useFirestore();
 const userStore = useUserStore();
 
 const { userObj } = storeToRefs(userStore);
@@ -34,46 +36,15 @@ definePageMeta({
   middleware: "auth",
 });
 
-const availablePacks = useState<iPack[]>('availablePacks', () => []);
+const viewModes = ['packs', 'daily-deals'] as const;
+type ViewMode = (typeof viewModes)[number];
 
-const {
-  shouldUserSeeEmergencyPacks,
-  emergencyPacksAvailableToUser,
-} = storeToRefs(userStore);
+const currentViewMode = useState<ViewMode>('viewMode', () => 'packs');
 
-await callOnce(async () => {
-  const packsRef = collection(db, "packs");
-  const q = query(packsRef, where("hiddenFromStore", "==", false));
-  const querySnapshot = await getDocs(q);
-
-  // get all packs
-  availablePacks.value = querySnapshot.docs.map(
-    (packDoc: QueryDocumentSnapshot) => packDoc.data() as iPack
-  );
-});
-
-const filteredPacks = computed(() => {
-  return filterPacks();
-});
-
-const filterPacks = () => {
-  let activePacks = availablePacks.value;
-
-  // if user shouldn't see emergency packs, remove them
-  if (!shouldUserSeeEmergencyPacks.value) {
-    activePacks = activePacks.filter((pack) => !pack.isEmergencyPack);
-  } else {
-    activePacks = activePacks.filter(
-      (pack) =>
-        !pack.isEmergencyPack ||
-        emergencyPacksAvailableToUser.value.includes(pack.packId)
-    );
-  }
-
-  activePacks.sort((a, b) => a.cost - b.cost);
-
-  return activePacks;
-};
+const toggleViewMode = (mode: ViewMode) => {
+  currentViewMode.value = mode;
+}
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+</style>

@@ -1,7 +1,6 @@
 import { CardType, iCardInUsersCards, iConstructorCard, iConstructorFantasyScore, iDriverCard, iDriverFantasyScore, iDriverStats } from "@f1pick6/shared/types";
 import { getFirestore } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
-import { arrayAggDistinct } from "firebase/firestore/pipelines";
 
 export async function updateAllCards(fantasyScores: Record<string, iDriverFantasyScore | iConstructorFantasyScore>, round: number) {
   const firestore = getFirestore();
@@ -78,6 +77,7 @@ export async function updateAllCards(fantasyScores: Record<string, iDriverFantas
     }
   })
 
+  // update all constructor cards in cards DB object
   constructorCards.forEach((card: iConstructorCard) => {
     let cardScores = fantasyScores[card.cardId] as iConstructorFantasyScore;
 
@@ -132,6 +132,8 @@ export async function updateAllCards(fantasyScores: Record<string, iDriverFantas
   })
 
   await writeBatch.commit();
+
+  return [...driverCards, ...constructorCards];
 }
 
 export function calcAverage(currentAverage: number, newVal: number, noOfRaces: number) {

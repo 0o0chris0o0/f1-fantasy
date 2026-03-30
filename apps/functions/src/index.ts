@@ -7,17 +7,16 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import {setGlobalOptions} from "firebase-functions";
+import {logger, setGlobalOptions} from "firebase-functions";
 import {initializeApp} from "firebase-admin/app";
-import {onRequest} from "firebase-functions/https";
-import * as logger from "firebase-functions/logger";
-import getResults from "./getResults";
+import {onRequest} from "firebase-functions/https";import getResults from "./getResults";
 import { generateFantasyScores } from "./generateFantasyScores";
 import { updatePlayerScores } from "./updatePlayerScores";
 import { iConstructorFantasyScore, iDriverFantasyScore, iLeaderBoard, iLeaderboardScore } from "@f1pick6/shared/types";
 import { updateLeaderboard } from "./updateLeaderboard";
 import { updateAllCards } from "./updateAllCards";
 import { updateNextRaceDetails } from "./updateNextRaceDetails";
+import { setupDailyDeals } from "./setupDailyDeals";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -66,12 +65,14 @@ const performUpdate = async (round?: string): Promise<string> => {
     logger.log(newLeaderboard)
 
     // update all cards including those in the players objs
-    await updateAllCards(fantasyScores, roundData.currentRound);
+    const updatedCards = await updateAllCards(fantasyScores, roundData.currentRound);
 
     // Update the next race details & round number
     await updateNextRaceDetails(roundData.currentRound);
     logger.info('Next race details updated')
 
+    // set the weeks dailyDeals
+    await setupDailyDeals(updatedCards);
 
     return `Update performed for round ${round || "latest"}`;
   } else {
