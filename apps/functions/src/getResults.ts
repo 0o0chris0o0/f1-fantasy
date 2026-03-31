@@ -1,6 +1,6 @@
 // import axios from "axios";
 import * as logger from "firebase-functions/logger";
-import { getFirestore, Timestamp } from "firebase-admin/firestore";
+import { getFirestore } from "firebase-admin/firestore";
 import axios from 'axios';
 
 import type { iJolpicaResult, iRoundInfo } from "@f1pick6/shared/types";
@@ -29,7 +29,7 @@ export default async function getResults(forceRound?: string) {
 
     // check if theres been a new race
     if (raceResults) {
-      logger.info("Race results found...");
+      logger.info(`Race results found. Getting results for round ${roundData.currentRound}...`);
       return { raceResults, roundData };
     } else {
       logger.info(`No race results found, maybe the race hasn't happened yet?`);

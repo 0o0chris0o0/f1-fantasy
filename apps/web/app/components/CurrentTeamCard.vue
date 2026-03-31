@@ -8,7 +8,7 @@
       :xp="data.xp"
     />
     <div v-if="userObj" class="mt-1 text-center">
-      <div class="inline-block py-2 px-2 rounded-lg bg-black">
+      <div class="inline-block py-1 px-2 rounded-lg bg-black">
         <button @click="toggleModifierInfo">
           <p class="flex text-xs font-f1 items-baseline underline">
             <span :style="{ 
@@ -85,19 +85,9 @@
           <p class="text-xs">{{ `+${getModifierValues().teamMatchModifier * 100}%` }}</p>
         </div>
       </div>
-
-
-      <div class="flex items-center gap-1">
-        
-      </div>
       
-      <!-- 
-      <Icon name="game-icons:steering-wheel" :class="{
-        'text-green-600': getModifierValues().teamMatchModifier > 0,
-        'opacity-20': !getModifierValues().teamMatchModifier
-      }" /> -->
     </div>
-    <div class="mt-1 text-center">
+    <div class="text-center">
       <button 
         @click="$emit('removeCard')"
         class="mx-auto text-xs underline text-red-600 font-bold"

@@ -56,7 +56,7 @@
             <option value="rarity:asc,points:desc,name">Rarity (Common First)</option>
             <option value="name">Name (A-Z)</option>
             <option value="quantity:desc,rarity:desc,name">Quantity</option>
-            <option value="level,rarity:desc,name">Level</option>
+            <option value="level:desc,rarity:desc,name">Level</option>
             <option value="points:desc,rarity:desc,name">Fantasy Points</option>
           </select>
         </div>

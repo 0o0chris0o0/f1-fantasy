@@ -16,6 +16,7 @@ export async function cardPurchase(cardData: iDriverCard | iConstructorCard, rar
   const usersCollection = userObj.value.collection;
   const usersCardHistory = userObj.value.cardsHistory;
   const usersCurrentTeam = userObj.value.currentTeam;
+  const purchasedCards = userObj.value.dailyDealCardsPurchased || [];
 
   if (!userCards) {
     return;
@@ -62,10 +63,14 @@ export async function cardPurchase(cardData: iDriverCard | iConstructorCard, rar
     };
     userCards.push(newUserCard);
   }
+  
+  // add card to purchased array
+  purchasedCards.push(cardData.cardId);
 
   await updateDoc(userDocRef.value, {
     cards: userCards,
     currentTeam: usersCurrentTeam,
+    dailyDealCardsPurchased: purchasedCards,
     money: increment(-price)
   })
 }

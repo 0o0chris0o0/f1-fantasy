@@ -24,6 +24,7 @@ export enum FinishingStatus {
   FINISHED = 'Finished',
   RETIRED = 'Retired',
   UNKNOWN = 'Unknown',
+  'DID NOT START' = 'Did Not Start',
   LAPPED = 'Lapped',
   DISQUALIFIED = 'Disqualified'
 }

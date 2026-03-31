@@ -49,7 +49,7 @@ export const useUserStore = defineStore('user', () => {
 
   const isXCardInUsersCurrentTeam = (cardId: string, rarity: iCardRarity): boolean => {
     if (userObj.value?.currentTeam) {
-      return Object.values(userObj.value?.currentTeam).some((card: iCardInUsersCards) => card.cardData.cardId === cardId && card.rarity === rarity)
+      return Object.values(userObj.value?.currentTeam).some((card: iCardInUsersCards) => card && card.cardData.cardId === cardId && card.rarity === rarity)
     } else {
       return false;
     }
@@ -62,5 +62,13 @@ export const useUserStore = defineStore('user', () => {
     return Object.values(userObj.value?.currentTeam).map((card: iCardInUsersCards)  => card.cardData.cardId);
   }
 
-  return { userObj, userDocRef, userPacksCount, getUserData, doesUserHaveCard, doesUserHaveCardInCollection, getXCardFromUserObj, idsOfCardsInCurrentTeam, isXCardInUsersCurrentTeam };
+  const hasUserPurchasedXCard = (cardId: string): boolean => {
+    if (!userObj.value?.dailyDealCardsPurchased) {
+      return false;
+    }
+    // we don't need to worry about rarity here as each card will only appear once in the daily deals
+    return userObj.value.dailyDealCardsPurchased.includes(cardId);  
+  }
+
+  return { userObj, userDocRef, userPacksCount, getUserData, doesUserHaveCard, doesUserHaveCardInCollection, getXCardFromUserObj, idsOfCardsInCurrentTeam, isXCardInUsersCurrentTeam, hasUserPurchasedXCard };
 })

@@ -15,6 +15,7 @@ const newPlayerStarterObj: iFBUser = {
     commonDriver: null,
     commonConstructor: null,
   },
+  dailyDealCardsPurchased: [],
   displayName: '',
   latestResult: null,
   latestResultCleared: false,

@@ -13,7 +13,7 @@ export function generateFantasyScores(results: iJolpicaResult[]) {
     const finishingPosition = parseInt(result.position);
     const startingPosition = parseInt(result.grid);
     const finishingStatus = getFinishingStatus(result.status.toUpperCase());
-    const didDnf = finishingStatus !== FinishingStatus.FINISHED;
+    const didDnf = checkForDnf(finishingStatus);
 
     const {raceFantasyPoints, qualFantasyPoints} = calculateFantasyPoints(finishingPosition, startingPosition, driverCount, didDnf);
     
@@ -28,7 +28,7 @@ export function generateFantasyScores(results: iJolpicaResult[]) {
       qualFantasyPoints,
       finishingStatus,
       constructor: result.Constructor.constructorId, // add this to check if the driver has moved teams
-      constructorName: result.Constructor.name // """"
+      constructorName: result.Constructor.name
     }
 
     const constructorScore: iConstructorFantasyScore = {
@@ -75,6 +75,11 @@ function getFinishingStatus(status: string) {
   } else {
     return FinishingStatus[status as keyof typeof FinishingStatus];
   }
+}
+
+function checkForDnf(finishingStatus: FinishingStatus) {
+  const dnfStatuses = [FinishingStatus.DISQUALIFIED, FinishingStatus["DID NOT START"], FinishingStatus.RETIRED];
+  return dnfStatuses.includes(finishingStatus);
 }
 
 function calculateFantasyPoints(finishingPosition: number, startingPosition: number, driverCount: number, didDnf: boolean) {

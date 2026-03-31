@@ -22,7 +22,10 @@
           </div>
           <div class="pl-20 font-f1 text-sm flex-1">
             <div class="flex items-center w-full justify-between mb-1">
-              <p class="uppercase text-xs">{{ card.cardData.cardName }}</p>
+              <p class="text-xs">
+                <span class="uppercase">{{ card.cardData.cardName }}</span>
+                <span class="opacity-75">&nbsp;(Lvl. {{ card.level }})</span>
+              </p>
               <p class="flex items-center tracking-tight">
                 <span class="text-xl">{{ card.modifiedFantasyScore }}</span>
                 <span class="text-[10px]">&nbsp;PTS</span>
@@ -48,6 +51,7 @@
                 <p class="flex items-center justify-center">
                   <span>{{ card.fantasyRaceScore }}</span>
                   <span class="text-[10px]">&nbsp;PTS</span>
+                  <span v-if="card.fantasyRaceScore === -5" class="text-xs text-red-400 italic opacity-75">&nbsp;({{ card.finishingStatus }})</span>
                 </p>
               </div>
               <div class="flex pl-3 sm:pl-4">
@@ -68,7 +72,10 @@
           </div>
           <div class="pl-20 font-f1 text-sm flex-1">
             <div class="flex items-center w-full justify-between mb-1">
-              <p class="uppercase text-xs">{{ card.cardData.cardName }}</p>
+              <p class="text-xs">
+                <span class="uppercase">{{ card.cardData.cardName }}</span>
+                <span class="opacity-75">&nbsp;(Lvl. {{ card.level }})</span>
+              </p>
               <p class="flex items-center tracking-tight">
                 <span class="text-xl">{{ card.modifiedFantasyScore }}</span>
                 <span class="text-[10px]">&nbsp;PTS</span>
@@ -77,11 +84,18 @@
             <div class="grid grid-cols-12 items-center gap-2">
               <div class="col-span-9 grid grid-cols-12 items-center gap-y-1 border-r border-gray-600 py-1 pr-2">
                 <template v-for="driver in card.driverScores">
-                  <p class="col-span-8 text-xs italic opacity-60">{{ driver.driverName }}:&nbsp;</p>
-                  <p class="col-span-4 flex items-center">
-                    <span>{{ driver.totalFantasyPoints }}</span>
-                    <span class="text-[10px]">&nbsp;PTS</span>
-                  </p>
+                  <div class="col-span-7">
+                    <p class="text-xs italic opacity-60">{{ driver.driverName }}:&nbsp;</p>
+                  </div>
+                  <div class="col-span-5 leading-tight">
+                    <p class="col-span-5 flex items-center">
+                      <span>{{ driver.totalFantasyPoints }}</span>
+                      <span class="text-[10px]">
+                        &nbsp;PTS
+                      </span>
+                    </p>
+                    <p v-if="driver.totalFantasyPoints === -5" class="text-xs text-red-400 italic opacity-75">({{ driver.finishingStatus }})</p>
+                  </div>
                 </template>
               </div>
               <div class="col-span-3 text-center">

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { updatePlayerScores } from '../updatePlayerScores'; // Update this path
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import { Timestamp } from 'firebase/firestore';
 
 // 1. Define the mock functions outside so we can control them in tests
 const mockGet = vi.fn();
@@ -22,13 +23,14 @@ vi.mock('firebase-admin/firestore', () => {
     })),
     FieldValue: {
       increment: vi.fn((val) => val),
-    },
+      arrayUnion: vi.fn((val) => val),
+    },  
   };
 });
 
 // Mock your helper function
 vi.mock('../generatePlayerScores.ts', () => ({
-  generatePlayerScores: vi.fn(() => ({ totalFantasy: 10 })),
+  generatePlayerScores: vi.fn(() => ({ totalModifiedScore: 10 })),
 }));
 
 describe('updatePlayerScores', () => {
@@ -61,7 +63,12 @@ describe('updatePlayerScores', () => {
     });
 
     const fantasyScores = {}; // Mock data as needed
-    await updatePlayerScores(fantasyScores, 1);
+    await updatePlayerScores(fantasyScores, {
+      nextRaceName: 'Test Race',
+      nextRaceStart: new Timestamp(0, 0),
+      teamEditCutoff: new Timestamp(0, 0),
+      currentRound: 1
+    });
 
     // Assertions
     expect(db.batch).toHaveBeenCalled();
@@ -71,8 +78,6 @@ describe('updatePlayerScores', () => {
     const updatedData = updateCall[1] as any;
 
     expect(updatedData.cards[0].quantity).toBe(1);
-
-    console.log(updatedData);
     
     // Verify FieldValue.increment was called correctly
     expect(FieldValue.increment).toHaveBeenCalledWith(10);

@@ -11,6 +11,7 @@ export interface iFBUser {
   collectionCompletion: number;
   currentScore: number;
   currentTeam: iCurrentTeam;
+  dailyDealCardsPurchased: string[];
   displayName: string;
   latestResult: iResult | null;
   latestResultCleared: boolean;

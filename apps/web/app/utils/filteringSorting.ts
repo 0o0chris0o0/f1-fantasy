@@ -151,6 +151,11 @@ export function defaultCollectionSorting(
     .sort((a, b) => rarityOrder[a.rarity]! > rarityOrder[b.rarity]! ? -1 : 1)
     .sort((a, b) => a.cardName > b.cardName ? 1 : -1);
 
+  const constructorIds = new Set([
+    ...constructorCards.map(c => c.cardId),
+    ...driverCards.map(d => d.teamId)
+  ]);
+
   const constructorsByTeam: Record<string, iConstructorCollectionCard[]> = {};
   constructorCards.forEach((c) => {
     if (!constructorsByTeam[c.teamId]) constructorsByTeam[c.teamId] = [];
@@ -161,15 +166,15 @@ export function defaultCollectionSorting(
   const driversByTeam: Record<string, iDriverCollectionCard[]> = {};
   driverCards.forEach((d) => {
     if (!driversByTeam[d.teamId]) driversByTeam[d.teamId] = [];
-    driversByTeam[d.teamId]?.push(d as iDriverCollectionCard);
+    driversByTeam[d.teamId]!.push(d as iDriverCollectionCard);
   });
 
   const returnObj: (iDriverCollectionCard | iConstructorCollectionCard)[] = [];
 
   // add each constructor followed by the drivers
-  Object.keys(constructorsByTeam).forEach((con) => {
-    const constructorCards = constructorsByTeam[con] || [];
-    const driverCards = driversByTeam[con] || [];
+  constructorIds.forEach((constructorId) => {
+    const constructorCards = constructorsByTeam[constructorId] || [];
+    const driverCards = driversByTeam[constructorId] || [];
     returnObj.push(...constructorCards)
     returnObj.push(...driverCards)
   })
@@ -204,7 +209,7 @@ export function sortCardsForCollection(
     return true;
   });
 
-   const compareMulti = (a: iDriverCollectionCard | iConstructorCollectionCard, b: iDriverCollectionCard | iConstructorCollectionCard) => {
+  const compareMulti = (a: iDriverCollectionCard | iConstructorCollectionCard, b: iDriverCollectionCard | iConstructorCollectionCard) => {
     // allow comma-separated criteria like "rarity:desc,name" or "name,level:asc"
     const criteria = String(sortBy || 'name').split(',').map(s => s.trim()).filter(Boolean);
 

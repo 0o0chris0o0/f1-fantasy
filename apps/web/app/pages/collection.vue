@@ -133,15 +133,17 @@
                   />
                 </div>
               </div>
-              <div 
-                v-if="userStore.doesUserHaveCard(card.cardId, card.rarity) && !userStore.doesUserHaveCardInCollection(card.cardId, card.rarity)"
-                class="flex items-center justify-center gap-1 text-xs sm:text-sm pt-1 font-f1 font-bold"
-              >
-                <Icon name="bi:stack" />
-                <p>x{{ userStore.getXCardFromUserObj(card.cardId, card.rarity)?.quantity }}</p>
-              </div>
-              <div v-if="userStore.isXCardInUsersCurrentTeam(card.cardId, card.rarity)">
-                <p class="font-f1 text-xs">IN TEAM</p>
+              <div class="flex justify-center items-center gap-2 mt-1">
+                <div 
+                  v-if="userStore.doesUserHaveCard(card.cardId, card.rarity) && !userStore.doesUserHaveCardInCollection(card.cardId, card.rarity)"
+                  class="flex items-center justify-center gap-1 text-xs sm:text-sm font-f1 font-bold"
+                >
+                  <Icon name="bi:stack" />
+                  <p>x{{ userStore.getXCardFromUserObj(card.cardId, card.rarity)?.quantity }}</p>
+                </div>
+                <div v-if="userStore.isXCardInUsersCurrentTeam(card.cardId, card.rarity)">
+                  <Icon name="game-icons:steering-wheel" class="text-green-600" />
+                </div>
               </div>
             </div>
           </template>

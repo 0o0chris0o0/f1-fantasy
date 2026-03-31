@@ -16,8 +16,15 @@ export function generatePlayerScores(currentTeam: iCurrentTeam, fantasyScores: R
     const card = currentTeam[key as keyof iCurrentTeam];
     if (card) {
       const selectedCardScore = fantasyScores[card?.cardData.cardId];
-      const cardModifierValues = calcCurrentModifierScore(card, round, currentTeam);
-      const cardModifier = 1 + cardModifierValues.totalScoreModifier;
+      let cardModifier: number;
+
+      // check if the card has a positive score before applying the modifiers
+      if (selectedCardScore.totalFantasyPoints > 0) { 
+        const cardModifierValues = calcCurrentModifierScore(card, round, currentTeam);
+        cardModifier = 1 + cardModifierValues.totalScoreModifier;
+      } else {
+        cardModifier = 1;
+      }
 
       // does the driver have a score
       if (selectedCardScore) {

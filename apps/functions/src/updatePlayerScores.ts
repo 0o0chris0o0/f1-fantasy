@@ -48,30 +48,38 @@ export async function updatePlayerScores(fantasyScores: Record<string, iDriverFa
     const playersCurrentCardHistory = player.get('cardsHistory') as Record<string, iUserCardHistory> 
     
     // get an array of card id's of the players team
-    const cardIds = Object.values(playerTeam).map((card: iCardInUsersCards) => card && card.cardData.cardId).filter(Boolean)
+    // const cardIds = 
+    const playersTeam = Object.values(playerTeam).filter(Boolean)
 
     // for each card in the players team
-    cardIds.forEach(cardId => {
+    playersTeam.forEach((card: iCardInUsersCards) => {
       // check if we need to reduce the quantity or remove each card selected
-      const indexOfCard = playersCurrentCards.findIndex((c: iCardInUsersCards) => c.cardData.cardId === cardId);
+      const indexOfCard = playersCurrentCards.findIndex((c: iCardInUsersCards) => c.cardData.cardId === card.cardData.cardId && c.rarity === card.rarity);
       const cardQuantity = playersCurrentCards[indexOfCard]?.quantity;
 
       if (cardQuantity > 1) {
         playersCurrentCards[indexOfCard].quantity -= 1;
-        // update xp values as well
-        playersCurrentCards[indexOfCard].xp += 1;
-        playersCurrentCards[indexOfCard].level += playersCurrentCards[indexOfCard].level === 4 ? 0 : 1
       } else {
         playersCurrentCards.splice(indexOfCard, 1);
       }
 
+      // update the players XP and levels
+      // ensure to update every card with the same ID
+      playersCurrentCards.forEach((c: iCardInUsersCards) => {
+        if (c.cardData.cardId === card.cardData.cardId) {
+          c.xp += 1;
+          // only increase the level to a max of 4
+          c.level += c.level === 4 ? 0 : 1;
+        }
+      });
+
       // update the players history object
-      if (playersCurrentCardHistory[cardId]) {
-        playersCurrentCardHistory[cardId].xp += 1;
+      if (playersCurrentCardHistory[card.cardData.cardId]) {
+        playersCurrentCardHistory[card.cardData.cardId].xp += 1;
         // only increase the level to a max of 4
-        playersCurrentCardHistory[cardId].level += playersCurrentCardHistory[cardId].level === 4 ? 0 : 1
+        playersCurrentCardHistory[card.cardData.cardId].level += playersCurrentCardHistory[card.cardData.cardId].level === 4 ? 0 : 1
       } else {
-        playersCurrentCardHistory[cardId] = {
+        playersCurrentCardHistory[card.cardData.cardId] = {
           xp: 1,
           level: 2
         }
@@ -83,6 +91,7 @@ export async function updatePlayerScores(fantasyScores: Record<string, iDriverFa
       cards: playersCurrentCards,
       cardsHistory: playersCurrentCardHistory,
       currentScore: FieldValue.increment(playerScores.totalModifiedScore),
+      dailyDealCardsPurchased: [], // reset daily purchases
       money: FieldValue.increment(playerScores.totalModifiedScore),
       latestResult: playersResultObj,
       latestResultCleared: false,
