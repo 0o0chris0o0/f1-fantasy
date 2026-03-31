@@ -11,7 +11,10 @@
       <div class="shadow-xl">
         <Card :card="card" :rarity="rarity" :hide-card-score="hideCardScore" />
       </div>
-      <div v-if="!hideUserData" class="flex items-center justify-center gap-1 text-xs sm:text-sm text-white pt-1 font-f1 font-bold">
+      <div 
+        v-if="!hideUserData" 
+        class="flex items-center justify-center gap-1 text-xs sm:text-sm text-white pt-1 font-f1 font-bold"
+      >
         <Icon name="bi:stack" />
         <p>x{{ quantity }}</p>
         <div class="w-0.5 h-4 mx-1 bg-white opacity-90"></div>
@@ -27,6 +30,10 @@
             class="opacity-40"
           />
         </div>
+        <Icon 
+          v-if="inTeam" 
+          name="game-icons:steering-wheel" class="text-lg text-green-600" 
+        />
       </div>
       <div v-if="isNew" class="pt-1">
         <p class="text-xs font-f1 font-bold uppercase text-yellow-950 inline-block bg-amber-400 shadow shadow-yellow-300 rounded px-1.5 pt-0.5">New</p>
@@ -44,6 +51,7 @@ const { rarity = iCardRarity.COMMON, level = 0, quantity = 0 } = defineProps<{
   level?: number;
   quantity?: number;
   inCollection?: boolean;
+  inTeam?: boolean;
   hideUserData?: boolean;
   hideCardScore?: boolean;
   isNew?: boolean

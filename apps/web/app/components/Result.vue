@@ -56,7 +56,11 @@
               </div>
               <div class="flex pl-3 sm:pl-4">
                 <div class="text-center">
-                  <p>+ {{ Math.round((card.cardModifierValue - 1) * 100) }}%</p>
+                  <p class="text-xs text-blue-500">+ {{ Math.round((card.cardModifierValue - 1) * 100) }}%</p>
+                  <p class="flex items-center justify-center">
+                    <span>{{ card.modifiedFantasyScore - card.baseFantasyScore }}</span>
+                    <span class="text-[10px]">&nbsp;PTS</span>
+                  </p>
                 </div>
               </div>
             </div>
@@ -99,7 +103,11 @@
                 </template>
               </div>
               <div class="col-span-3 text-center">
-                <p>+ {{ Math.round((card.cardModifierValue - 1) * 100) }}%</p>
+                <p class="text-xs text-blue-500">+ {{ Math.round((card.cardModifierValue - 1) * 100) }}%</p>
+                <p class="flex items-center justify-center">
+                  <span>{{ card.modifiedFantasyScore - card.baseFantasyScore }}</span>
+                  <span class="text-[10px]">&nbsp;PTS</span>
+                </p>
               </div>
             </div>
           </div>

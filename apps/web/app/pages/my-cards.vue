@@ -62,7 +62,8 @@
             :card="card.cardData" 
             :rarity="card.rarity" 
             :level="card.level" 
-            :quantity="card.quantity" 
+            :quantity="card.quantity"
+            :inTeam="userStore.isXCardInUsersCurrentTeam(card.cardData.cardId, card.rarity)"
             :in-collection="card.inCollection"
           />
         </button>

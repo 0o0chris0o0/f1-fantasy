@@ -1,4 +1,7 @@
-import { CardType, iCardInUsersCards, iConstructorCard, iConstructorFantasyScore, iDriverCard, iDriverFantasyScore, iDriverStats } from "@f1pick6/shared/types";
+import { CardType, iCardInUsersCards, iConstructorCard, iConstructorFantasyScore, iDriverCard, iDriverFantasyScore, iDriverStats, iRace } from "@f1pick6/shared/types";
+import axios from "axios";
+import nationalities from 'i18n-nationality';
+import enLocale from 'i18n-nationality/langs/en.json';
 import { getFirestore } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 
@@ -24,12 +27,24 @@ export async function updateAllCards(fantasyScores: Record<string, iDriverFantas
       constructorCards.push(cardData)
     }
   })
-  
+
+  // clone the fantasyScores object which we'll use to see if there's any new drivers
+  const clonedDriverScores = { ...fantasyScores };
+  // remove all constructor scores
+  Object.keys(clonedDriverScores).forEach((key) => {
+    if (!(clonedDriverScores[key] as iDriverFantasyScore).driverId) {
+      delete clonedDriverScores[key];
+    }
+  });
+
   // update all driver cards in cards DB object
   driverCards.forEach((card: iDriverCard) => {
     let cardScores = fantasyScores[card.cardId] as iDriverFantasyScore;
 
     if (cardScores) {
+      // remove the score from the cloned obj so we can check for any new drivers at the end
+      delete clonedDriverScores[card.cardId];
+
       // add current fantasy points total
       card.stats.currentFantasyPoints += cardScores.totalFantasyPoints
 
@@ -76,6 +91,74 @@ export async function updateAllCards(fantasyScores: Record<string, iDriverFantas
       logger.warn(`Couldn't get a fantasy score for card ID: ${card.cardId}`)
     }
   })
+
+  if (Object.keys(clonedDriverScores).length > 0) {
+    logger.info('There are new drivers that we dont have cards for, creating new cards for them...');
+    logger.log(clonedDriverScores);
+
+    for (const cardId in clonedDriverScores) {
+      const cardScores = clonedDriverScores[cardId] as iDriverFantasyScore;
+
+      // get new drivers nationality
+      const driverResponse = await axios(`https://api.jolpi.ca/ergast/f1/drivers/${cardId}/`);
+      const driverData = driverResponse.data.MRData.DriverTable.Drivers[0];
+      let driverLocaleCode, driverCountry = '';
+      let homeRaces: iRace[] = [];
+
+      if (driverData) {
+        nationalities.registerLocale(enLocale);
+        driverLocaleCode = nationalities.getAlpha2Code(driverData.nationality, 'en');
+
+        if (!driverLocaleCode) {
+          // manual fixes
+          // colapinto
+          if (driverData.nationality === 'Argentine') driverLocaleCode = 'AR';
+          // leclerc
+          if (driverData.nationality === 'Monegasque') driverLocaleCode = 'MC';
+        }
+
+        if (driverLocaleCode) {
+          const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+          driverCountry = regionNames.of(driverLocaleCode) || '';
+        }
+      }
+
+      if (driverLocaleCode && driverCountry) {
+        logger.info(`Nationality info found for ${cardScores.driverName}: ${driverLocaleCode}: ${driverCountry}`);
+        logger.info('Getting schedule data to find home races...');
+        const scheduleRef = await firestore.collection('schedule').get();
+        const scheduleData = scheduleRef.docs.map((d) => d.data() as iRace);
+        homeRaces = scheduleData.filter((race) => race.locationCountry === driverCountry?.toLowerCase());
+      } else {
+        logger.warn(`Couldn't find nationality info for ${cardScores.driverName}, setting to empty string`);
+      }
+
+      const newCard: iDriverCard = {
+        cardId,
+        cardName: cardScores.driverName,
+        enabled: true,
+        teamId: cardScores.constructor,
+        teamName: cardScores.constructorName,
+        nationality: driverCountry,
+        nationalityCode: driverLocaleCode || '',
+        homeRaces,
+        type: CardType.DRIVER,
+        stats: {
+          currentFantasyPoints: cardScores.totalFantasyPoints,
+          averageFantasyPoints: cardScores.totalFantasyPoints,
+          numberOfDNFs: cardScores.dnf ? 1 : 0,
+          averageQualifyingPosition: cardScores.raceStartPosition,
+          averageRacePosition: cardScores.raceEndPosition
+        }
+      }
+
+      logger.info(`Creating new card for ${cardScores.driverName} with ID ${cardId}`);
+
+      const newCardRef = firestore.collection('cards').doc(cardId);
+      writeBatch.set(newCardRef, newCard);
+      driverCards.push(newCard);
+    }
+  }
 
   // update all constructor cards in cards DB object
   constructorCards.forEach((card: iConstructorCard) => {

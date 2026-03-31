@@ -55,15 +55,15 @@ export async function setupDailyDeals(updatedCards: (iDriverCard | iConstructorC
 
 function setPrice(rarity: iCardRarity, averagePoints: number) {
   const rarityPrices: Record<iCardRarity, number> = {
-    [iCardRarity.COMMON]: 50,
-    [iCardRarity.UNCOMMON]: 75,
-    [iCardRarity.RARE]: 100,
-    [iCardRarity.LEGENDARY]: 125,
-    [iCardRarity.MYTHIC]: 200
+    [iCardRarity.COMMON]: 1.1,
+    [iCardRarity.UNCOMMON]: 1.2,
+    [iCardRarity.RARE]: 1.3,
+    [iCardRarity.LEGENDARY]: 1.4,
+    [iCardRarity.MYTHIC]: 1.5
   }
 
-  const price = rarityPrices[rarity] + averagePoints;
+  const price = averagePoints * rarityPrices[rarity];
 
   // ensure price is rounded down to the nearest 5
-  return  Math.floor(price / 5) * 5;
+  return Math.floor(price / 5) * 5;
 }
