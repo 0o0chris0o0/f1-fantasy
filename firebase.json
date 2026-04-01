@@ -8,6 +8,9 @@
         "firebase-debug.log",
         "firestore-debug.log"
       ],
+      "predeploy": [
+        "pnpm build"
+      ],
       "source": "apps/functions"
     }
   ],
