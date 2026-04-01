@@ -13,13 +13,13 @@
       <button 
         v-else
         @click="$emit('beginEditing' , `${key}${type}` as keyof iCurrentTeam)" 
-        class="p-2 rounded-lg bg-common"
+        class="p-2 rounded-lg"
         :class="{
           'opacity-25': !editMode || editing !== `${key}${type}`,
           'opacity-50': editing === `${key}${type}`,
-          'bg-common': key === 'common',
           'bg-uncommon': key === 'uncommon',
-          'bg-legendary': key === 'rareLegendary'
+          'bg-rare': key === 'rare',
+          'bg-legendary': key === 'legendary'
         }"
       >
         <BlankCard :rarity="mapRarityFromKey(key)" />
@@ -51,7 +51,7 @@ const emit = defineEmits<{
 }>();
 
 const cards = computed(() => {
-  const keys = ['common', 'uncommon', 'rareLegendary'];
+  const keys = ['uncommon', 'rare', 'legendary'];
   let returnObj: Record<string, iCardInUsersCards | null | undefined> = {};
 
   keys.forEach((k) => {
@@ -65,16 +65,14 @@ const cards = computed(() => {
 
 const mapRarityFromKey = (key: string) => {
   switch (key) {
-    case 'common':
-      return iCardRarity.COMMON
     case 'uncommon':
       return iCardRarity.UNCOMMON
-    case 'rareLegendary':
+    case 'rare':
+      return iCardRarity.RARE
+    case 'legendary':
       return iCardRarity.LEGENDARY
   }
 }
-
-
 </script>
 
 <style scoped>

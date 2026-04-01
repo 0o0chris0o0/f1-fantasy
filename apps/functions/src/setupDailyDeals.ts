@@ -62,7 +62,7 @@ function setPrice(rarity: iCardRarity, averagePoints: number) {
     [iCardRarity.MYTHIC]: 1.5
   }
 
-  const price = averagePoints * rarityPrices[rarity];
+  const price = (averagePoints * 1.5) * rarityPrices[rarity];
 
   // ensure price is rounded down to the nearest 5
   return Math.floor(price / 5) * 5;

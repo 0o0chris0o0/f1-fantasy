@@ -240,9 +240,12 @@ const { rarity = iCardRarity.COMMON } = defineProps<{
     font-size: 16px;
   }
 
-  .card-name,
-  .card-icons {
+  .card-name {
     display: block;
+  }
+
+  .card-icons {
+    display: flex;
   }
 }
 

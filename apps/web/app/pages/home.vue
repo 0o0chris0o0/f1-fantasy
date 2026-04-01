@@ -10,10 +10,6 @@
       <YourTeam />
 
       <Leaderboard />
-
-      <p>Collection Status...</p>
-
-      <p>News...</p>
     </div>
   </div>
 </template>

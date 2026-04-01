@@ -8,12 +8,12 @@ const newPlayerStarterObj: iFBUser = {
   collectionCompletion: 0,
   currentScore: 0,
   currentTeam: {
-    rareLegendaryDriver: null,
-    rareLegendaryConstructor: null,
+    legendaryDriver: null,
+    legendaryConstructor: null,
+    rareDriver: null,
+    rareConstructor: null,
     uncommonDriver: null,
     uncommonConstructor: null,
-    commonDriver: null,
-    commonConstructor: null,
   },
   dailyDealCardsPurchased: [],
   displayName: '',
@@ -24,6 +24,7 @@ const newPlayerStarterObj: iFBUser = {
   progressInRewardTrack: 0,
   results: [],
   rewardLevel: 1,
+  seenCards: [],
 };
 
 export default newPlayerStarterObj;

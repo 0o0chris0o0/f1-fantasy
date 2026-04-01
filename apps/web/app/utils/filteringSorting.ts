@@ -247,27 +247,27 @@ export function filterCardsForMyTeam(editing: keyof iCurrentTeam, allCards: iCar
   let returnCards: iCardInUsersCards[] = [...allCards];
 
   switch (editing) {
-    case 'commonDriver':
-      returnCards = allCards.filter(c => c.rarity === iCardRarity.COMMON && c.cardData.type === CardType.DRIVER)
-      break;
-
-    case 'commonConstructor':
-      returnCards = allCards.filter(c => c.rarity === iCardRarity.COMMON && c.cardData.type === CardType.CONSTRUCTOR)
-      break;
-
     case 'uncommonDriver':
-      returnCards = allCards.filter(c => (c.rarity === iCardRarity.COMMON || c.rarity === iCardRarity.UNCOMMON) && c.cardData.type === CardType.DRIVER)
+      returnCards = allCards.filter(c => (c.rarity === iCardRarity.UNCOMMON || c.rarity === iCardRarity.COMMON) && c.cardData.type === CardType.DRIVER)
       break;
 
     case 'uncommonConstructor':
-      returnCards = allCards.filter(c => (c.rarity === iCardRarity.COMMON || c.rarity === iCardRarity.UNCOMMON) && c.cardData.type === CardType.CONSTRUCTOR)
+      returnCards = allCards.filter(c => (c.rarity === iCardRarity.UNCOMMON || c.rarity === iCardRarity.COMMON) && c.cardData.type === CardType.CONSTRUCTOR)
       break;
 
-    case 'rareLegendaryDriver':
+    case 'rareDriver':
+      returnCards = allCards.filter(c => c.rarity !== iCardRarity.LEGENDARY && c.cardData.type === CardType.DRIVER)
+      break;
+
+    case 'rareConstructor':
+      returnCards = allCards.filter(c => c.rarity !== iCardRarity.LEGENDARY && c.cardData.type === CardType.CONSTRUCTOR)
+      break;
+
+    case 'legendaryDriver':
       returnCards = allCards.filter(c => c.cardData.type === CardType.DRIVER)
       break;
 
-    case 'rareLegendaryConstructor':
+    case 'legendaryConstructor':
       returnCards = allCards.filter(c => c.cardData.type === CardType.CONSTRUCTOR)
       break;
   }

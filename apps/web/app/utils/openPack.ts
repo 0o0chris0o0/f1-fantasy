@@ -1,5 +1,5 @@
-import { collection, doc, getDoc, where, query, getDocs, updateDoc, writeBatch } from "firebase/firestore";
-import type { iCardInCollection, iCardInUsersCards, iCardRarity, iConstructorCard, iDriverCard } from "@f1pick6/shared";
+import { collection, doc, getDoc, where, query, getDocs, updateDoc, writeBatch, arrayUnion } from "firebase/firestore";
+import { iCardRarity, type iCardInCollection, type iCardInUsersCards, type iConstructorCard, type iDriverCard } from "@f1pick6/shared";
 import type { iUserCardHistory, iPack, iPackInUser } from "@f1pick6/shared";
 import { sortCardsForPackOpening } from './filteringSorting';
 
@@ -39,7 +39,7 @@ export async function openPack(packId: string) {
   // pick random cards based on pack data
   const pickedCards = pickCardsForUser(allCards, packData.cardsIncluded);
 
-  const newCards = createLootCards(pickedCards, packData, userObj.value.cards, userObj.value.cardsHistory, userObj.value.collection)
+  const newCards = await createLootCards(pickedCards, packData, userObj.value.cards, userObj.value.cardsHistory, userObj.value.collection)
 
   // create users card obj, includes adding rarity, level & xp
   const newCardsForUsers = mergeNewCardsWithCurrentUserCards(newCards, userObj.value.cards);
@@ -51,6 +51,12 @@ export async function openPack(packId: string) {
   // Add the cards to the user object 
   batch.update(userDocRef.value, {
     cards: newCardsForUsers
+  });
+
+  // update the new card list for the user
+  const seenCards = newCards.map(card => `${card.cardData.cardId}_${card.rarity}`);
+  batch.update(userDocRef.value, {
+    seenCards: arrayUnion(...seenCards)
   });
 
   // Remove the pack from the user object
@@ -79,7 +85,7 @@ export async function openPack(packId: string) {
 
 /** 
  * Picks a set number of random cards from all cards,
- * Includes logic to select ateast 1 driver & 1 constructor
+ * Includes logic to select atleast 1 driver & 1 constructor
  */
 export function pickCardsForUser(allCards: (iDriverCard | iConstructorCard)[], cardsToPick: number) {
   // Separate cards by type
@@ -130,13 +136,14 @@ export function pickCardsForUser(allCards: (iDriverCard | iConstructorCard)[], c
  * Creates the new card objects ready for the user object
  * Assigns the rarity to each card based on the pack slot data
  */
-export function createLootCards(
+export async function createLootCards(
   pickedCards: (iDriverCard | iConstructorCard)[],
   packData: iPack,
   usersCurrentCards: iCardInUsersCards[],
   usersCardHistory: Record<string, iUserCardHistory>,
   usersCollection: Record<string, iCardInCollection>
 ){
+  const db = useFirestore();
   const newCards: iCardInUsersCards[] = [];
 
   for (const [key, slotData] of Object.entries(packData.slots)) {
@@ -146,7 +153,23 @@ export function createLootCards(
     if (!slotData || !cardInSlot) continue;
 
     // select the rarity based on forced rarity or weighted chances
-    const selectedRarity = slotData.forcedRarity ?? getWeightedRarity(slotData.rarityChances);
+    let selectedRarity = slotData.forcedRarity ?? getWeightedRarity(slotData.rarityChances);
+
+    // handle mythic rarity
+    if (selectedRarity === iCardRarity.MYTHIC) {
+      // if the selected rarity is MYTHIC, first we need to check that the card is in the mythic pool.
+      const mythicPoolRef = doc(db, 'appData/misc');
+      const mythicPoolSnap = await getDoc(mythicPoolRef);
+      const mythicPoolData = mythicPoolSnap.get('mythicPool') || [];
+
+      // check if the picked card is in the mythic pool
+      const doesMythicVersionExist = mythicPoolData.includes(cardInSlot.cardId);
+
+      // if the card does NOT exist we'll change the rarity to legendary instead.
+      if (!doesMythicVersionExist) {
+        selectedRarity = iCardRarity.LEGENDARY;
+      };
+    }
 
     if (!selectedRarity) continue;
 

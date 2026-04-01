@@ -17,6 +17,7 @@ import { updateLeaderboard } from "./updateLeaderboard";
 import { updateAllCards } from "./updateAllCards";
 import { updateNextRaceDetails } from "./updateNextRaceDetails";
 import { setupDailyDeals } from "./setupDailyDeals";
+import { updateMythicPool } from "./updateMythicPool";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -66,6 +67,9 @@ const performUpdate = async (round?: string): Promise<string> => {
 
     // update all cards including those in the players objs
     const updatedCards = await updateAllCards(fantasyScores, roundData.currentRound);
+
+    // update mythic pool
+    await updateMythicPool(raceResults);
 
     // Update the next race details & round number
     await updateNextRaceDetails(roundData.currentRound);

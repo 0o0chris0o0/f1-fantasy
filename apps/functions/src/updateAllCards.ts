@@ -74,15 +74,19 @@ export async function updateAllCards(fantasyScores: Record<string, iDriverFantas
         round
       )
 
-      const cardRef = firestore.doc(`cards/${card.cardId}`)
-      writeBatch.update(cardRef, { stats: card.stats });
-
       // check if the driver just raced for a different team
       if (cardScores.constructor !== card.teamId) {
         logger.info(`${card.cardName} has a new team, moving to ${cardScores.constructorName}`)
         card.teamId = cardScores.constructor;
         card.teamName = cardScores.constructorName;
       }
+
+      const cardRef = firestore.doc(`cards/${card.cardId}`)
+      writeBatch.update(cardRef, { 
+        stats: card.stats,
+        teamId: card.teamId,
+        teamName: card.teamName
+      });
 
       // add updated cards into local memory for updating player cards
       updatedCards[card.cardId] = card;
@@ -181,7 +185,7 @@ export async function updateAllCards(fantasyScores: Record<string, iDriverFantas
       }
 
       // update drivers
-      const constructorDrivers = Object.values(updatedCards).filter(card => card.type === CardType.DRIVER && card.teamId === card.cardId);
+      const constructorDrivers = driverCards.filter(driverCard => driverCard.teamId === card.teamId);
 
       const cardRef = firestore.doc(`cards/${card.cardId}`)
       writeBatch.update(cardRef, { stats: card.stats, drivers: constructorDrivers });

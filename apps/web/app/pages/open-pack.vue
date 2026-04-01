@@ -9,9 +9,9 @@
       <div v-for="(card, i) in loot" class="relative px-3 sm:px-4 pt-2 sm:pt-4 card">
         <div class="relative">
           <button class="block w-full" @click="handleSelectCard(card)">
-            <UserCard :card="card.cardData" :rarity="card.rarity" :level="card.level" :quantity="card.quantity" />
+            <UserCard :card="card.cardData" :rarity="card.rarity" :level="card.level" :quantity="card.quantity" :isNew="!usersSeenCards.includes(`${card.cardData.cardId}_${card.rarity}`)" />
           </button>
-          <div v-if="!revealStatus[i]" class="absolute inset-0 z-10">
+          <div v-if="!revealStatus[i]" class="absolute -inset-1 z-10">
             <div class="relative top-0 h-full grid grid-flow-col gap-6">
               <button
                 :key="i"
@@ -47,14 +47,19 @@
   });
 
   const route = useRoute();
+  const userStore = useUserStore();
 
   const packId = route.query.packId as string;
   const isLoading = ref(true);
   const loot = ref<iCardInUsersCards[]>([]);
   const revealStatus = ref<Record<string, boolean>>({});
   const selectedCard = ref<iCardInUsersCards | null>(null);
+  const usersSeenCards = ref<string[]>([]);
 
   onMounted(async () => {
+    // set initial list of the cards already seen by the user
+    // clone the array so it doesn't update
+    usersSeenCards.value = [...userStore.userObj?.seenCards || []];
     try {
       loot.value = await openPack(packId);
     } catch (error) {

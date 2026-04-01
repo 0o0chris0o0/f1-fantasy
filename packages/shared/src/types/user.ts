@@ -20,15 +20,16 @@ export interface iFBUser {
   progressInRewardTrack: number;
   results: iResult[];
   rewardLevel: number;
+  seenCards: string[];
 }
 
 export interface iCurrentTeam {
-  rareLegendaryDriver: iCardInUsersCards | null;
-  rareLegendaryConstructor: iCardInUsersCards | null;
+  legendaryDriver: iCardInUsersCards | null;
+  legendaryConstructor: iCardInUsersCards | null;
+  rareDriver: iCardInUsersCards | null;
+  rareConstructor: iCardInUsersCards | null;
   uncommonDriver: iCardInUsersCards | null;
   uncommonConstructor: iCardInUsersCards | null;
-  commonDriver: iCardInUsersCards | null;
-  commonConstructor: iCardInUsersCards | null;
 }
 
 export interface iResult {

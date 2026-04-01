@@ -10,7 +10,7 @@ export async function updateNextRaceDetails(completedRound: number) {
 
   if (nextScheduleRef.exists && nextScheduleData) {
     const roundInfoRef = firestore.doc('appData/roundInfo');
-    roundInfoRef.update({
+    await roundInfoRef.update({
       currentRound: completedRound + 1,
       nextRaceName: nextScheduleData.raceName,
       nextRaceStart: nextScheduleData.raceStart,

@@ -210,7 +210,7 @@ await callOnce(async () => {
   // sort the cards for collection
   // this will also duplicate the cards for each rarity
   allCards.value = createCardsForCollection(cardDocs, userObj.value?.cards || [], userObj.value?.collection || {});
-});
+}, { mode: 'navigation' });
 
 const changeGridSize = (newSize: '2' | '3') => {
   gridSize.value = newSize;

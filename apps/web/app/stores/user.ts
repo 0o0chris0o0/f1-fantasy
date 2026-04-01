@@ -70,5 +70,16 @@ export const useUserStore = defineStore('user', () => {
     return userObj.value.dailyDealCardsPurchased.includes(cardId);  
   }
 
-  return { userObj, userDocRef, userPacksCount, getUserData, doesUserHaveCard, doesUserHaveCardInCollection, getXCardFromUserObj, idsOfCardsInCurrentTeam, isXCardInUsersCurrentTeam, hasUserPurchasedXCard };
+  const hasUserSeenCard = (cardId: string, cardRarity: iCardRarity): boolean => {
+    if (!userObj.value?.seenCards) {
+      return false;
+    }
+    return userObj.value.seenCards.includes(`${cardId}_${cardRarity}`);
+  };
+
+  const getCardLevelForUser = (cardId: string): number => {
+    return userObj.value?.cardsHistory?.[cardId]?.level || 1;
+  }
+
+  return { userObj, userDocRef, userPacksCount, getUserData, doesUserHaveCard, doesUserHaveCardInCollection, getXCardFromUserObj, idsOfCardsInCurrentTeam, isXCardInUsersCurrentTeam, hasUserPurchasedXCard, hasUserSeenCard, getCardLevelForUser };
 })

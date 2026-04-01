@@ -11,7 +11,9 @@
         :card="deal.cardData" 
         :rarity="deal.rarity"
         :quantity="userStore.getXCardFromUserObj(deal.cardData.cardId, deal.rarity)?.quantity"
+        :level="userStore.getCardLevelForUser(deal.cardData.cardId)"
         :inCollection="userStore.doesUserHaveCardInCollection(deal.cardData.cardId, deal.rarity)"
+        :isNew="!userStore.hasUserSeenCard(deal.cardData.cardId, deal.rarity)"
         class="w-full"
         :class="{
           'opacity-50': userStore.hasUserPurchasedXCard(deal.cardData.cardId)
@@ -59,18 +61,16 @@ await callOnce(async () => {
 
     const dayName = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date()) as WeekDay;
     dailyDeals.value = docSnap[dayName];
-  } else {
-    // TODO: handle weekend message
   }
 
-
+  // TEMP WEEKEND FIX
   // const dailyDealRef = doc(db, "appData/dailyStores");
   // const docSnap = (await getDoc(dailyDealRef)).data() as WeeklySchedule;
 
   // const dayName = 'Monday'
   // dailyDeals.value = docSnap[dayName];
   
-});
+}, { mode: 'navigation' });
 
 const handleBuyCard = async (cardData: iDriverCard | iConstructorCard, rarity: iCardRarity, price: number) => {
   await cardPurchase(cardData, rarity, price);

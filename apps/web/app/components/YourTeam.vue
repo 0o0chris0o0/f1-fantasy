@@ -31,7 +31,7 @@ const userStore = useUserStore();
 const { userObj } = storeToRefs(userStore);
 
 const cards = computed(() => {
-  const keys = ['common', 'uncommon', 'rareLegendary'];
+  const keys = ['uncommon', 'rare', 'legendary'];
   let returnObj: Record<string, iCardInUsersCards | null | undefined> = {};
 
   keys.forEach((k) => {

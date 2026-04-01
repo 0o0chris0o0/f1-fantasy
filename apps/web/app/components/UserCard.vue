@@ -35,8 +35,8 @@
           name="game-icons:steering-wheel" class="text-lg text-green-600" 
         />
       </div>
-      <div v-if="isNew" class="pt-1">
-        <p class="text-xs font-f1 font-bold uppercase text-yellow-950 inline-block bg-amber-400 shadow shadow-yellow-300 rounded px-1.5 pt-0.5">New</p>
+      <div v-if="isNew" class="absolute w-full text-center -top-3">
+        <p class="text-xs font-f1 font-bold uppercase text-yellow-950 inline-block bg-amber-400 shadow-lg shadow-yellow-300 rounded px-1.5 pt-0.5">New</p>
       </div>
     </div>
   </div>
