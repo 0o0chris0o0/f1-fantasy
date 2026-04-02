@@ -18,6 +18,7 @@ import { updateAllCards } from "./updateAllCards";
 import { updateNextRaceDetails } from "./updateNextRaceDetails";
 import { setupDailyDeals } from "./setupDailyDeals";
 import { updateMythicPool } from "./updateMythicPool";
+import { onSchedule } from "firebase-functions/scheduler";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -95,4 +96,10 @@ export const run = onRequest(async (request, response) => {
 
   logger.info(result);
   response.send(result);
+});
+
+export const updateScores = onSchedule("0 0 * * 1", async (event) => {
+  await performUpdate();
+
+  logger.log("User cleanup finished");
 });
