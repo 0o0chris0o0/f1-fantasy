@@ -7,7 +7,7 @@
     >
       <header class="flex items-center p-4 shadow-sm z-10">
         <NuxtLink :to="user ? '/home' : '/'">
-          <p class="text-4xl font-f1"><span>F1</span>Pick<span>Em</span></p>
+          <p class="text-4xl font-f1"><span>F1</span>Pick<span>6</span></p>
         </NuxtLink>
         <div class="ml-auto">
           <NavButton :nav-open="navOpen" @toggle-menu="toggleMenu" />
