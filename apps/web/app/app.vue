@@ -14,18 +14,23 @@
         </div>
       </header>
       <main class="w-full max-w-lg mx-auto flex-1 flex flex-col p-4">
-        <NuxtPage/>
+        <NuxtPage />
         <ModalsContainer />
         <NotificationContainer />
       </main>
     </div>
-    <Nav v-if="!userDataFetchPending" ref="nav" :nav-open="navOpen" @toggle-menu="toggleMenu" />
+    <Nav
+      v-if="!userDataFetchPending"
+      ref="nav"
+      :nav-open="navOpen"
+      @toggle-menu="toggleMenu"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
 import type { ComponentPublicInstance } from "vue";
-import { ModalsContainer } from 'vue-final-modal';
+import { ModalsContainer } from "vue-final-modal";
 
 const user = useCurrentUser();
 const userStore = useUserStore();
@@ -36,10 +41,13 @@ const contentContainer = ref<HTMLElement | null>(null);
 const navOpen = ref(false);
 const navWidth = ref(0);
 
-const { pending: userDataFetchPending } = await useAsyncData('my-unique-key', async () => {
-  await userStore.getUserData();
-  return true; // useAsyncData expects a return value
-});
+const { pending: userDataFetchPending } = await useAsyncData(
+  "fetchUserData",
+  async () => {
+    await userStore.getUserData();
+    return true; // useAsyncData expects a return value
+  },
+);
 
 onMounted(async () => {
   const navComp = nav.value;
@@ -66,10 +74,13 @@ const toggleMenu = () => {
   transition: left 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
   left: 0;
 
-  background: var(--bg-gradient, linear-gradient(300deg, rgba(2, 12, 56, 1) 0%, rgba(1, 8, 25, 1) 100%));
+  background: var(
+    --bg-gradient,
+    linear-gradient(300deg, rgba(2, 12, 56, 1) 0%, rgba(1, 8, 25, 1) 100%)
+  );
 
   &.page-open-pack {
-    --bg-gradient: url('/img/surface.avif');
+    --bg-gradient: url("/img/surface.avif");
     background-size: 200px;
   }
 
