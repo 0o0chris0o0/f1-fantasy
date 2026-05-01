@@ -40,7 +40,7 @@
   --color-uncommon: #a1e9ff;
   --color-rare: #f128ff;
   --color-legendary: #ffc927;
-  --color-mythic: #ff4400;
+  --color-mythic: #FFF;
 
   /* Shared fallback */
   --color-default: #808080;

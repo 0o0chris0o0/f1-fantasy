@@ -4,41 +4,59 @@
     <PageHeader class="mb-6">My Team</PageHeader>
 
     <div v-if="roundInfo" class="mb-4 text-center">
-      <p class="text-xl">Round {{ roundInfo.currentRound }} - {{ roundInfo.nextRaceName }}</p>
+      <p class="text-xl">
+        Round {{ roundInfo.currentRound }} - {{ roundInfo.nextRaceName }}
+      </p>
       <p>{{ raceDateV2(roundInfo.nextRaceStart) }}</p>
     </div>
 
     <div class="mb-10">
-      <CurrentTeamCards type="Driver" @begin-editing="beginEditing" :editMode="editMode" :editing="editing" :currentRound="roundInfo.currentRound" :count="teamCounts().driverCards" @remove-card="handleRemoveCard" />
-      <hr class="block my-6 opacity-30 mx-auto max-w-[80%]"/>
-      <CurrentTeamCards type="Constructor" @begin-editing="beginEditing" :editMode="editMode" :editing="editing" :currentRound="roundInfo.currentRound" :count="teamCounts().constructorCards" @remove-card="handleRemoveCard" />
+      <CurrentTeamCards
+        :type="CardType.DRIVER"
+        @begin-editing="beginEditing"
+        :editMode="editMode"
+        :editing="editing"
+        :currentRound="roundInfo.currentRound"
+        :count="teamCounts().driverCards"
+        @remove-card="handleRemoveCard"
+      />
+      <hr class="block my-6 opacity-30 mx-auto max-w-[80%]" />
+      <CurrentTeamCards
+        :type="CardType.CONSTRUCTOR"
+        @begin-editing="beginEditing"
+        :editMode="editMode"
+        :editing="editing"
+        :currentRound="roundInfo.currentRound"
+        :count="teamCounts().constructorCards"
+        @remove-card="handleRemoveCard"
+      />
     </div>
 
     <div v-if="editMode">
       <ClientOnly>
-      <TransitionGroup
-        name="cards"
-        tag="div"
-        class="grid grid-cols-3 gap-x-2 gap-y-3 mb-6"
-      >
-        <button 
-          v-for="card in filteredCards" 
-          :key="`${card.cardData.cardId}-${card.rarity}`" 
-          @click="handleSelectCard(card)"
-          :disabled="isCardInTeam(card.cardData.cardId)"
-          :class="{
-            'opacity-25': isCardInTeam(card.cardData.cardId)
-          }"
+        <TransitionGroup
+          name="cards"
+          tag="div"
+          class="grid grid-cols-3 gap-x-2 gap-y-3 mb-6"
         >
-          <UserCard 
-            :card="card.cardData" 
-            :rarity="card.rarity" 
-            :level="card.level" 
-            :quantity="card.quantity" 
-            :in-collection="card.inCollection"
-          />
-        </button>
-      </TransitionGroup>
+          <button
+            v-for="card in filteredCards"
+            :key="`${card.cardData.cardId}-${card.rarity}`"
+            @click="handleSelectCard(card)"
+            :disabled="isCardInTeam(card.cardData.cardId)"
+            :class="{
+              'opacity-25': isCardInTeam(card.cardData.cardId),
+            }"
+          >
+            <UserCard
+              :card="card.cardData"
+              :rarity="card.rarity"
+              :level="card.level"
+              :quantity="card.quantity"
+              :in-collection="card.inCollection"
+            />
+          </button>
+        </TransitionGroup>
       </ClientOnly>
     </div>
     <div v-else>
@@ -49,14 +67,18 @@
 
 <script setup lang="ts">
 // Components
-import { ref } from 'vue';
+import { ref } from "vue";
 import { useModal } from "vue-final-modal";
 import { storeToRefs } from "pinia";
 import { doc, getDoc } from "firebase/firestore";
 
 import AddToTeamConfirmation from "~/components/modals/AddToTeamConfirmation.vue";
-import { CardType  } from "@f1pick6/shared/types";
-import type { iRoundInfo, iCurrentTeam, iCardInUsersCards } from "@f1pick6/shared/types";
+import { CardType } from "@f1pick6/shared/types";
+import type {
+  iRoundInfo,
+  iCurrentTeam,
+  iCardInUsersCards,
+} from "@f1pick6/shared/types";
 
 const db = useFirestore();
 const userStore = useUserStore();
@@ -77,7 +99,7 @@ definePageMeta({
 
 await callOnce(async () => {
   // get all cards
-  const roundInfoRef = doc(db, 'appData', 'roundInfo');
+  const roundInfoRef = doc(db, "appData", "roundInfo");
   const roundInfoSnapshot = await getDoc(roundInfoRef);
 
   if (roundInfoSnapshot.exists()) {
@@ -85,12 +107,16 @@ await callOnce(async () => {
   }
 });
 
-const { open: openAddToTeamConfirmationModal, close: closeAddToTeamConfirmationModal, patchOptions } = useModal({
+const {
+  open: openAddToTeamConfirmationModal,
+  close: closeAddToTeamConfirmationModal,
+  patchOptions,
+} = useModal({
   component: AddToTeamConfirmation,
   attrs: {
     addToTeam: (card) => handleAddToTeam(card),
     close: () => closeAddToTeamConfirmationModal(),
-  }
+  },
 });
 
 const handleSelectCard = async (card: iCardInUsersCards) => {
@@ -101,9 +127,9 @@ const handleSelectCard = async (card: iCardInUsersCards) => {
       userData: card,
     },
   });
-  
+
   openAddToTeamConfirmationModal();
-}
+};
 
 const beginEditing = (editingValue: keyof iCurrentTeam) => {
   editMode.value = true;
@@ -111,8 +137,11 @@ const beginEditing = (editingValue: keyof iCurrentTeam) => {
 
   if (!userObj.value?.cards) return;
 
-  filteredCards.value = filterCardsForMyTeam(editingValue, userObj.value?.cards);
-}
+  filteredCards.value = filterCardsForMyTeam(
+    editingValue,
+    userObj.value?.cards,
+  );
+};
 
 const handleAddToTeam = async (card: iCardInUsersCards) => {
   if (!editing.value) return;
@@ -126,7 +155,7 @@ const handleAddToTeam = async (card: iCardInUsersCards) => {
   editing.value = null;
   editMode.value = false;
   loading.value = false;
-}
+};
 
 const isCardInTeam = (cardId: string) => {
   if (!userObj.value?.currentTeam) return false;
@@ -136,10 +165,11 @@ const isCardInTeam = (cardId: string) => {
     .map((c) => c.cardData.cardId);
 
   return cardsInTeam.includes(cardId);
-}
+};
 
 const teamCounts = () => {
-  if (!userObj.value?.currentTeam) return { constructorCards: 0, driverCards: 0 };
+  if (!userObj.value?.currentTeam)
+    return { constructorCards: 0, driverCards: 0 };
 
   const constructorCards = Object.values(userObj.value.currentTeam)
     .filter((c): c is iCardInUsersCards => c !== null)
@@ -151,9 +181,9 @@ const teamCounts = () => {
 
   return {
     constructorCards: constructorCards.length,
-    driverCards: driverCards.length
-  }
-}
+    driverCards: driverCards.length,
+  };
+};
 
 const handleRemoveCard = async (key: keyof iCurrentTeam) => {
   loading.value = true;
@@ -164,13 +194,12 @@ const handleRemoveCard = async (key: keyof iCurrentTeam) => {
   beginEditing(key);
 
   loading.value = false;
-}
+};
 </script>
 
 <style lang="scss" scoped>
-
 /* 1. THE MOVE ANIMATION (for sorting) */
-.cards-move, 
+.cards-move,
 .cards-enter-active,
 .cards-leave-active {
   transition: all 0.4s cubic-bezier(0.55, 0, 0.1, 1);

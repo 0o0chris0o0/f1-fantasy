@@ -13,7 +13,7 @@ export default async function getResults(forceRound?: string) {
   let roundData: iRoundInfo = roundDataFromDb;
 
   try {
-    const currentYear = 2025;
+    const currentYear = 2026;
     
     if (!forceRound) {
       logger.info(`No round provided, using DB value: ${roundData.currentRound}`);
