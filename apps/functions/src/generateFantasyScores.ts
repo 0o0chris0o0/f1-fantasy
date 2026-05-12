@@ -82,7 +82,7 @@ function checkForDnf(finishingStatus: FinishingStatus) {
   return dnfStatuses.includes(finishingStatus);
 }
 
-function calculateFantasyPoints(finishingPosition: number, startingPosition: number, driverCount: number, didDnf: boolean) {
+export function calculateFantasyPoints(finishingPosition: number, startingPosition: number, driverCount: number, didDnf: boolean) {
   let returnObj = {
     raceFantasyPoints: 0,
     qualFantasyPoints: 0
@@ -107,7 +107,7 @@ function calculateFantasyPoints(finishingPosition: number, startingPosition: num
   if (didDnf) {
     returnObj.raceFantasyPoints = -5;
   } else {
-    returnObj.raceFantasyPoints += (driverCount * 2 + 1) - finishingPosition
+    returnObj.raceFantasyPoints += (1 + (driverCount - finishingPosition)) * 2;
   }
 
   return returnObj;

@@ -104,7 +104,7 @@ describe('updatePlayerScores', () => {
       docs: [mockPlayerDoc]
     });
 
-    await updatePlayerScores({}, 1);
+    await updatePlayerScores({}, { currentRound: 1, nextRaceName: 'Test Race', nextRaceStart: new Timestamp(0, 0), teamEditCutoff: new Timestamp(0, 0) });
 
     const updatedData = vi.mocked(mockBatch.update).mock.calls[0][1] as any;
     expect(updatedData.cards.length).toBe(0); // Card should be spliced out
@@ -135,7 +135,7 @@ describe('updatePlayerScores', () => {
       docs: [mockPlayerDoc]
     });
 
-    await updatePlayerScores({}, 1);
+    await updatePlayerScores({}, { currentRound: 1, nextRaceName: 'Test Race', nextRaceStart: new Timestamp(0, 0), teamEditCutoff: new Timestamp(0, 0) });
 
     const updatedData = vi.mocked(mockBatch.update).mock.calls[0][1] as any;
     expect(updatedData.cardsHistory.testCardId.level).toBe(2);

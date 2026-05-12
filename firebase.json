@@ -9,7 +9,7 @@
         "firestore-debug.log"
       ],
       "predeploy": [
-        "pnpm build"
+        "pnpm --filter functions build"
       ],
       "source": "apps/functions"
     }
