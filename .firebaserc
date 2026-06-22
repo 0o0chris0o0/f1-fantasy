@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "f1-fantasy-9c389"
+    "default": "f1-fantasy-dev",
+    "production": "f1-fantasy-9c389"
   }
 }

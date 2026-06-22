@@ -6,7 +6,7 @@
   "scripts": {
     "build": "pnpm -r build",
     "lint": "eslint .",
-    "dev:web": "pnpm --filter web dev",
+    "dev": "pnpm --filter web dev",
     "web:prod": "pnpm --filter web dev:prod",
     "dev:functions": "pnpm --filter functions dev",
     "emulators": "pnpm --filter web emulators"
@@ -14,7 +14,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@11.6.0",
   "devDependencies": {
     "@nuxt/eslint-config": "^1.15.2",
     "eslint": "^10.0.2",

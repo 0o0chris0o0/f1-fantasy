@@ -2,53 +2,37 @@
   <button
     :type="type || 'button'"
     :class="[
-      'rounded-xl border-2 font-f1',
-      version,
+      baseClasses,
+      variantClasses[version || ''] || '',
+      sizeClasses[size || 'medium'],
       classes,
-      size || 'medium',
       textColorClass || 'text-white',
     ]"
   >
-    <slot/>
+    <slot />
   </button>
 </template>
 
 <script setup lang="ts">
 defineProps<{
   type?: "button" | "submit";
-  size?: "x-small" | "small" | "medium"; 
+  size?: "x-small" | "small" | "medium";
   version?: string;
   classes?: string;
   textColorClass?: string;
 }>();
+
+const baseClasses = "rounded-xl border-2 font-f1";
+
+const variantClasses: Record<string, string> = {
+  green: "border border-green-700 bg-green-600",
+  orange: "border border-orange-700 bg-orange-600",
+  red: "border border-red-700 bg-red-600",
+};
+
+const sizeClasses: Record<"x-small" | "small" | "medium", string> = {
+  "x-small": "py-1 px-3 text-xs",
+  small: "py-2 px-5 text-sm",
+  medium: "py-3 px-6",
+};
 </script>
-
-<style lang="scss" scoped>
-button:disabled {
-  @apply opacity-25;
-}
-
-.green {
-  @apply border border-green-700 bg-green-600;
-}
-
-.orange {
-  @apply border border-orange-700 bg-orange-600;
-}
-
-.red {
-  @apply border border-red-700 bg-red-600;
-}
-
-.medium {
-  @apply py-3 px-6;
-}
-
-.small {
-  @apply py-2 px-5 text-sm;
-}
-
-.x-small {
-  @apply py-1 px-3 text-xs;
-}
-</style>

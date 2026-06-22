@@ -10,7 +10,11 @@
 
     <form @submit.prevent="createUser">
       <div class="grid grid-cols-1 gap-4">
-        <Input v-model="username" placeholder="Username" :errored="errorFields.includes('username')" />
+        <Input
+          v-model="username"
+          placeholder="Username"
+          :errored="errorFields.includes('username')"
+        />
         <Input
           v-model="email"
           type="email"
@@ -37,6 +41,12 @@
             <span v-else>Signing up…</span>
           </Button>
         </div>
+        <div class="text-center mt-2 text-sm font-semibold">
+          Already have an account?
+          <NuxtLink to="/login" class="underline text-blue-400">
+            og in
+          </NuxtLink>
+        </div>
       </div>
     </form>
   </div>
@@ -48,7 +58,7 @@ import { doc, writeBatch } from "firebase/firestore";
 import { useFirebaseAuth } from "vuefire";
 
 // Utils
-import newPlayerStarterObj from "~/utils/newPlayerStarterObj";
+import newPlayerStarterObj from "../utils/newPlayerStarterObj";
 
 // Types
 import type { FirebaseError } from "firebase/app";
@@ -111,7 +121,7 @@ const createUser = async () => {
     const userCred = await createUserWithEmailAndPassword(
       auth,
       email.value,
-      password.value
+      password.value,
     );
 
     // set users username only if provided
@@ -125,10 +135,10 @@ const createUser = async () => {
       newUserObj.displayName = userCred.user.displayName;
     }
 
-    const playerRef = doc(db, 'players', userCred.user.uid);
-    const leaderboardRef = doc(db, 'leaderboard', playerRef.id);
+    const playerRef = doc(db, "players", userCred.user.uid);
+    const leaderboardRef = doc(db, "leaderboard", playerRef.id);
 
-    batch.set(playerRef, newUserObj)
+    batch.set(playerRef, newUserObj);
 
     const leaderBoardEntry: iLeaderboardScore = {
       playerName: newUserObj.displayName,
@@ -138,17 +148,16 @@ const createUser = async () => {
       prevRank: 1,
       qualifyingScore: 0,
       modifierScore: 0,
-      raceScore: 0
-    }
+      raceScore: 0,
+    };
 
-    batch.set(leaderboardRef, leaderBoardEntry)
+    batch.set(leaderboardRef, leaderBoardEntry);
 
     await batch.commit();
 
     // clear sensitive data
     password.value = "";
     navigateTo("/home");
-
   } catch (reason: unknown) {
     const errorObj = reason as FirebaseError;
     if (errorObj.code) {

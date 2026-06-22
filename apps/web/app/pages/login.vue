@@ -40,6 +40,7 @@ import { useFirebaseAuth } from "vuefire";
 
 definePageMeta({
   linkTitle: "Login",
+  middleware: "auth",
 });
 
 const auth = useFirebaseAuth()!; // only exists on client side

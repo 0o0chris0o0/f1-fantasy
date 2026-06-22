@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { doc, DocumentReference, getDoc } from "firebase/firestore";
+import { doc } from "firebase/firestore";
 
 import type { iCardInUsersCards, iCardRarity, iFBUser } from '@f1pick6/shared';
 
@@ -7,23 +7,12 @@ export const useUserStore = defineStore('user', () => {
   const user = useCurrentUser();
   const db = useFirestore();
 
-  const userDocRef = computed(() => {
-    if (user.value) {
-      return doc(db, 'players', user.value.uid);
-    }
-    return null;
-  });
+  const userDocRef = computed(() => (user.value ? doc(db, 'players', user.value.uid) : null));
 
-  const userObj = useDocument(() =>
-    user.value ? doc(db, 'players', user.value.uid) as DocumentReference<iFBUser> : null
-  );
-
-  async function getUserData() {
-    if (userDocRef.value) {
-      const docSnap = await getDoc(userDocRef.value);
-      return docSnap;
-    }
-  }
+  const {
+    data: userObj,
+    pending: userDataPending,
+  } = useDocument<iFBUser>(userDocRef);
 
   const userPacksCount = computed(() => {
     const userPacks = userObj.value?.packs;
@@ -81,5 +70,5 @@ export const useUserStore = defineStore('user', () => {
     return userObj.value?.cardsHistory?.[cardId]?.level || 1;
   }
 
-  return { userObj, userDocRef, userPacksCount, getUserData, doesUserHaveCard, doesUserHaveCardInCollection, getXCardFromUserObj, idsOfCardsInCurrentTeam, isXCardInUsersCurrentTeam, hasUserPurchasedXCard, hasUserSeenCard, getCardLevelForUser };
+  return { userObj, userDocRef, userDataPending, userPacksCount, doesUserHaveCard, doesUserHaveCardInCollection, getXCardFromUserObj, idsOfCardsInCurrentTeam, isXCardInUsersCurrentTeam, hasUserPurchasedXCard, hasUserSeenCard, getCardLevelForUser };
 })

@@ -1,47 +1,42 @@
 <template>
-  <VueFinalModal
-    class="flex justify-center items-center"
-    :overlay-style="{ backgroundColor: 'rgba(0,0,0,0.96)' }"
-    content-class="flex flex-col p-10 space-y-4 modal-container"
+  <UModal
+    :ui="{
+      overlay: 'bg-gray-900/75',
+    }"
   >
-    <div v-if="pack">
-      <div class="mb-6">
-        <ClientOnly>
-          <img 
-            :src="`/img/pack-${pack.packId}.png`"
-            class="" 
+    <template #content>
+      <div v-if="pack" class="p-6 bg-gray-800 text-white">
+        <div class="mb-6">
+          <img
+            :src="`/img/${pack.packId}-pack.png`"
+            class="max-w-44 mx-auto"
             @error="loadFallbackPackImage($event)"
-          >
-        </ClientOnly>
-      </div>
-      <p class="font-f1 text-2xl font-bold text-center text-gray-200 mb-4">{{ pack.packName }}</p>
-      <div class="grid grid-cols-1 text-center gap-4">
-        <div>
-          <NuxtLink :to="`/open-pack?packId=${pack.packId}`">
-            <Button @click="props.close" version="green">Open Now</Button>
-          </NuxtLink>
+          />
         </div>
-        <div>
-          <Button @click="props.close" size="small">Close</Button>
+        <p class="font-f1 text-2xl font-bold text-center text-gray-200 mb-4">
+          {{ pack.packName }}
+        </p>
+        <div class="grid grid-cols-1 text-center gap-4">
+          <div>
+            <NuxtLink :to="`/open-pack?packId=${pack.packId}`">
+              <Button @click="emit('close')" version="green">Open Now</Button>
+            </NuxtLink>
+          </div>
+          <div>
+            <Button @click="emit('close')" size="small">Close</Button>
+          </div>
         </div>
       </div>
-    </div>
-  </VueFinalModal>
+    </template>
+  </UModal>
 </template>
 
 <script setup lang="ts">
-import { VueFinalModal } from "vue-final-modal";
 import type { iPack } from "@f1pick6/shared";
 
 const props = defineProps<{
   pack?: iPack | null;
-  close?: () => void;
 }>();
 
-
+const emit = defineEmits<{ close: [] }>();
 </script>
-
-<style scoped></style>
-
-<style lang="scss" scoped>
-</style>

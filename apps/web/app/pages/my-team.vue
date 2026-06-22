@@ -68,7 +68,6 @@
 <script setup lang="ts">
 // Components
 import { ref } from "vue";
-import { useModal } from "vue-final-modal";
 import { storeToRefs } from "pinia";
 import { doc, getDoc } from "firebase/firestore";
 
@@ -107,28 +106,9 @@ await callOnce(async () => {
   }
 });
 
-const {
-  open: openAddToTeamConfirmationModal,
-  close: closeAddToTeamConfirmationModal,
-  patchOptions,
-} = useModal({
-  component: AddToTeamConfirmation,
-  attrs: {
-    addToTeam: (card) => handleAddToTeam(card),
-    close: () => closeAddToTeamConfirmationModal(),
-  },
-});
-
 const handleSelectCard = async (card: iCardInUsersCards) => {
   // Update the modal attributes explicitly if it's already "created"
-  patchOptions({
-    attrs: {
-      cardData: card.cardData,
-      userData: card,
-    },
-  });
-
-  openAddToTeamConfirmationModal();
+  // openAddToTeamConfirmationModal();
 };
 
 const beginEditing = (editingValue: keyof iCurrentTeam) => {
@@ -146,7 +126,7 @@ const beginEditing = (editingValue: keyof iCurrentTeam) => {
 const handleAddToTeam = async (card: iCardInUsersCards) => {
   if (!editing.value) return;
 
-  closeAddToTeamConfirmationModal();
+  // closeAddToTeamConfirmationModal();
 
   loading.value = true;
 

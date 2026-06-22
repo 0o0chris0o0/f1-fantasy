@@ -1,16 +1,14 @@
 <template>
   <div>
-    <Loader v-if="isLoading"/>
-    <div 
+    <Loader v-if="isLoading" />
+    <div
       class="relative flex shadow-inner-custom border border-gray-700 rounded-lg"
     >
-      <ClientOnly>
-        <img 
-          :src="`/img/pack-${pack.packId}.png`"
-          class="absolute top-1/2 w-28 -translate-y-1/2" 
-          @error="loadFallbackPackImage($event)"
-        >
-      </ClientOnly>
+      <img
+        :src="`/img/${pack.packId}-pack.png`"
+        class="absolute top-1/2 w-28 -translate-y-1/2 ml-2"
+        @error="loadFallbackPackImage($event)"
+      />
       <div class="ml-28 w-full p-4">
         <div class="mb-2">
           <div class="font-f1 font-semibold flex justify-between">
@@ -20,13 +18,22 @@
               <p class="text-yellow-500 ml-1">{{ pack.cost }}</p>
             </div>
           </div>
-          <p class="text-sm">Includes <span class="font-semibold text-base">{{ pack.cardsIncluded }}</span> card{{ pack.cardsIncluded > 1 ? 's' : ''}}</p>
+          <p class="text-sm">
+            Includes
+            <span class="font-semibold text-base">{{
+              pack.cardsIncluded
+            }}</span>
+            card{{ pack.cardsIncluded > 1 ? "s" : "" }}
+          </p>
         </div>
         <Button
           v-if="userObj"
           version="green"
           text-color-class="text-white text-sm"
           :disabled="userObj.money < pack.cost"
+          :class="{
+            'opacity-50': userObj.money < pack.cost,
+          }"
           @click="handleBuyPack"
         >
           Buy pack
@@ -42,55 +49,41 @@
 </template>
 
 <script setup lang="ts">
-import type { iPack } from '@f1pick6/shared/types';
+import type { iPack } from "@f1pick6/shared/types";
 import { loadFallbackPackImage } from "~/utils/loadDefaultImage";
-import PackInfoModal from './modals/PackInfoModal.vue';
-import { useModal } from 'vue-final-modal';
-import PackConfirmationModal from './modals/PackConfirmationModal.vue';
+import PackInfoModal from "./modals/PackInfoModal.vue";
+import PackConfirmationModal from "./modals/PackConfirmationModal.vue";
 
 const props = defineProps<{
   pack: iPack;
 }>();
 
-const user = useCurrentUser();
 const userStore = useUserStore();
-const notificationStore = useNotificationStore();
+const overlay = useOverlay();
+
+const modalPackInfo = overlay.create(PackInfoModal);
+const modalPackPurchaseConfirmation = overlay.create(PackConfirmationModal);
 
 const { userObj } = storeToRefs(userStore);
 const isLoading = ref(false);
 
-const { open: openPackInfoModal, close: closePackInfoModal } = useModal({
-  component: PackInfoModal,
-  attrs: {
+const openPackInfoModal = () => {
+  modalPackInfo.open({
     pack: props.pack,
-    close: () => {
-      closePackInfoModal();
-    }
-  },
-});
-
-const { open: openPackConfirmationModal, close: closePackConfirmationModal } = useModal({
-  component: PackConfirmationModal,
-  attrs: {
-    pack: props.pack,
-    close: () => {
-      closePackConfirmationModal();
-    }
-  },
-});
+  });
+};
 
 const handleBuyPack = async () => {
   isLoading.value = true;
 
   await giveUserPack(props.pack);
 
-  openPackConfirmationModal();
-  
+  modalPackPurchaseConfirmation.open({
+    pack: props.pack,
+  });
+
   isLoading.value = false;
 };
-
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
