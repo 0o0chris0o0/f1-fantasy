@@ -1,12 +1,10 @@
 <template>
   <button
-    :type="type || 'button'"
+    :type="type"
     :class="[
-      baseClasses,
-      variantClasses[version || ''] || '',
-      sizeClasses[size || 'medium'],
-      classes,
-      textColorClass || 'text-white',
+      'slant-button font-bold uppercase tracking-widest',
+      versionClasses[version],
+      sizeClasses[size],
     ]"
   >
     <slot />
@@ -14,25 +12,32 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+const {
+  type = "button",
+  size = "md",
+  version = "primary",
+} = defineProps<{
   type?: "button" | "submit";
-  size?: "x-small" | "small" | "medium";
-  version?: string;
-  classes?: string;
-  textColorClass?: string;
+  size?: "sm" | "md" | "lg";
+  version?: "primary" | "secondary" | "tertiary" | "neutral";
 }>();
 
-const baseClasses = "rounded-xl border-2 font-f1";
-
-const variantClasses: Record<string, string> = {
-  green: "border border-green-700 bg-green-600",
-  orange: "border border-orange-700 bg-orange-600",
-  red: "border border-red-700 bg-red-600",
+const sizeClasses = {
+  sm: "py-4 px-8 text-xs",
+  md: "py-5 px-12 text-base",
+  lg: "py-6 px-12 text-xl",
 };
 
-const sizeClasses: Record<"x-small" | "small" | "medium", string> = {
-  "x-small": "py-1 px-3 text-xs",
-  small: "py-2 px-5 text-sm",
-  medium: "py-3 px-6",
+const versionClasses = {
+  primary: "bg-primary-container text-on-primary-container",
+  secondary: "bg-secondary-container text-on-primary-container",
+  tertiary: "bg-tertiary text-white",
+  neutral: "bg-neutral text-white",
 };
 </script>
+
+<style lang="css" scoped>
+button {
+  clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+}
+</style>

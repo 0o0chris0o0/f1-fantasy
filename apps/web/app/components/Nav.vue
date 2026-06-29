@@ -17,21 +17,6 @@
       <ul
         class="space-y-6 font-headline uppercase tracking-tighter text-2xl text-white"
       >
-        <li v-if="userLoggedIn">
-          <div class="flex justify-between mb-4">
-            <NuxtLink to="/profile" class="flex items-center">
-              <Icon name="bi:person" size="1.5em" />
-              <p class="ml-2 font-f1 leading-tight">{{ userDisplayName }}</p>
-            </NuxtLink>
-            <div class="flex items-center">
-              <Icon name="bi:cash-coin" class="text-yellow-500" size="1.5em" />
-              <p class="font-f1 font-semibold text-sm text-yellow-500 ml-1">
-                {{ userMoney }}
-              </p>
-            </div>
-          </div>
-        </li>
-
         <li>
           <NuxtLink :to="userLoggedIn ? '/home' : '/'"> Home </NuxtLink>
         </li>
@@ -40,9 +25,12 @@
             <NuxtLink to="/store">Store</NuxtLink>
           </li>
           <li>
-            <NuxtLink to="/packs" class="main-link flex items-center">
+            <NuxtLink to="/packs" class="main-link flex items-center gap-3">
               Packs
-              <span v-if="userStore.userPacksCount" class="pack-notification">
+              <span
+                v-if="userStore.userPacksCount"
+                class="bg-error rounded-full drop-shadow-[0_0_5px_#ff1801] text-sm font-headline font-bold w-6 leading-6 text-center"
+              >
                 {{ userStore.userPacksCount }}
               </span>
             </NuxtLink>
@@ -68,10 +56,6 @@
             <NuxtLink to="/login">Sign In</NuxtLink>
           </li>
         </template>
-        <li class="mt-3"><hr class="invisible my-3" /></li>
-        <li v-if="userLoggedIn">
-          <button @click="logout">Logout</button>
-        </li>
       </ul>
       <div v-if="userLoggedIn" class="mt-auto pt-8 border-t border-white/5">
         <button
@@ -104,11 +88,6 @@ const { userObj } = storeToRefs(userStore);
 const userLoggedIn = computed(() => {
   return !!user.value?.uid;
 });
-
-const userDisplayName = computed(
-  () => userObj.value?.displayName ?? "Loading...",
-);
-const userMoney = computed(() => userObj.value?.money ?? "—");
 
 watch(
   () => route.path,
@@ -158,17 +137,6 @@ const logout = async () => {
   opacity: 0.4;
   cursor: default;
   text-decoration: underline;
-}
-
-.pack-notification {
-  display: inline-block;
-  border-radius: 9999px;
-  background-color: #ef4444;
-  width: 1.5rem;
-  font-size: 0.875rem;
-  line-height: 1.5rem;
-  text-align: center;
-  margin-left: 0.25rem;
 }
 
 @media (prefers-reduced-motion: reduce) {

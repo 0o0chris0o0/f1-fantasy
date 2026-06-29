@@ -28,19 +28,27 @@
   --font-f1: "Formula1", sans-serif;
 
   --color-primary: #ffb4a7;
+  --color-primary-on-surface: #eabcb4;
+  --color-primary-container: #ff553d;
+  --color-on-primary-container: #5b0300;
+
   --color-secondary: #ffd700;
+  --color-secondary-container: #ffdb3c;
+
   --color-tertiary: #00d2be;
   --color-neutral: #15151e;
 
   --color-surface: #13131b;
+  --color-surface-container-low: #1b1b24;
   --color-surface-lowest: #0d0d16;
-  /* surface-dim: '#13131b'
-  surface-bright: '#393842'
-  surface-container-lowest: '#0d0d16'
-  surface-container-low: '#1b1b24'
-  surface-container: '#1f1f28'
-  surface-container-high: '#292933'
-  surface-container-highest: '#34343e' */
+  --color-surface-container-highest: #34343e;
+  --color-on-surface: #e4e1ee;
+  --color-on-surface-variant: #eabcb4;
+
+  --color-error: #ff1801;
+
+  /* Misc */
+  --color-outline-variant: #5f3e39;
 
   /* Rarity colors */
   --color-common: #f5f5f5;
@@ -66,4 +74,5 @@
   --color-default: #808080;
 
   --shadow-inner-custom: inset 0 0 10px rgba(0, 0, 0, 0.5);
+  --shadow-red-glow: 0 0 40px rgba(255, 24, 1, 0.15);
 }

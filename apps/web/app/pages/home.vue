@@ -3,7 +3,7 @@
     <PageHeader class="mb-4"> Home </PageHeader>
 
     <div class="space-y-6">
-      <LatestResult
+      <!-- <LatestResult
         v-if="userObj && userObj.latestResult && !userObj.latestResultCleared"
         :latestResult="userObj.latestResult"
       />
@@ -12,7 +12,7 @@
 
       <YourTeam />
 
-      <Leaderboard />
+      <Leaderboard /> -->
     </div>
   </div>
 </template>

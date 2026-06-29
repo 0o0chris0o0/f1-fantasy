@@ -4,51 +4,117 @@
 
     <Loader v-if="loading" />
 
-    <p v-if="error" class="text-center text-red-600 mb-2">
-      {{ error }}
-    </p>
+    <div class="text-center mb-4">
+      <p
+        v-if="generalError"
+        class="font-mono text-sm font-semibold tracking-wide text-error"
+      >
+        {{ generalError }}
+      </p>
+    </div>
 
-    <form @submit.prevent="createUser">
-      <div class="grid grid-cols-1 gap-4">
-        <Input
-          v-model="username"
-          placeholder="Username"
-          :errored="errorFields.includes('username')"
-        />
-        <Input
-          v-model="email"
-          type="email"
-          placeholder="Email"
-          :errored="errorFields.includes('email')"
+    <UForm
+      :state="formState"
+      class="space-y-4"
+      :class="{
+        'border-error/50': generalError,
+      }"
+      @submit="createUser"
+      @error="onError"
+    >
+      <!-- Glass Corner Accent -->
+      <div
+        class="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-primary-container/40 rounded-tr-lg"
+      ></div>
+      <div class="space-y-4">
+        <UFormField
+          label="Email"
+          name="email"
+          :error="fieldErrors.email || false"
+          :class="{ 'error-state': !!fieldErrors.email }"
           required
-        />
-        <Input
-          v-model="password"
-          type="password"
-          placeholder="Password"
-          :errored="errorFields.includes('password')"
-          errorMessage="Password must be at least 6 characters long"
+        >
+          <UInput
+            v-model="formState.email"
+            placeholder="Email"
+            icon="i-lucide-at-sign"
+            variant="none"
+            :trailing-icon="fieldErrors.email ? 'wordpress:error' : ''"
+          />
+        </UFormField>
+
+        <UFormField
+          label="Username"
+          name="username"
+          :error="fieldErrors.username || false"
+          :class="{ 'error-state': !!fieldErrors.username }"
           required
-        />
+        >
+          <UInput
+            v-model="formState.username"
+            placeholder="Username"
+            icon="i-lucide-user"
+            variant="none"
+            :trailing-icon="fieldErrors.username ? 'wordpress:error' : ''"
+          />
+        </UFormField>
+
+        <div class="h-1"></div>
+
+        <UFormField
+          label="Password"
+          name="password"
+          :error="fieldErrors.password || false"
+          :class="{ 'error-state': !!fieldErrors.password }"
+          required
+        >
+          <UInput
+            v-model="formState.password"
+            type="password"
+            placeholder="Password"
+            icon="i-lucide-lock"
+            variant="none"
+            :trailing-icon="fieldErrors.password ? 'wordpress:error' : ''"
+          />
+        </UFormField>
+
+        <UFormField
+          label="Confirm Password"
+          name="confirmPassword"
+          :error="fieldErrors.confirmPassword || false"
+          :class="{ 'error-state': !!fieldErrors.confirmPassword }"
+          required
+        >
+          <UInput
+            v-model="formState.confirmPassword"
+            type="password"
+            placeholder="Confirm Password"
+            icon="i-lucide-lock"
+            variant="none"
+            :trailing-icon="
+              fieldErrors.confirmPassword ? 'wordpress:error' : ''
+            "
+          />
+        </UFormField>
+
         <div class="text-center">
-          <Button
-            type="submit"
-            version="green"
-            :disabled="loading"
-            :aria-busy="loading"
-          >
+          <Button type="submit" :disabled="loading" :aria-busy="loading">
             <span v-if="!loading">Sign up</span>
             <span v-else>Signing up…</span>
           </Button>
         </div>
-        <div class="text-center mt-2 text-sm font-semibold">
-          Already have an account?
-          <NuxtLink to="/login" class="underline text-blue-400">
-            og in
-          </NuxtLink>
-        </div>
       </div>
-    </form>
+    </UForm>
+
+    <div class="mt-8 text-center">
+      <p class="text-on-surface-variant opacity-70">Already have an account?</p>
+      <NuxtLink
+        to="/login"
+        class="uppercase font-bold text-sm text-primary border-b border-primary/30 pb-1 tracking-[0.15em]"
+      >
+        Log in
+      </NuxtLink>
+    </div>
   </div>
 </template>
 
@@ -56,6 +122,7 @@
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, writeBatch } from "firebase/firestore";
 import { useFirebaseAuth } from "vuefire";
+import type { FormErrorEvent, FormSubmitEvent } from "@nuxt/ui";
 
 // Utils
 import newPlayerStarterObj from "../utils/newPlayerStarterObj";
@@ -66,68 +133,49 @@ import type { iLeaderboardScore } from "@f1pick6/shared";
 
 const db = useFirestore();
 const auth = useFirebaseAuth()!; // only exists on client side
-const batch = writeBatch(db);
 
-const username = ref<string>("");
-const email = ref<string>("");
-const password = ref<string>("");
-const errorFields = ref<string[]>([]);
+const formState = ref({
+  email: "",
+  username: "",
+  password: "",
+  confirmPassword: "",
+});
 
-// display errors if any
-const error = ref<string | null>(null);
+type Schema = typeof formState.value;
+type FieldName = keyof Schema;
+
+const fieldErrors = ref<Record<FieldName, string | null>>({
+  email: null,
+  username: null,
+  password: null,
+  confirmPassword: null,
+});
+
+const generalError = ref<string | null>(null);
 const loading = ref(false);
 
-const validateForm = () => {
-  error.value = null;
-  errorFields.value = [];
-
-  const trimmedEmail = email.value.trim();
-  const trimmedUsername = username.value.trim();
-  const pwd = password.value;
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if (!trimmedUsername) {
-    errorFields.value.push("username");
-  }
-
-  if (!emailRegex.test(trimmedEmail)) {
-    errorFields.value.push("email");
-  }
-
-  if (!pwd || pwd.length < 6) {
-    errorFields.value.push("password");
-  }
-
-  if (errorFields.value.length) {
-    error.value = "Please fix the highlighted fields.";
-    return false;
-  }
-
-  // normalize values
-  email.value = trimmedEmail;
-  username.value = trimmedUsername;
-
-  return true;
-};
-
-const createUser = async () => {
+const createUser = async (event: FormSubmitEvent<Schema>) => {
   if (loading.value) return;
-  if (!validateForm()) return;
+
+  resetErrors();
+
+  if (!validateForm()) {
+    return;
+  }
 
   loading.value = true;
 
   try {
     const userCred = await createUserWithEmailAndPassword(
       auth,
-      email.value,
-      password.value,
+      formState.value.email,
+      formState.value.password,
     );
 
-    // set users username only if provided
-    if (username.value) {
-      await updateProfile(userCred.user, { displayName: username.value });
-    }
+    // set users username
+    await updateProfile(userCred.user, {
+      displayName: formState.value.username,
+    });
 
     const newUserObj = { ...newPlayerStarterObj };
 
@@ -137,6 +185,7 @@ const createUser = async () => {
 
     const playerRef = doc(db, "players", userCred.user.uid);
     const leaderboardRef = doc(db, "leaderboard", playerRef.id);
+    const batch = writeBatch(db);
 
     batch.set(playerRef, newUserObj);
 
@@ -155,22 +204,17 @@ const createUser = async () => {
 
     await batch.commit();
 
-    // clear sensitive data
-    password.value = "";
     navigateTo("/home");
   } catch (reason: unknown) {
     const errorObj = reason as FirebaseError;
     if (errorObj.code) {
       const { errorMsg, field } = transformErrorCode(errorObj.code);
-      error.value = errorMsg;
+      setGeneralError(errorMsg);
       if (field) {
-        // avoid duplicates
-        if (!errorFields.value.includes(field)) {
-          errorFields.value.push(field);
-        }
+        setFieldError(field, errorMsg);
       }
     } else {
-      error.value = "Unknown error";
+      setGeneralError("Unknown error");
     }
   } finally {
     loading.value = false;
@@ -179,7 +223,7 @@ const createUser = async () => {
 
 function transformErrorCode(code: string) {
   let errorMsg = "Unknown error";
-  let field: string | null = null;
+  let field: FieldName | null = null;
 
   switch (code) {
     case "auth/invalid-email":
@@ -199,16 +243,93 @@ function transformErrorCode(code: string) {
   return { errorMsg, field };
 }
 
-// clear field-specific errors as user types
-watch(username, () => {
-  errorFields.value = errorFields.value.filter((f) => f !== "username");
-});
-watch(email, () => {
-  errorFields.value = errorFields.value.filter((f) => f !== "email");
-});
-watch(password, () => {
-  errorFields.value = errorFields.value.filter((f) => f !== "password");
-});
+function setFieldError(field: FieldName, errorMsg: string) {
+  fieldErrors.value[field] = errorMsg;
+}
+
+function clearFieldError(field: FieldName) {
+  fieldErrors.value[field] = null;
+}
+
+function setGeneralError(errorMsg: string) {
+  generalError.value = errorMsg;
+}
+
+function resetErrors() {
+  generalError.value = null;
+  fieldErrors.value.email = null;
+  fieldErrors.value.username = null;
+  fieldErrors.value.password = null;
+  fieldErrors.value.confirmPassword = null;
+}
+
+function validateForm() {
+  let valid = true;
+
+  if (!formState.value.email) {
+    setFieldError("email", "Please enter a valid email");
+    valid = false;
+  }
+
+  if (!formState.value.username) {
+    setFieldError("username", "Please enter a username");
+    valid = false;
+  }
+
+  if (!formState.value.password) {
+    setFieldError("password", "Please enter a valid password");
+    valid = false;
+  }
+
+  if (!formState.value.confirmPassword) {
+    setFieldError("confirmPassword", "Please confirm your password");
+    valid = false;
+  }
+
+  if (formState.value.password !== formState.value.confirmPassword) {
+    setFieldError("confirmPassword", "Passwords do not match");
+    valid = false;
+  }
+
+  return valid;
+}
+
+async function onError(event: FormErrorEvent) {
+  if (event?.errors?.[0]?.id) {
+    const element = document.getElementById(event.errors[0].id);
+    element?.focus();
+    element?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+}
+
+watch(
+  () => formState.value.email,
+  () => {
+    clearFieldError("email");
+  },
+);
+
+watch(
+  () => formState.value.username,
+  () => {
+    clearFieldError("username");
+  },
+);
+
+watch(
+  () => formState.value.password,
+  () => {
+    clearFieldError("password");
+    clearFieldError("confirmPassword");
+  },
+);
+
+watch(
+  () => formState.value.confirmPassword,
+  () => {
+    clearFieldError("confirmPassword");
+  },
+);
 </script>
 
 <style scoped></style>

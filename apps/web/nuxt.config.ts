@@ -39,6 +39,16 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: [
+        "dayjs",
+        "dayjs/plugin/advancedFormat",
+        "dayjs/plugin/isBetween",
+        "dayjs/plugin/relativeTime",
+        "dayjs/plugin/updateLocale",
+        "vuefire",
+      ],
+    },
   },
 
   build: {

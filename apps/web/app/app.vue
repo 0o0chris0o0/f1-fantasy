@@ -11,12 +11,34 @@
         <header
           class="bg-surface border-b border-white/10 shadow-[0_0_20px_rgba(255,180,167,0.1)] flex items-center p-4 z-10"
         >
-          <NuxtLink :to="user ? '/home' : '/'">
-            <p class="text-4xl font-f1 text-primary">
-              <span>F1</span>Pick<span>6</span>
-            </p>
+          <NuxtLink :to="user ? '/home' : '/'" class="w-16">
+            <NuxtImg
+              src="/img/logo-2.png"
+              alt="F1 Pick6 logo"
+              width="400"
+              height="206"
+              class="mr-2"
+            />
           </NuxtLink>
-          <div class="ml-auto">
+          <div class="ml-auto flex items-center gap-6">
+            <div class="flex items-center gap-2">
+              <Icon
+                name="bi:person-circle"
+                class="text-on-surface"
+                size="1.5em"
+              />
+              <p class="font-headline font-bold text-xl text-on-surface">
+                {{ userDisplayName }}
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <Icon name="bi:cash-coin" class="text-secondary" size="1.5em" />
+              <p class="font-mono font-bold text-secondary text-lg">
+                {{ userMoney }}
+              </p>
+            </div>
+          </div>
+          <div class="ml-4">
             <NavButton :nav-open="navOpen" @toggle-menu="toggleMenu" />
           </div>
         </header>
@@ -47,7 +69,7 @@
 <script lang="ts" setup>
 const user = useCurrentUser();
 const userStore = useUserStore();
-const { userDataPending } = storeToRefs(userStore);
+const { userDataPending, userObj } = storeToRefs(userStore);
 const route = useRoute();
 
 const navOpen = ref(false);
@@ -59,6 +81,9 @@ const toggleMenu = () => {
 const closeMenu = () => {
   navOpen.value = false;
 };
+
+const userDisplayName = computed(() => userObj.value?.displayName ?? "");
+const userMoney = computed(() => userObj.value?.money ?? 0);
 
 watch(navOpen, (isOpen) => {
   if (!import.meta.client) return;
