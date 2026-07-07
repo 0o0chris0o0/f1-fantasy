@@ -23,9 +23,9 @@ const {
 }>();
 
 const sizeClasses = {
-  sm: "py-4 px-8 text-xs",
-  md: "py-5 px-12 text-base",
-  lg: "py-6 px-12 text-xl",
+  sm: "py-2 px-8 text-xs slant-button-sm",
+  md: "py-5 px-12 text-base slant-button",
+  lg: "py-6 px-12 text-xl slant-button",
 };
 
 const versionClasses = {
@@ -37,7 +37,11 @@ const versionClasses = {
 </script>
 
 <style lang="css" scoped>
-button {
+.slant-button {
   clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+}
+
+.slant-button-sm {
+  clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
 }
 </style>

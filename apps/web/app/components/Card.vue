@@ -4,12 +4,12 @@
     class="cursor-pointer"
     :ui="{
       overlay: 'bg-gray-900',
-      content: 'w-auto',
+      content: 'w-auto max-w-[90%]',
     }"
   >
     <CardFace :card="card" :rarity="rarity" :hide-card-score="hideCardScore" />
     <template #content>
-      <div class="w-96">
+      <div class="w-96 max-w-full">
         <CardFace
           :card="card"
           :rarity="rarity"

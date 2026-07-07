@@ -13,7 +13,7 @@
   </div>
 
   <!-- Main Content -->
-  <div class="relative z-10">
+  <div class="relative z-10 px-4">
     <h1 class="text-center text-2xl font-bold mt-8 font-f1 text-white">
       WELCOME TO F1 PICK 6
     </h1>
@@ -23,7 +23,7 @@
       src="/img/logo.png"
     />
     <p
-      class="text-lg text-primary-on-surface max-w-2xl mb-8 border-l-2 border-primary pl-6 leading-relaxed"
+      class="text-lg text-primary-on-surface max-w-2xl mb-8 pl-6 border-l-2 border-primary leading-relaxed"
     >
       The ultimate fantasy racing experience! Collect your favorite drivers and
       teams, and build out your team to compete against friends and the global

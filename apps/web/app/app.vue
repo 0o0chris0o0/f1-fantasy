@@ -20,20 +20,15 @@
               class="mr-2"
             />
           </NuxtLink>
-          <div class="ml-auto flex items-center gap-6">
-            <div class="flex items-center gap-2">
-              <Icon
-                name="bi:person-circle"
-                class="text-on-surface"
-                size="1.5em"
-              />
-              <p class="font-headline font-bold text-xl text-on-surface">
-                {{ userDisplayName }}
-              </p>
-            </div>
+          <div class="ml-auto flex items-center gap-4">
+            <Icon
+              name="bi:person-circle"
+              class="text-on-surface"
+              size="1.5em"
+            />
             <div class="flex items-center gap-2">
               <Icon name="bi:cash-coin" class="text-secondary" size="1.5em" />
-              <p class="font-mono font-bold text-secondary text-lg">
+              <p class="font-f1 font-bold text-secondary text-lg">
                 {{ userMoney }}
               </p>
             </div>
@@ -42,7 +37,7 @@
             <NavButton :nav-open="navOpen" @toggle-menu="toggleMenu" />
           </div>
         </header>
-        <main class="w-full max-w-lg mx-auto flex-1 flex flex-col p-4">
+        <main class="w-full max-w-lg mx-auto flex-1 flex flex-col">
           <div
             v-if="userDataPending"
             class="flex-1 flex items-center justify-center"
@@ -82,7 +77,6 @@ const closeMenu = () => {
   navOpen.value = false;
 };
 
-const userDisplayName = computed(() => userObj.value?.displayName ?? "");
 const userMoney = computed(() => userObj.value?.money ?? 0);
 
 watch(navOpen, (isOpen) => {
