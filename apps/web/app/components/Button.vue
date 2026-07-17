@@ -5,7 +5,9 @@
       'slant-button font-bold uppercase tracking-widest',
       versionClasses[version],
       sizeClasses[size],
+      disabled ? 'opacity-25' : '',
     ]"
+    :disabled="disabled"
   >
     <slot />
   </button>
@@ -16,10 +18,12 @@ const {
   type = "button",
   size = "md",
   version = "primary",
+  disabled = false,
 } = defineProps<{
   type?: "button" | "submit";
   size?: "sm" | "md" | "lg";
   version?: "primary" | "secondary" | "tertiary" | "neutral";
+  disabled?: boolean;
 }>();
 
 const sizeClasses = {

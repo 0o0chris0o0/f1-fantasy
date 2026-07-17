@@ -21,19 +21,23 @@
             />
           </NuxtLink>
           <div class="ml-auto flex items-center gap-4">
-            <Icon
-              name="bi:person-circle"
-              class="text-on-surface"
-              size="1.5em"
-            />
-            <div class="flex items-center gap-2">
-              <Icon name="bi:cash-coin" class="text-secondary" size="1.5em" />
-              <p class="font-f1 font-bold text-secondary text-lg">
-                {{ userMoney }}
-              </p>
+            <div v-if="user" class="flex items-center gap-4">
+              <Icon
+                name="bi:person-circle"
+                class="text-on-surface"
+                size="1.5em"
+              />
+              <div class="flex items-center gap-2">
+                <Icon
+                  name="bi:cash-coin"
+                  class="text-secondary mt-1"
+                  size="1.2em"
+                />
+                <p class="font-f1 font-bold text-secondary text-lg">
+                  {{ userMoney }}
+                </p>
+              </div>
             </div>
-          </div>
-          <div class="ml-4">
             <NavButton :nav-open="navOpen" @toggle-menu="toggleMenu" />
           </div>
         </header>

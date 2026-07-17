@@ -47,6 +47,9 @@
 
   --color-error: #ff1801;
 
+  /* Drop Shadows */
+  --drop-shadow-error: 0 0 5px var(--color-error);
+
   /* Misc */
   --color-outline-variant: #5f3e39;
 

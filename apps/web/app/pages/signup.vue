@@ -15,7 +15,7 @@
 
     <UForm
       :state="formState"
-      class="space-y-4"
+      class="space-y-4 w-11/12 mx-auto"
       :class="{
         'border-error/50': generalError,
       }"

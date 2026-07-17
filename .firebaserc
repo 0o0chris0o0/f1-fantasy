@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": "f1-fantasy-dev",
+    "default": "demo-f1-fantasy-dev",
     "production": "f1-fantasy-9c389"
   }
 }

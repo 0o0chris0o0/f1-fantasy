@@ -5,7 +5,7 @@
     }"
   >
     <template #content>
-      <div v-if="pack" class="p-6 bg-gray-800 text-white">
+      <div v-if="pack" class="p-6 bg-surface-container-highest text-white">
         <p class="font-f1 text-2xl font-bold text-center">
           {{ pack.packName }}
         </p>
@@ -30,6 +30,7 @@
                 'text-uncommon': slot.forcedRarity === iCardRarity.UNCOMMON,
                 'text-rare': slot.forcedRarity === iCardRarity.RARE,
                 'text-legendary': slot.forcedRarity === iCardRarity.LEGENDARY,
+                'text-mythic': slot.forcedRarity === iCardRarity.MYTHIC,
               }"
             >
               {{ toCamel(slot.forcedRarity) }}
@@ -55,6 +56,11 @@
                 class="text-legendary"
                 >{{ slot.rarityChances[iCardRarity.LEGENDARY] }}%
                 Legendary</span
+              >
+              <span
+                v-if="slot.rarityChances[iCardRarity.MYTHIC]"
+                class="text-mythic"
+                >{{ slot.rarityChances[iCardRarity.MYTHIC] }}% Mythic</span
               >
             </p>
           </div>

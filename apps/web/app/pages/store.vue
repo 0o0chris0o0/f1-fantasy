@@ -3,8 +3,8 @@
     <PageHeader class="col-span-6 col-start-4"> Store </PageHeader>
 
     <StoreDailyDeals />
-
-    <!-- <StorePacks /> -->
+    <div class="h-8"></div>
+    <StorePacks />
   </div>
 </template>
 

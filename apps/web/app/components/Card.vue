@@ -29,6 +29,7 @@
 <script setup lang="ts">
 import { iCardRarity } from "@f1pick6/shared/types";
 import type { iConstructorCard, iDriverCard } from "@f1pick6/shared/types";
+import CardFace from "./CardFace.vue";
 
 const { rarity = iCardRarity.COMMON, disableModal = false } = defineProps<{
   card: iDriverCard | iConstructorCard;

@@ -25,11 +25,14 @@
   </div>
 
   <div v-if="dailyDeals?.length">
-    <div ref="sliderRef" class="store-container flex gap-6 overflow-x-auto p-4">
+    <div
+      ref="sliderRef"
+      class="flex gap-6 overflow-x-auto p-4 snap-x snap-mandatory scroll-smooth max-md:scrollbar-none max-md:[-webkit-overflow-scrolling:touch] max-md:[&::-webkit-scrollbar]:hidden"
+    >
       <div
         v-for="deal in dailyDeals"
         :key="deal.cardData.cardId"
-        class="store-container__card"
+        class="shrink-0 grow-0 min-w-[40%] snap-center"
       >
         <UserCard
           :card="deal.cardData"
@@ -48,7 +51,7 @@
           :isNew="!userStore.hasUserSeenCard(deal.cardData.cardId, deal.rarity)"
           class="w-full"
           :class="{
-            'opacity-50': userStore.hasUserPurchasedXCard(deal.cardData.cardId),
+            'opacity-25': userStore.hasUserPurchasedXCard(deal.cardData.cardId),
           }"
         />
         <div v-if="userObj" class="mt-2 text-center">
@@ -61,7 +64,7 @@
               userStore.hasUserPurchasedXCard(deal.cardData.cardId)
             "
             class="bg-green-400"
-            @click="handleBuyCard(deal.cardData, deal.rarity, deal.price)"
+            @click="openBuyConfirmation(deal)"
           >
             <div class="flex items-center gap-1">
               <Icon name="bi:coin" />
@@ -91,9 +94,12 @@ import type {
   WeeklySchedule,
 } from "@f1pick6/shared";
 import { doc, getDoc } from "firebase/firestore";
+import DailyDealConfirmationModal from "./modals/DailyDealConfirmationModal.vue";
 
 const db = useFirestore();
 const userStore = useUserStore();
+const overlay = useOverlay();
+const dailyDealConfirmationModal = overlay.create(DailyDealConfirmationModal);
 
 const { userObj } = storeToRefs(userStore);
 const dailyDeals = useState<iDailyDealCard[]>("dailyDeals", () => []);
@@ -131,50 +137,57 @@ const handleBuyCard = async (
   await cardPurchase(cardData, rarity, price);
 };
 
+const openBuyConfirmation = (deal: iDailyDealCard) => {
+  dailyDealConfirmationModal.open({
+    deal,
+    confirm: async (selectedDeal: iDailyDealCard) => {
+      await handleBuyCard(
+        selectedDeal.cardData,
+        selectedDeal.rarity,
+        selectedDeal.price,
+      );
+    },
+  });
+};
+
 const scrollDeals = (direction: "prev" | "next") => {
   if (!sliderRef.value) {
     return;
   }
 
-  const scrollAmount = sliderRef.value.clientWidth * 0.8;
+  const slider = sliderRef.value;
+  const cards = Array.from(slider.children) as HTMLElement[];
 
-  sliderRef.value.scrollBy({
-    left: direction === "next" ? scrollAmount : -scrollAmount,
+  if (!cards.length) {
+    return;
+  }
+
+  const sliderCenter = slider.scrollLeft + slider.clientWidth / 2;
+  const currentCardIndex = cards.reduce((closestIndex, card, index) => {
+    const cardCenter = card.offsetLeft + card.clientWidth / 2;
+    const closestCard = cards[closestIndex]!;
+    const closestCenter = closestCard.offsetLeft + closestCard.clientWidth / 2;
+
+    return Math.abs(cardCenter - sliderCenter) <
+      Math.abs(closestCenter - sliderCenter)
+      ? index
+      : closestIndex;
+  }, 0);
+
+  const targetCardIndex = Math.max(
+    0,
+    Math.min(
+      cards.length - 1,
+      currentCardIndex + (direction === "next" ? 1 : -1),
+    ),
+  );
+  const targetCard = cards[targetCardIndex]!;
+  const targetLeft =
+    targetCard.offsetLeft - (slider.clientWidth - targetCard.clientWidth) / 2;
+
+  slider.scrollTo({
+    left: targetLeft,
     behavior: "smooth",
   });
 };
 </script>
-
-<style lang="scss" scoped>
-.store-container {
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  &__card {
-    flex: 0 0 min(40%, 16rem);
-    scroll-snap-align: center;
-
-    @media (min-width: 768px) {
-      flex: 0 0 14rem;
-    }
-  }
-}
-
-.slider-nav {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 1px solid rgb(var(--color-primary));
-  border-radius: 9999px;
-  color: rgb(var(--color-primary));
-  background: rgb(var(--color-background));
-}
-</style>

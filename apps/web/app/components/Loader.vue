@@ -31,10 +31,10 @@
   position: absolute;
   inset: -4px;
   border: 4px solid transparent;
-  border-top-color: #ff1801;
+  border-top-color: var(--color-error);
   border-radius: 50%;
   animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  filter: drop-shadow(0 0 8px #ff1801);
+  filter: drop-shadow(0 0 8px var(--color-error));
 }
 
 .inner-dots {
@@ -48,15 +48,15 @@
 .core {
   position: absolute;
   inset: 45px;
-  background: #ff1801;
+  background: var(--color-error);
   border-radius: 50%;
-  box-shadow: 0 0 20px #ff1801;
+  box-shadow: 0 0 20px var(--color-error);
   animation: core-pulse 1.5s ease-in-out infinite;
 }
 
 .status-text {
   margin-top: 32px;
-  color: #ff1801;
+  color: var(--color-error);
   text-transform: uppercase;
   letter-spacing: 0.2em;
   font-size: 12px;

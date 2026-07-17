@@ -1,23 +1,26 @@
 <template>
-  <div class="grid grid-cols-1 gap-12">
-    <StorePack v-for="pack in filteredPacks" :key="pack.packId" :pack="pack"/>
+  <div class="px-4">
+    <h2 class="font-semibold font-headline uppercase text-primary mb-10">
+      Card Packs
+    </h2>
+    <div class="grid grid-cols-1 gap-14">
+      <StorePack
+        v-for="pack in filteredPacks"
+        :key="pack.packId"
+        :pack="pack"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { iPack,  } from "@f1pick6/shared";
-import type {
-  QueryDocumentSnapshot} from "firebase/firestore";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+import type { iPack } from "@f1pick6/shared";
+import type { QueryDocumentSnapshot } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 const db = useFirestore();
 
-const availablePacks = useState<iPack[]>('availablePacks', () => []);
+const availablePacks = useState<iPack[]>("availablePacks", () => []);
 
 await callOnce(async () => {
   const packsRef = collection(db, "packs");
@@ -26,7 +29,7 @@ await callOnce(async () => {
 
   // get all packs
   availablePacks.value = querySnapshot.docs.map(
-    (packDoc: QueryDocumentSnapshot) => packDoc.data() as iPack
+    (packDoc: QueryDocumentSnapshot) => packDoc.data() as iPack,
   );
 });
 
@@ -41,8 +44,6 @@ const filterPacks = () => {
 
   return activePacks;
 };
-
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

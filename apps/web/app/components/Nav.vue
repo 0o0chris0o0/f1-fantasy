@@ -29,7 +29,7 @@
               Packs
               <span
                 v-if="userStore.userPacksCount"
-                class="bg-error rounded-full drop-shadow-[0_0_5px_#ff1801] text-sm font-headline font-bold w-6 leading-6 text-center"
+                class="bg-error rounded-full drop-shadow-error text-sm font-headline font-bold w-6 leading-6 tracking-wide text-center"
               >
                 {{ userStore.userPacksCount }}
               </span>

@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Loader v-if="isLoading" />
     <div
       class="relative flex shadow-inner-custom border border-gray-700 rounded-lg"
     >
@@ -28,12 +27,9 @@
         </div>
         <Button
           v-if="userObj"
-          version="green"
-          text-color-class="text-white text-sm"
+          version="secondary"
+          size="sm"
           :disabled="userObj.money < pack.cost"
-          :class="{
-            'opacity-50': userObj.money < pack.cost,
-          }"
           @click="handleBuyPack"
         >
           Buy pack
@@ -65,7 +61,6 @@ const modalPackInfo = overlay.create(PackInfoModal);
 const modalPackPurchaseConfirmation = overlay.create(PackConfirmationModal);
 
 const { userObj } = storeToRefs(userStore);
-const isLoading = ref(false);
 
 const openPackInfoModal = () => {
   modalPackInfo.open({
@@ -74,15 +69,12 @@ const openPackInfoModal = () => {
 };
 
 const handleBuyPack = async () => {
-  isLoading.value = true;
-
-  await giveUserPack(props.pack);
-
   modalPackPurchaseConfirmation.open({
     pack: props.pack,
+    confirm: async (pack: iPack) => {
+      await giveUserPack(pack);
+    },
   });
-
-  isLoading.value = false;
 };
 </script>
 

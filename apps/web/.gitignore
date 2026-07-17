@@ -26,3 +26,5 @@ logs
 db-utils/
 saved-data/
 .netlify
+*storybook.log
+storybook-static

@@ -7,6 +7,8 @@
     "build": "pnpm -r build",
     "lint": "eslint .",
     "dev": "pnpm --filter web dev",
+    "storybook": "pnpm --filter web storybook",
+    "storybook:build": "pnpm --filter web build-storybook",
     "web:prod": "pnpm --filter web dev:prod",
     "dev:functions": "pnpm --filter functions dev",
     "emulators": "pnpm --filter web emulators"
