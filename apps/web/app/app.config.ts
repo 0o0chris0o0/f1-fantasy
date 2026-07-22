@@ -1,5 +1,24 @@
 export default defineAppConfig({
   ui: {
+    modal: {
+      slots: {
+        overlay: "bg-gray-900/90",
+        content:
+          "bg-surface-container-highest divide-none flex flex-col focus:outline-none",
+      },
+      variants: {
+        fullscreen: {
+          false: {
+            content: "w-auto max-w-[90%] rounded-lg shadow-lg",
+          },
+        },
+        overlay: {
+          true: {
+            overlay: "bg-gray-900/90",
+          },
+        },
+      },
+    },
     input: {
       slots: {
         root: "w-full relative inline-flex items-center",
