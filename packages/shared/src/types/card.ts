@@ -1,7 +1,6 @@
 import type { Timestamp } from "firebase/firestore";
 import type { iRace } from "./race.ts";
 
-
 interface iCard {
   cardId: string;
   cardName: string;
@@ -19,28 +18,29 @@ export interface iDriverCard extends iCard {
 
 export interface iConstructorCard extends iCard {
   stats: iConstructorStats;
-  drivers: iDriverCard[]
+  drivers: iDriverCard[];
 }
 
-export type iDriverCollectionCard = iDriverCard & { 
-  rarity: iCardRarity; 
-  quantity: number;
-  userHasInCollection: boolean;
-}
-export type iConstructorCollectionCard = iConstructorCard & { 
+export type iDriverCollectionCard = iDriverCard & {
   rarity: iCardRarity;
   quantity: number;
   userHasInCollection: boolean;
-}
+};
+export type iConstructorCollectionCard = iConstructorCard & {
+  rarity: iCardRarity;
+  quantity: number;
+  userHasInCollection: boolean;
+};
 
 export enum CardType {
-  DRIVER = 'driver',
-  CONSTRUCTOR = 'constructor',
+  DRIVER = "driver",
+  CONSTRUCTOR = "constructor",
 }
 
 export interface iConstructorStats {
   currentFantasyPoints: number;
-  averageFantasyPoints: number
+  averageQualifyingPosition: number;
+  averageFantasyPoints: number;
   numberOfDNFs: number;
 }
 
@@ -50,7 +50,7 @@ export interface iDriverStats extends iConstructorStats {
 }
 
 export interface iCardInUsersCards {
-  cardData: iDriverCard | iConstructorCard
+  cardData: iDriverCard | iConstructorCard;
   inCollection: boolean;
   collectedOn: Timestamp | null;
   level: number;
@@ -60,11 +60,11 @@ export interface iCardInUsersCards {
 }
 
 export enum iCardRarity {
-  COMMON = 'COMMON',
-  UNCOMMON = 'UNCOMMON',
-  RARE = 'RARE',
-  LEGENDARY = 'LEGENDARY',
-  MYTHIC = 'MYTHIC',
+  COMMON = "COMMON",
+  UNCOMMON = "UNCOMMON",
+  RARE = "RARE",
+  LEGENDARY = "LEGENDARY",
+  MYTHIC = "MYTHIC",
 }
 
 export interface iCardInCollection {

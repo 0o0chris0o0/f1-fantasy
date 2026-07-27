@@ -261,7 +261,7 @@ defineProps<{
 
 @container card (min-width: 100px) {
   .card {
-    font-size: 16px;
+    font-size: 22px;
   }
 
   .card-name {
@@ -275,7 +275,7 @@ defineProps<{
 
 @container card (min-width: 200px) {
   .card {
-    font-size: 22px;
+    font-size: 28px;
   }
 
   .card-team {
@@ -283,7 +283,13 @@ defineProps<{
   }
 }
 
-@container card (min-width: 330px) {
+@container card (min-width: 250px) {
+  .card {
+    font-size: 36px;
+  }
+}
+
+@container card (min-width: 300px) {
   .card {
     font-size: 45px;
   }
