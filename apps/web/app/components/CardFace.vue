@@ -38,9 +38,12 @@
       </div>
       <div class="inline-block text-left uppercase card-team">
         <hr class="opacity-50" />
-        <p class="opacity-75">{{ card.teamName }}</p>
+        <p class="opacity-75 tracking-tighter">{{ card.teamName }}</p>
       </div>
-      <div v-if="!hideCardScore" class="font-f1 text-right card-score">
+      <div
+        v-if="!hideCardScore"
+        class="font-f1 font-bold tracking-tighter text-right card-score"
+      >
         <p class="card-score__number">
           {{ card.stats.currentFantasyPoints }}
         </p>
@@ -121,7 +124,7 @@ defineProps<{
       #632c65 100%
     );
     box-shadow:
-      0 0 15px rgba(146, 59, 168, 0.7),
+      0 0 16px rgba(146, 59, 168, 0.7),
       inset 0 0 15px rgba(255, 255, 255, 0.5);
     color: var(--color-rare);
 
@@ -140,7 +143,7 @@ defineProps<{
       #aa771c 100%
     );
     box-shadow:
-      0 0 20px rgba(184, 134, 11, 0.6),
+      0 0 16px rgba(184, 134, 11, 0.6),
       inset 0 0 10px rgba(255, 255, 255, 0.5);
     color: var(--color-legendary);
 
@@ -159,7 +162,7 @@ defineProps<{
       #3b0000 100%
     );
     box-shadow:
-      0 0 20px rgba(255, 68, 0, 0.6),
+      0 0 16px rgba(255, 68, 0, 0.6),
       inset 0 0 10px rgba(255, 68, 0, 0.5);
     color: var(--color-mythic);
 
@@ -261,7 +264,7 @@ defineProps<{
 
 @container card (min-width: 100px) {
   .card {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .card-name {
@@ -291,7 +294,7 @@ defineProps<{
 
 @container card (min-width: 300px) {
   .card {
-    font-size: 45px;
+    font-size: 42px;
   }
 
   .card-name {

@@ -11,6 +11,18 @@
   font-display: swap;
 }
 
+/* Mobile-friendly scroll utility for smaller containers */
+.touch-scroll {
+  -webkit-overflow-scrolling: touch; /* momentum scrolling on iOS */
+  -ms-overflow-style: none; /* hide IE/Edge scrollbar */
+  scrollbar-width: none; /* hide Firefox scrollbar */
+  overscroll-behavior-y: contain; /* prevent body scroll chaining */
+  touch-action: pan-y; /* allow vertical panning */
+}
+.touch-scroll::-webkit-scrollbar {
+  display: none; /* hide webkit scrollbar */
+}
+
 @font-face {
   font-family: "Formula1";
   src:
@@ -39,8 +51,9 @@
   --color-neutral: #15151e;
 
   --color-surface: #13131b;
-  --color-surface-container-low: #1b1b24;
   --color-surface-lowest: #0d0d16;
+  --color-surface-container-low: #1b1b24;
+  --color-surface-container-high: #292933;
   --color-surface-container-highest: #34343e;
   --color-on-surface: #e4e1ee;
   --color-on-surface-variant: #eabcb4;

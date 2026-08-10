@@ -81,13 +81,6 @@ const {
   isNew?: boolean;
 }>();
 
-const levelColors: Record<number, string> = {
-  1: "rgba(184, 146, 40, 1)",
-  2: "rgba(214, 175, 50, 1)",
-  3: "rgba(244, 201, 50, 1)",
-  4: "rgba(255, 223, 0, 1)",
-};
-
 const customizeIcon = (content: string) => {
   return content
     .replace(/fill="[^"]*"/g, `fill="#84cc16"`) // Change fill color to red

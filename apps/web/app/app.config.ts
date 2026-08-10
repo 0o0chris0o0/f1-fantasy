@@ -9,7 +9,7 @@ export default defineAppConfig({
       variants: {
         fullscreen: {
           false: {
-            content: "w-auto max-w-[90%] rounded-lg shadow-lg",
+            content: "w-auto max-w-[80%] rounded-lg shadow-lg",
           },
         },
         overlay: {
