@@ -1,10 +1,5 @@
 <template>
-  <UModal
-    class="cursor-pointer"
-    :ui="{
-      content: 'border-0 ring-0 bg-transparent',
-    }"
-  >
+  <UModal class="cursor-pointer">
     <CardFace :card="card" :rarity="rarity" :hide-card-score="hideCardScore" />
     <template #content>
       <div class="w-full max-h-[90vh] flex flex-col gap-6 min-h-0">

@@ -1,14 +1,7 @@
 <template>
-  <UModal
-    :ui="{
-      content: 'w-full border-0 ring-0 bg-transparent',
-    }"
-  >
+  <UModal class="w-full">
     <template #content>
-      <div
-        v-if="pack"
-        class="w-full bg-surface-container-highest p-3 text-white"
-      >
+      <div v-if="pack" class="bg-surface-container-highest p-3 text-white">
         <div class="mb-4">
           <p class="font-f1 text-2xl font-bold text-center">
             {{ pack.packName }}

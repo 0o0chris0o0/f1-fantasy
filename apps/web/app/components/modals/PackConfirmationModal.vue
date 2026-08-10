@@ -1,9 +1,5 @@
 <template>
-  <UModal
-    :ui="{
-      overlay: 'bg-gray-900/75',
-    }"
-  >
+  <UModal>
     <template #content>
       <div v-if="pack" class="p-6 bg-surface-container-highest">
         <div class="mb-6">
