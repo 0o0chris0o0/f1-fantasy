@@ -22,7 +22,7 @@ const {
 } = defineProps<{
   type?: "button" | "submit";
   size?: "sm" | "md" | "lg";
-  version?: "primary" | "secondary" | "tertiary" | "neutral";
+  version?: keyof typeof versionClasses;
   disabled?: boolean;
 }>();
 
@@ -34,9 +34,12 @@ const sizeClasses = {
 
 const versionClasses = {
   primary: "bg-primary-container text-on-primary-container",
+  "primary-outline": "bg-transparent border border-primary text-primary",
   secondary: "bg-secondary-container text-on-primary-container",
+  "secondary-outline": "bg-transparent border border-secondary text-secondary",
   tertiary: "bg-tertiary text-white",
   neutral: "bg-neutral text-white",
+  normal: "bg-common text-black",
 };
 </script>
 

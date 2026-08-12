@@ -2,9 +2,9 @@
   <div v-if="userObj">
     <PageHeader class="mb-6"> Packs </PageHeader>
 
-    <div class="flex flex-col gap-10">
+    <div class="flex flex-col gap-10 mx-6">
       <template v-for="pack in userObj.packs">
-        <UserPack  v-if="pack.quantity" :key="pack.packId" :pack="pack"/>
+        <UserPack v-if="pack.quantity" :key="pack.packId" :pack="pack" />
       </template>
     </div>
   </div>
@@ -20,6 +20,4 @@ definePageMeta({
 });
 </script>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>
