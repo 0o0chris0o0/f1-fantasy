@@ -1,6 +1,6 @@
 import type { Timestamp } from "firebase/firestore";
 import type { iCardInUsersCards, iCardInCollection } from "./card.ts";
-import type { iPackInUser } from './pack.ts';
+import type { iPackInUser } from "./pack.ts";
 import { FinishingStatus, iDriverFantasyScore } from "./fantasyScores.js";
 
 export interface iFBUser {
@@ -24,19 +24,19 @@ export interface iFBUser {
 }
 
 export interface iCurrentTeam {
-  legendaryDriver: iCardInUsersCards | null;
-  legendaryConstructor: iCardInUsersCards | null;
-  rareDriver: iCardInUsersCards | null;
-  rareConstructor: iCardInUsersCards | null;
-  uncommonDriver: iCardInUsersCards | null;
-  uncommonConstructor: iCardInUsersCards | null;
+  legendarySlot_a: iCardInUsersCards | null;
+  legendarySlot_b: iCardInUsersCards | null;
+  rareSlot_a: iCardInUsersCards | null;
+  rareSlot_b: iCardInUsersCards | null;
+  uncommonSlot_a: iCardInUsersCards | null;
+  uncommonSlot_b: iCardInUsersCards | null;
 }
 
 export interface iResult {
   baseFantasyScore: number;
   cards: iCurrentTeamScores;
   raceName: string;
-  raceStart: Timestamp,
+  raceStart: Timestamp;
   round: number;
   totalModifiedScore: number;
   baseQualifyingScore: number;
@@ -44,19 +44,19 @@ export interface iResult {
 }
 
 export interface iCurrentTeamScores {
-  rareLegendaryDriver: iCardScore;
-  rareLegendaryConstructor: iCardScore;
-  uncommonDriver: iCardScore;
-  uncommonConstructor: iCardScore;
-  commonDriver: iCardScore;
-  commonConstructor: iCardScore;
+  legendarySlot_a: iCardScore;
+  legendarySlot_b: iCardScore;
+  rareSlot_a: iCardScore;
+  rareSlot_b: iCardScore;
+  uncommonSlot_a: iCardScore;
+  uncommonSlot_b: iCardScore;
 }
 
 export interface iCardScore extends iCardInUsersCards {
   driverName?: string;
   baseFantasyScore: number;
   cardModifierValue: number;
-  driverScores?: iDriverFantasyScore[],
+  driverScores?: iDriverFantasyScore[];
   fantasyQualScore: number;
   fantasyRaceScore: number;
   finishingStatus?: FinishingStatus;

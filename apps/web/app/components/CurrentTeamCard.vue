@@ -119,7 +119,7 @@ import {
 } from "@f1pick6/shared/types";
 
 const props = defineProps<{
-  type: CardType;
+  type?: CardType;
   data: iCardInUsersCards;
   currentRound: number;
 }>();

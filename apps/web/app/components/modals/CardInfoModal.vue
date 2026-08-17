@@ -86,9 +86,14 @@
                 </div>
               </div>
               <div>
-                <p class="text-xl font-bold text-secondary"><p class="uppercase font-mono text-xs">HOME RACEs:</p></p>
+                <p class="text-xl font-bold text-secondary">HOME RACEs:</p>
               </div>
-              <p v-if="!card.homeRaces.length" class="text-center italic opacity-60">No Home Races</p>
+              <p
+                v-if="!card.homeRaces.length"
+                class="text-center italic opacity-60"
+              >
+                No Home Races
+              </p>
               <div
                 v-else
                 v-if="isDriverCard(card) && driverStats"
@@ -99,9 +104,13 @@
                   v-if="card.homeRaces.length"
                   v-for="race in card.homeRaces"
                 >
-                  <p class="uppercase font-mono text-sm text-primary">Round {{race.round}}:</p>
+                  <p class="uppercase font-mono text-sm text-primary">
+                    Round {{ race.round }}:
+                  </p>
                   <p>{{ race.raceName }}</p>
-                  <p class="font-mono text-tertiary">{{ prettyRaceDate(race.raceStart)}}</p>
+                  <p class="font-mono text-tertiary">
+                    {{ prettyRaceDate(race.raceStart) }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -156,5 +165,4 @@ const driverStats = computed(() => {
 
 <style scoped></style>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

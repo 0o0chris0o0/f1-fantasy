@@ -24,6 +24,7 @@
             inTeam,
           }"
           :hide-card-score="hideCardScore"
+          :disable-modal="disableModal"
         />
       </div>
       <div
@@ -69,6 +70,7 @@ const {
   rarity = iCardRarity.COMMON,
   level = 0,
   quantity = 0,
+  disableModal = false,
 } = defineProps<{
   card: iDriverCard | iConstructorCard;
   rarity?: iCardRarity;
@@ -79,6 +81,7 @@ const {
   hideUserData?: boolean;
   hideCardScore?: boolean;
   isNew?: boolean;
+  disableModal?: boolean;
 }>();
 
 const customizeIcon = (content: string) => {

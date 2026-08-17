@@ -99,5 +99,25 @@ export default defineAppConfig({
         },
       },
     },
+    drawer: {
+      slots: {
+        overlay: "bg-gray-900/75",
+        content:
+          "fixed bg-surface-container-low ring ring-default flex focus:outline-none px-6",
+        handle: [
+          "shrink-0 bg-surface-lowest mb-4",
+          "transition-opacity ease-out",
+        ],
+        container: "w-full flex flex-col gap-4 p-4 overflow-y-auto",
+      },
+      compoundVariants: [
+        {
+          direction: ["top", "bottom"],
+          class: {
+            content: "h-auto max-h-[80%]",
+          },
+        },
+      ],
+    },
   },
 });

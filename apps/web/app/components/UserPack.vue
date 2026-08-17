@@ -1,27 +1,4 @@
 <template>
-  <!-- <div class="text-center">
-    <div class="relative inline-block mb-2">
-      <img
-        :src="`/img/${pack.packId}-pack.png`"
-        class="max-h-44 mx-auto"
-        @error="loadFallbackPackImage($event)"
-      />
-
-      <div
-        class="absolute -bottom-2 -right-2 w-14 h-14 bg-black border border-gray-800 rounded-full grid place-content-center"
-      >
-        <p class="font-f1 rotate-6 font-bold">x{{ pack.quantity }}</p>
-      </div>
-    </div>
-    <div class="text-center">
-      <div class="font-f1 font-semibold text-xl mb-3">
-        <p>{{ pack.packName }}</p>
-      </div>
-      <NuxtLink :to="`/open-pack?packId=${pack.packId}`">
-        <Button size="sm"> Open </Button>
-      </NuxtLink>
-    </div>
-  </div> -->
   <div class="glass-panel p-1 rounded-xl relative group overflow-hidden">
     <!-- Rarity Border Effect -->
     <div
@@ -55,7 +32,7 @@
             :class="packRarityMap[pack.packId]?.background"
           ></span>
           <span
-            class="font-mono text-stat-value text-lg"
+            class="font-mono text-lg"
             :class="packRarityMap[pack.packId]?.text"
             >{{ pack.quantity }} UNOPENED</span
           >
@@ -87,9 +64,6 @@ import { loadFallbackPackImage } from "~/utils/loadDefaultImage";
 const props = defineProps<{
   pack: iPackInUser;
 }>();
-const userStore = useUserStore();
-
-const { userObj } = storeToRefs(userStore);
 
 const packRarityMap: Record<
   string,

@@ -1,62 +1,49 @@
 <template>
-  <p class="mb-1">{{ toTitleCase(type) }}s ({{ count }}/3)</p>
-  <div class="grid items-start grid-cols-3 gap-4 mb-2">
-    <template v-for="(data, key) in cards">
+  <div class="grid items-start grid-cols-2 gap-4 mb-2">
+    <template v-for="slotKey in slotKeys">
       <CurrentTeamCard
-        v-if="data"
-        :key="`${key}${type}`"
-        :type="props.type"
-        :data="data"
+        v-if="cards[slotKey]"
+        :key="slotKey"
+        :data="cards[slotKey]"
         :currentRound="currentRound"
-        @removeCard="
-          $emit(
-            'removeCard',
-            `${key}${toTitleCase(type)}` as keyof iCurrentTeam,
-          )
-        "
+        @removeCard="$emit('removeCard', slotKey)"
       />
       <button
         v-else
-        @click="
-          $emit(
-            'beginEditing',
-            `${key}${toTitleCase(type)}` as keyof iCurrentTeam,
-          )
-        "
-        class="p-2 rounded-lg"
+        @click="$emit('beginEditing', slotKey)"
+        class="border-2 border-dashed rounded-lg aspect-3/4 flex flex-col items-center justify-center bg-surface-container-lowest/30 p-4"
         :class="{
-          'opacity-25': !editMode || editing !== `${key}${toTitleCase(type)}`,
-          'opacity-50': editing === `${key}${toTitleCase(type)}`,
-          'bg-uncommon': key === 'uncommon',
-          'bg-rare': key === 'rare',
-          'bg-legendary': key === 'legendary',
+          'opacity-50': !editMode || editing !== slotKey,
+          'opacity-75': editing === slotKey,
+          'border-uncommon': slotRarity(slotKey) === 'uncommon',
+          'border-rare': slotRarity(slotKey) === 'rare',
+          'border-legendary': slotRarity(slotKey) === 'legendary',
         }"
       >
-        <BlankCard :rarity="mapRarityFromKey(key)" :type="type" />
+        <div
+          class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center mb-3"
+        >
+          <Icon name="bi:plus-lg" class="text-primary text-2xl" />
+        </div>
+        <p class="font-mono text-sm tracking-tighter text-on-surface-variant">
+          SELECT CARD
+        </p>
       </button>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { iCardRarity } from "@f1pick6/shared/types";
-import type {
-  iCurrentTeam,
-  iCardInUsersCards,
-  CardType,
-} from "@f1pick6/shared/types";
-import { toTitleCase } from "../utils/textFuncs";
+import type { iCurrentTeam, iCardInUsersCards } from "@f1pick6/shared/types";
 
 const userStore = useUserStore();
 
 const { userObj } = storeToRefs(userStore);
 
 const props = defineProps<{
-  type: CardType;
   editMode: boolean;
   editing: string | null;
   currentRound: number;
-  count: number;
 }>();
 
 const emit = defineEmits<{
@@ -64,28 +51,33 @@ const emit = defineEmits<{
   (e: "removeCard", value: keyof iCurrentTeam): void;
 }>();
 
-const cards = computed(() => {
-  const keys = ["uncommon", "rare", "legendary"];
-  let returnObj: Record<string, iCardInUsersCards | null | undefined> = {};
+const emptyCurrentTeam: iCurrentTeam = {
+  legendarySlot_a: null,
+  legendarySlot_b: null,
+  rareSlot_a: null,
+  rareSlot_b: null,
+  uncommonSlot_a: null,
+  uncommonSlot_b: null,
+};
 
-  keys.forEach((k) => {
-    const realKey = `${k}${toTitleCase(props.type)}` as keyof iCurrentTeam;
+const slotKeys: (keyof iCurrentTeam)[] = [
+  "legendarySlot_a",
+  "legendarySlot_b",
+  "rareSlot_a",
+  "rareSlot_b",
+  "uncommonSlot_a",
+  "uncommonSlot_b",
+];
 
-    returnObj[k] = userObj.value?.currentTeam[realKey];
-  });
-
-  return returnObj;
+const cards = computed<iCurrentTeam>(() => {
+  return userObj.value?.currentTeam ?? emptyCurrentTeam;
 });
 
-const mapRarityFromKey = (key: string) => {
-  switch (key) {
-    case "uncommon":
-      return iCardRarity.UNCOMMON;
-    case "rare":
-      return iCardRarity.RARE;
-    case "legendary":
-      return iCardRarity.LEGENDARY;
-  }
+const slotRarity = (slotKey: keyof iCurrentTeam) => {
+  if (slotKey.startsWith("uncommon")) return "uncommon";
+  if (slotKey.startsWith("rare")) return "rare";
+  if (slotKey.startsWith("legendary")) return "legendary";
+  return "uncommon";
 };
 </script>
 
