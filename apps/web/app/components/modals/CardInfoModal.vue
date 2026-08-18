@@ -1,15 +1,10 @@
 <template>
-  <UModal class="cursor-pointer">
+  <UModal class="cursor-pointer" variant="fullscreen">
     <CardFace :card="card" :rarity="rarity" :hide-card-score="hideCardScore" />
     <template #content>
-      <div class="w-full max-h-[90vh] flex flex-col gap-6 min-h-0">
-        <div
-          class="max-w-full px-4"
-          :class="{
-            'w-96': !userDetails,
-            'w-80': userDetails,
-          }"
-        >
+      <div class="absolute top-0 right-0">X</div>
+      <div class="w-full flex flex-col gap-6 min-h-0">
+        <div class="w-[220px] mx-auto">
           <CardFace
             :card="card"
             :rarity="rarity"

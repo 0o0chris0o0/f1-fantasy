@@ -38,6 +38,7 @@ const versionClasses = {
   secondary: "bg-secondary-container text-on-primary-container",
   "secondary-outline": "bg-transparent border border-secondary text-secondary",
   tertiary: "bg-tertiary text-white",
+  "tertiary-outline": "bg-transparent border border-tertiary text-tertiary",
   neutral: "bg-neutral text-white",
   normal: "bg-common text-black",
 };

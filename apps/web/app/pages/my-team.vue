@@ -69,20 +69,31 @@
               </button>
             </div>
             <div class="flex items-center gap-2">
-              <Icon
-                name="bi:sort-down"
-                class="text-lg text-on-surface-variant"
-              />
-              <select
-                id="sortBy"
-                v-model="selectedSort"
-                @change="setSelectedSort(selectedSort)"
-                class="rounded-lg border border-outline-variant bg-surface-container-high px-3 py-2 text-sm text-on-surface"
+              <UDrawer
+                nested
+                direction="right"
+                :ui="{ overlay: 'bg-inverted/30' }"
               >
-                <option value="points:desc">Fantasy Points</option>
-                <option value="rarity:desc">Rarity</option>
-                <option value="name:asc">Name</option>
-              </select>
+                <Icon
+                  name="bi:sort-down"
+                  class="text-lg text-on-surface-variant"
+                />
+
+                <template #content>
+                  <div>
+                    <select
+                      id="sortBy"
+                      v-model="selectedSort"
+                      @change="setSelectedSort(selectedSort)"
+                      class="rounded-lg border border-outline-variant bg-surface-container-high px-3 py-2 text-sm text-on-surface"
+                    >
+                      <option value="points:desc">Fantasy Points</option>
+                      <option value="rarity:desc">Rarity</option>
+                      <option value="name:asc">Name</option>
+                    </select>
+                  </div>
+                </template>
+              </UDrawer>
             </div>
           </div>
           <ClientOnly>
@@ -94,27 +105,11 @@
               <div
                 v-for="card in filteredCards"
                 :key="`${card.cardData.cardId}-${card.rarity}`"
-                class="flex"
               >
-                <div class="w-20">
-                  <UserCard
-                    :card="card.cardData"
-                    :rarity="card.rarity"
-                    :level="card.level"
-                    :quantity="card.quantity"
-                    :in-collection="card.inCollection"
-                    disableModal
-                  />
-                </div>
-                <button
-                  @click="handleSelectCard(card, $event)"
-                  :disabled="isCardInTeam(card.cardData.cardId)"
-                  :class="{
-                    'opacity-25': isCardInTeam(card.cardData.cardId),
-                  }"
-                >
-                  Add card
-                </button>
+                <AddToTeamCard
+                  :card="card"
+                  :currentRound="roundInfo.currentRound"
+                />
               </div>
             </TransitionGroup>
           </ClientOnly>
@@ -170,13 +165,6 @@ await callOnce(async () => {
   }
 });
 
-const handleSelectCard = async (card: iCardInUsersCards, e: Event) => {
-  e.preventDefault();
-  e.stopPropagation();
-  // Update the modal attributes explicitly if it's already "created"
-  // openAddToTeamConfirmationModal();
-};
-
 const refreshFilteredCards = () => {
   if (!editing.value || !userObj.value?.cards) {
     filteredCards.value = [];
@@ -229,16 +217,6 @@ const handleAddToTeam = async (card: iCardInUsersCards) => {
   editing.value = null;
   editMode.value = false;
   loading.value = false;
-};
-
-const isCardInTeam = (cardId: string) => {
-  if (!userObj.value?.currentTeam) return false;
-
-  const cardsInTeam = Object.values(userObj.value?.currentTeam)
-    .filter((c): c is iCardInUsersCards => c !== null)
-    .map((c) => c.cardData.cardId);
-
-  return cardsInTeam.includes(cardId);
 };
 
 const handleRemoveCard = async (key: keyof iCurrentTeam) => {

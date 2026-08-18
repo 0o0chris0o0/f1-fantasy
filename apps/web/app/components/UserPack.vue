@@ -40,12 +40,14 @@
       </div>
       <!-- Actions -->
       <div class="flex flex-col gap-3">
-        <Button version="normal">
-          <span
-            class="block speed-slant-reverse font-bold text-sm z-10 relative"
-            >OPEN SINGLE</span
-          >
-        </Button>
+        <NuxtLink :to="`open-pack?packId=${pack.packId}`">
+          <Button version="normal">
+            <span
+              class="block speed-slant-reverse font-bold text-sm z-10 relative"
+              >OPEN SINGLE</span
+            >
+          </Button>
+        </NuxtLink>
 
         <Button size="sm" version="secondary-outline">
           <span class="block speed-slant-reverse text-xs">

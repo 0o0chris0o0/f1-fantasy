@@ -148,6 +148,9 @@ importers:
       '@iconify-json/lets-icons':
         specifier: ^1.2.2
         version: 1.2.2
+      '@iconify-json/lucide':
+        specifier: ^1.2.123
+        version: 1.2.123
       '@iconify-json/mage':
         specifier: ^1.2.4
         version: 1.2.4
@@ -1218,6 +1221,9 @@ packages:
 
   '@iconify-json/lets-icons@1.2.2':
     resolution: {integrity: sha512-GBCeFoWNLA5v1ZRIM54cZGpE/lHtFcSJjxXXCi2W5SxkJoPDonNoLGf61/z8eNxiBkegynClvEgCAs0YjLeZkA==}
+
+  '@iconify-json/lucide@1.2.123':
+    resolution: {integrity: sha512-0CozmpKXEOEEhltrfT2zt+/t1hez67Y+hM2VJWoIcBKdBrb83VYuKf+b5A0QU9HfQm+RNn2GjFWlTOwi+Ss6IA==}
 
   '@iconify-json/mage@1.2.4':
     resolution: {integrity: sha512-QZnjHtV/RP9/bF6n7bHSnXMPX/MW5dpHqOH2pEHiEytUx76OKrUZ55YBFwrAxPz5f3BoCeWMY1wyEQQD36Bkkw==}
@@ -10055,6 +10061,10 @@ snapshots:
       '@iconify/types': 2.0.0
 
   '@iconify-json/lets-icons@1.2.2':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/lucide@1.2.123':
     dependencies:
       '@iconify/types': 2.0.0
 
