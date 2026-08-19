@@ -29,7 +29,7 @@
       />
     </div>
 
-    <UDrawer v-model:open="editMode">
+    <UDrawer v-model:open="editMode" :ui="{ content: 'h-[80vh]' }">
       <template #content>
         <div class="h-full max-h-screen overflow-y-auto pb-6">
           <div class="flex gap-4 items-center justify-between mb-4">
@@ -68,34 +68,29 @@
                 CONSTRUCTORS
               </button>
             </div>
-            <div class="flex items-center gap-2">
-              <UDrawer
-                nested
-                direction="right"
-                :ui="{ overlay: 'bg-inverted/30' }"
+            <div class="relative">
+              <SimpleButton
+                version="primary"
+                aria-label="Open filters"
+                @click="toggleFilters"
               >
-                <Icon
-                  name="bi:sort-down"
-                  class="text-lg text-on-surface-variant"
-                />
-
-                <template #content>
-                  <div>
-                    <select
-                      id="sortBy"
-                      v-model="selectedSort"
-                      @change="setSelectedSort(selectedSort)"
-                      class="rounded-lg border border-outline-variant bg-surface-container-high px-3 py-2 text-sm text-on-surface"
-                    >
-                      <option value="points:desc">Fantasy Points</option>
-                      <option value="rarity:desc">Rarity</option>
-                      <option value="name:asc">Name</option>
-                    </select>
-                  </div>
-                </template>
-              </UDrawer>
+                <Icon name="bi:sort-down" class="text-lg" />
+              </SimpleButton>
             </div>
           </div>
+          <FiltersDrawer
+            v-model:showFilters="showFilters"
+            v-model:searchText="searchText"
+            v-model:selectedRarity="selectedRarity"
+            v-model:selectedTeam="selectedTeam"
+            v-model:sortBy="selectedSort"
+            :teams="teams"
+            @update:searchText="refreshFilteredCards"
+            @update:selectedRarity="refreshFilteredCards"
+            @update:selectedTeam="refreshFilteredCards"
+            @update:sortBy="setSelectedSort"
+            @reset="resetFilters"
+          />
           <ClientOnly>
             <TransitionGroup
               name="cards"
@@ -124,6 +119,7 @@
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import { doc, getDoc } from "firebase/firestore";
+import FiltersDrawer from "~/components/FiltersDrawer.vue";
 
 import { CardType } from "@f1pick6/shared/types";
 import {
@@ -146,10 +142,24 @@ const loading = ref(false);
 const editMode = ref(false);
 const editing = ref<keyof iCurrentTeam | null>(null);
 const selectedType = ref<CardType | "ALL">("ALL");
-const selectedSort = ref("points:desc");
+const searchText = ref("");
+const selectedRarity = ref("ALL");
+const selectedTeam = ref("ALL");
+const selectedSort = ref("rarity:desc,points:desc,name");
+const showFilters = ref(false);
 const filteredCards = ref<iCardInUsersCards[]>([]);
 
 const roundInfo = useState<iRoundInfo>();
+
+const teams = computed(() => {
+  const teamNames = new Set<string>();
+
+  (userObj.value?.cards || []).forEach((card) => {
+    if (card.cardData.teamName) teamNames.add(card.cardData.teamName);
+  });
+
+  return Array.from(teamNames).sort();
+});
 
 definePageMeta({
   middleware: "auth",
@@ -180,9 +190,9 @@ const refreshFilteredCards = () => {
 
   filteredCards.value = sortCardsForMyCards(
     cards,
-    "",
-    "ALL",
-    "ALL",
+    searchText.value,
+    selectedRarity.value,
+    selectedTeam.value,
     selectedSort.value,
   );
 };
@@ -202,6 +212,18 @@ const setSelectedType = (type: CardType | "ALL") => {
 
 const setSelectedSort = (sort: string) => {
   selectedSort.value = sort;
+  refreshFilteredCards();
+};
+
+const toggleFilters = () => {
+  showFilters.value = !showFilters.value;
+};
+
+const resetFilters = () => {
+  searchText.value = "";
+  selectedRarity.value = "ALL";
+  selectedTeam.value = "ALL";
+  selectedSort.value = "rarity:desc,points:desc,name";
   refreshFilteredCards();
 };
 

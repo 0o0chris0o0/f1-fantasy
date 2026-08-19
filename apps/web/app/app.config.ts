@@ -48,7 +48,7 @@ export default defineAppConfig({
             trailingIcon: "size-4",
           },
           md: {
-            base: "px-10 py-4 text-base",
+            base: "px-3 py-2 text-base",
             leading: "ps-2.5",
             trailing: "pe-2.5",
             leadingIcon: "size-5",
@@ -56,7 +56,7 @@ export default defineAppConfig({
             trailingIcon: "size-6",
           },
           lg: {
-            base: "px-3 py-2 text-base/5 gap-2",
+            base: "px-3 py-3 text-base gap-2",
             leading: "ps-3",
             trailing: "pe-3",
             leadingIcon: "size-5",
@@ -75,10 +75,23 @@ export default defineAppConfig({
         variant: {
           none: "bg-surface-container-highest/40 border border-outline-variant/50 text-on-surface",
         },
+        leading: {
+          true: "px-10",
+        },
         color: {
           error:
             "text-error focus-visible:ring-error/50 focus-visible:outline-error/50",
         },
+      },
+    },
+    select: {
+      slots: {
+        base: "focus:border-on-surface focus:ring-1 focus:ring-primary-container/30 transition-all placeholder:text-on-surface-variant/30 placeholder:uppercase tracking-wider outline-none",
+        content:
+          "bg-surface-container-highest border border-outline-variant/50 text-on-surface",
+      },
+      variant: {
+        //
       },
     },
     form: {
@@ -110,11 +123,26 @@ export default defineAppConfig({
         ],
         container: "w-full flex flex-col gap-4 p-4 overflow-y-auto",
       },
+      variants: {
+        direction: {
+          right: {
+            content: "flex-row p-4 pr-8",
+            handle: "ml-1! mr-3!",
+          },
+        },
+      },
       compoundVariants: [
         {
           direction: ["top", "bottom"],
           class: {
             content: "h-auto max-h-[80%]",
+          },
+        },
+        {
+          direction: "right",
+          inset: false,
+          class: {
+            content: "top-0 w-[60%]",
           },
         },
       ],
