@@ -39,7 +39,7 @@
 
     <UDrawer v-model:open="editMode" :ui="{ content: 'h-[80vh]' }">
       <template #content>
-        <div class="pb-6">
+        <div class="h-full max-h-screen overflow-y-auto pb-6">
           <div
             class="flex items-end justify-between mb-4 border-b border-gray-700 pb-4 px-4"
           >
