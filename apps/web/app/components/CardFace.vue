@@ -37,8 +37,9 @@
         <p>{{ card.cardName }}</p>
       </div>
       <div class="inline-block text-left uppercase card-team">
-        <hr class="opacity-50" />
-        <p class="opacity-75 tracking-tighter">{{ card.teamName }}</p>
+        <p class="opacity-75 tracking-tighter border-t pt-0.5 pr-1">
+          {{ card.teamName }}
+        </p>
       </div>
       <div
         v-if="!hideCardScore"

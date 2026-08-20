@@ -3,32 +3,50 @@
     <PageHeader class="mb-6">My Cards</PageHeader>
 
     <div
-      class="flex items-end justify-between mb-4 border-b border-gray-700 pb-4"
+      class="flex items-end justify-between mb-4 border-b border-gray-700 pb-4 px-4"
     >
-      <div>
-        <p class="text-sm mb-1">Grid size</p>
-        <div class="grid grid-cols-2 gap-2">
-          <button
-            v-for="n in gridSizes"
-            :key="n"
-            :class="[
-              'flex gap-0.5 px-2 py-3 border-2 border-gray-500 rounded-xl justify-center card-size',
-              {
-                'opacity-50 bg-gray-600': gridSize === n,
-              },
-            ]"
-            @click="changeGridSize(n as '2' | '3')"
-            :aria-pressed="gridSize === n"
-            :disabled="gridSize === n"
-            :title="`Set grid to ${n} columns`"
-          >
-            <span v-for="i in Number(n)" :key="i"></span>
-          </button>
-        </div>
+      <div class="flex gap-4">
+        <button
+          @click="setSelectedType('ALL')"
+          :class="[
+            'font-headline pb-1 border-b-2 text-sm transition-colors',
+            selectedType === 'ALL'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-on-surface-variant hover:text-on-surface',
+          ]"
+        >
+          ALL
+        </button>
+        <button
+          @click="setSelectedType(CardType.DRIVER)"
+          :class="[
+            'font-headline pb-1 border-b-2 text-sm transition-colors',
+            selectedType === CardType.DRIVER
+              ? 'border-primary text-primary'
+              : 'border-transparent text-on-surface-variant hover:text-on-surface',
+          ]"
+        >
+          DRIVERS
+        </button>
+        <button
+          @click="setSelectedType(CardType.CONSTRUCTOR)"
+          :class="[
+            'font-headline pb-1 border-b-2 text-sm transition-colors',
+            selectedType === CardType.CONSTRUCTOR
+              ? 'border-primary text-primary'
+              : 'border-transparent text-on-surface-variant hover:text-on-surface',
+          ]"
+        >
+          CONSTRUCTORS
+        </button>
       </div>
-      <div>
-        <Button size="small" @click="toggleFilters">Show Filters</Button>
-      </div>
+      <SimpleButton
+        version="primary"
+        aria-label="Open filters"
+        @click="toggleFilters"
+      >
+        <Icon name="bi:sort-down" class="text-lg" />
+      </SimpleButton>
     </div>
 
     <FiltersDrawer
@@ -41,7 +59,7 @@
       @reset="resetFilters"
     />
 
-    <div>
+    <div class="px-4">
       <p v-if="!userObj?.cards?.length" class="italic opacity-50">
         No cards...
       </p>
@@ -51,11 +69,7 @@
       <TransitionGroup
         name="cards"
         tag="div"
-        class="grid gap-x-2 gap-y-3 mb-6"
-        :class="{
-          'grid-cols-2': gridSize === '2',
-          'grid-cols-3': gridSize === '3',
-        }"
+        class="grid grid-cols-2 gap-x-2 gap-y-3 mb-6"
       >
         <button
           v-for="card in filteredCards"
@@ -85,6 +99,7 @@
 import { storeToRefs } from "pinia";
 import FiltersDrawer from "~/components/FiltersDrawer.vue";
 import { ref, computed } from "vue";
+import { CardType } from "@f1pick6/shared/types";
 import { sortCardsForMyCards } from "~/utils/filteringSorting";
 
 const userStore = useUserStore();
@@ -96,8 +111,7 @@ const searchText = ref("");
 const selectedRarity = ref("ALL");
 const selectedTeam = ref("ALL");
 const sortBy = ref("rarity:desc,points:desc,name");
-const gridSize = ref<"2" | "3">("3");
-const gridSizes = ["3", "2"] as const;
+const selectedType = ref<CardType | "ALL">("ALL");
 const showFilters = ref(false);
 
 definePageMeta({
@@ -112,10 +126,6 @@ const teams = computed(() => {
   return Array.from(t).sort();
 });
 
-const changeGridSize = (newSize: "2" | "3") => {
-  gridSize.value = newSize;
-};
-
 const filteredCards = computed(() => {
   const cards = userObj.value?.cards || [];
 
@@ -125,8 +135,14 @@ const filteredCards = computed(() => {
     selectedRarity.value,
     selectedTeam.value,
     sortBy.value,
+    undefined,
+    selectedType.value,
   );
 });
+
+const setSelectedType = (type: CardType | "ALL") => {
+  selectedType.value = type;
+};
 
 const toggleFilters = () => {
   showFilters.value = !showFilters.value;
@@ -137,20 +153,11 @@ const resetFilters = () => {
   selectedRarity.value = "ALL";
   selectedTeam.value = "ALL";
   sortBy.value = "name";
+  selectedType.value = "ALL";
 };
 </script>
 
 <style lang="scss" scoped>
-.card-size {
-  span {
-    display: inline-block;
-    width: 10px;
-    height: 16px;
-    border-radius: 3px;
-    border: 2px solid white;
-  }
-}
-
 /* 1. THE MOVE ANIMATION (for sorting) */
 .cards-move,
 .cards-enter-active,

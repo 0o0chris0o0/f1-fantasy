@@ -12,11 +12,19 @@
 
     <div class="px-4">
       <div
-        class="glass-panel rounded-lg p-3 mb-6 border-primary-container flex items-center gap-3 bg-primary-container/40"
+        class="glass-panel rounded-lg p-3 mb-6 border-primary-container flex items-center gap-3"
+        :class="{
+          'bg-primary-container/40': teamCount !== 6,
+          'bg-tertiary/40': teamCount === 6,
+        }"
       >
         <Icon name="bi:info-circle" class="text-lg text-white" />
         <p class="font-headline text-xs text-white">
-          Your team is still incomplete. X/6 cards selected.
+          <template v-if="teamCount === 6">Your team is ready!</template>
+          <template v-else
+            >Your team is still incomplete. {{ teamCount }}/6 cards
+            selected.</template
+          >
         </p>
       </div>
 
@@ -24,15 +32,17 @@
         @begin-editing="beginEditing"
         :editMode="editMode"
         :editing="editing"
-        :currentRound="roundInfo.currentRound"
+        :currentRound="roundInfo?.currentRound ?? 0"
         @remove-card="handleRemoveCard"
       />
     </div>
 
     <UDrawer v-model:open="editMode" :ui="{ content: 'h-[80vh]' }">
       <template #content>
-        <div class="h-full max-h-screen overflow-y-auto pb-6">
-          <div class="flex gap-4 items-center justify-between mb-4">
+        <div class="pb-6">
+          <div
+            class="flex items-end justify-between mb-4 border-b border-gray-700 pb-4 px-4"
+          >
             <div class="flex gap-4">
               <button
                 @click="setSelectedType('ALL')"
@@ -68,15 +78,13 @@
                 CONSTRUCTORS
               </button>
             </div>
-            <div class="relative">
-              <SimpleButton
-                version="primary"
-                aria-label="Open filters"
-                @click="toggleFilters"
-              >
-                <Icon name="bi:sort-down" class="text-lg" />
-              </SimpleButton>
-            </div>
+            <SimpleButton
+              version="primary"
+              aria-label="Open filters"
+              @click="toggleFilters"
+            >
+              <Icon name="bi:sort-down" class="text-lg" />
+            </SimpleButton>
           </div>
           <FiltersDrawer
             v-model:showFilters="showFilters"
@@ -85,6 +93,7 @@
             v-model:selectedTeam="selectedTeam"
             v-model:sortBy="selectedSort"
             :teams="teams"
+            :sort-options="teamSortOptions"
             @update:searchText="refreshFilteredCards"
             @update:selectedRarity="refreshFilteredCards"
             @update:selectedTeam="refreshFilteredCards"
@@ -103,9 +112,16 @@
               >
                 <AddToTeamCard
                   :card="card"
-                  :currentRound="roundInfo.currentRound"
+                  :currentRound="roundInfo?.currentRound ?? 0"
+                  @select-card="handleAddToTeam"
                 />
               </div>
+              <p
+                v-if="!filteredCards.length"
+                class="py-4 italic text-on-surface/50"
+              >
+                Nothing to show, try a different search filter
+              </p>
             </TransitionGroup>
           </ClientOnly>
         </div>
@@ -118,7 +134,6 @@
 // Components
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
-import { doc, getDoc } from "firebase/firestore";
 import FiltersDrawer from "~/components/FiltersDrawer.vue";
 
 import { CardType } from "@f1pick6/shared/types";
@@ -126,13 +141,9 @@ import {
   filterCardsForMyTeam,
   sortCardsForMyCards,
 } from "~/utils/filteringSorting";
-import type {
-  iRoundInfo,
-  iCurrentTeam,
-  iCardInUsersCards,
-} from "@f1pick6/shared/types";
+import type { SelectItem } from "@nuxt/ui";
+import type { iCurrentTeam, iCardInUsersCards } from "@f1pick6/shared/types";
 
-const db = useFirestore();
 const userStore = useUserStore();
 
 const { userObj } = storeToRefs(userStore);
@@ -145,11 +156,31 @@ const selectedType = ref<CardType | "ALL">("ALL");
 const searchText = ref("");
 const selectedRarity = ref("ALL");
 const selectedTeam = ref("ALL");
-const selectedSort = ref("rarity:desc,points:desc,name");
+const selectedSort = ref("scoreBoost:desc,points:desc,name");
 const showFilters = ref(false);
 const filteredCards = ref<iCardInUsersCards[]>([]);
+const teamSortOptions: SelectItem[] = [
+  {
+    id: "scoreBoost:desc,points:desc,name",
+    label: "Score Boost",
+  },
+  { id: "points:desc,rarity:desc,name", label: "Fantasy Points" },
+  { id: "rarity:desc,points:desc,name", label: "Rarity (Legendary First)" },
+  { id: "rarity:asc,points:desc,name", label: "Rarity (Common First)" },
+  { id: "name", label: "Name (A-Z)" },
+  { id: "quantity:desc,rarity:desc,name", label: "Quantity" },
+  { id: "level:desc,rarity:desc,name", label: "Level" },
+];
 
-const roundInfo = useState<iRoundInfo>();
+const roundInfo = await useRoundInfo();
+
+const teamCount = computed(() => {
+  if (!userObj.value?.currentTeam) {
+    return 0;
+  }
+
+  return Object.values(userObj.value?.currentTeam).filter(Boolean).length;
+});
 
 const teams = computed(() => {
   const teamNames = new Set<string>();
@@ -163,16 +194,6 @@ const teams = computed(() => {
 
 definePageMeta({
   middleware: "auth",
-});
-
-await callOnce(async () => {
-  // get all cards
-  const roundInfoRef = doc(db, "appData", "roundInfo");
-  const roundInfoSnapshot = await getDoc(roundInfoRef);
-
-  if (roundInfoSnapshot.exists()) {
-    roundInfo.value = roundInfoSnapshot.data() as iRoundInfo;
-  }
 });
 
 const refreshFilteredCards = () => {
@@ -194,6 +215,12 @@ const refreshFilteredCards = () => {
     selectedRarity.value,
     selectedTeam.value,
     selectedSort.value,
+    roundInfo.value && userObj.value.currentTeam
+      ? {
+          currentRound: roundInfo.value.currentRound,
+          currentTeam: userObj.value.currentTeam,
+        }
+      : undefined,
   );
 };
 
@@ -230,8 +257,6 @@ const resetFilters = () => {
 const handleAddToTeam = async (card: iCardInUsersCards) => {
   if (!editing.value) return;
 
-  // closeAddToTeamConfirmationModal();
-
   loading.value = true;
 
   await addCardToTeam(editing.value, card);
@@ -245,9 +270,6 @@ const handleRemoveCard = async (key: keyof iCurrentTeam) => {
   loading.value = true;
 
   await removeCardFromTeam(key);
-
-  // begin editing the slot we just removed from
-  beginEditing(key);
 
   loading.value = false;
 };

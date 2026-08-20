@@ -7,6 +7,7 @@
         :level="card.level"
         :quantity="card.quantity"
         :in-collection="card.inCollection"
+        hide-card-level
         hide-user-data
       />
     </div>
@@ -41,7 +42,7 @@
             }"
           />
           <p
-            class="font-headline tracking-tighter font-bold"
+            class="font-headline tracking-tighter font-bold pt-0.5"
             :class="{
               'opacity-20': !getModifierValues().levelModifier,
               'text-uncommon': card.level === 2,
@@ -66,25 +67,36 @@
             }"
           />
         </div>
-        <p class="flex text-sm font-mono font-bold">
-          <span :style="{}"> + </span>
-          <span :style="{}"> {{ cardScoreModifier * 100 }}% </span>
-          <span>&nbsp;Score boost</span>
+        <p
+          class="flex text-sm font-mono"
+          :class="{
+            'text-common': cardScoreModifier <= 0.2,
+            'text-uncommon':
+              cardScoreModifier >= 0.3 && cardScoreModifier <= 0.5,
+            'text-rare': cardScoreModifier >= 0.6 && cardScoreModifier <= 0.8,
+            'text-legendary': cardScoreModifier >= 0.9,
+          }"
+        >
+          <span class="font-bold">+{{ cardScoreModifier * 100 }}%</span>
+          &nbsp;Score boost
         </p>
       </div>
     </div>
     <div>
       <button
-        @click="handleSelectCard(card, $event)"
-        :disabled="isCardInTeam(card.cardData.cardId)"
+        @click="onSelectCard"
+        :disabled="cardIsInTeam"
         class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center"
         :class="{
-          'opacity-25': isCardInTeam(card.cardData.cardId),
+          'opacity-25': cardIsInTeam,
         }"
         version="tertiary-outline"
         size="sm"
       >
-        <Icon name="bi:plus-lg" class="text-primary text-2xl" />
+        <Icon
+          :name="cardIsInTeam ? 'bi:check-lg' : 'bi:plus-lg'"
+          class="text-2xl text-primary"
+        />
       </button>
     </div>
   </div>
@@ -103,17 +115,20 @@ const props = defineProps<{
   currentRound: number;
 }>();
 
+const cardIsInTeam = computed(() => isCardInTeam(props.card.cardData.cardId));
+
+const emit = defineEmits<{
+  (e: "selectCard", card: iCardInUsersCards): void;
+}>();
+
 const customizeIcon = (content: string) => {
   return content
     .replace(/fill="[^"]*"/g, `fill="#84cc16"`) // Change fill color to red
     .replace(/stroke="[^"]*"/g, `stroke="#84cc16"`); // Change stroke color to red
 };
 
-const handleSelectCard = async (card: iCardInUsersCards, e: Event) => {
-  e.preventDefault();
-  e.stopPropagation();
-  // Update the modal attributes explicitly if it's already "created"
-  // openAddToTeamConfirmationModal();
+const onSelectCard = async () => {
+  emit("selectCard", props.card);
 };
 
 const isCardInTeam = (cardId: string) => {

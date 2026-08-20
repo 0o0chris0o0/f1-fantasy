@@ -1,7 +1,10 @@
 <template>
   <div class="relative card-container">
     <div class="card">
-      <div v-if="level" class="absolute top-3 left-2 z-10 flex gap-0.5">
+      <div
+        v-if="level && !hideCardLevel"
+        class="absolute top-3 left-2 z-10 flex gap-0.5"
+      >
         <div
           v-for="i in level"
           :key="'filled-' + i"
@@ -79,6 +82,7 @@ const {
   inCollection?: boolean;
   inTeam?: boolean;
   hideUserData?: boolean;
+  hideCardLevel?: boolean;
   hideCardScore?: boolean;
   isNew?: boolean;
   disableModal?: boolean;

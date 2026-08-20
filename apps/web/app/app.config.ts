@@ -3,11 +3,13 @@ export default defineAppConfig({
     modal: {
       slots: {
         overlay: "bg-gray-900/90",
-        content:
-          "bg-surface-container-highest divide-none flex flex-col focus:outline-none",
+        content: "divide-none",
       },
       variants: {
         fullscreen: {
+          true: {
+            content: "inset-0",
+          },
           false: {
             content:
               "w-full max-w-[90%] sm:max-w-sm rounded-lg shadow-lg border-0 ring-0 bg-transparent",

@@ -8,6 +8,12 @@ import type {
   iDriverCard,
   iDriverCollectionCard,
 } from "@f1pick6/shared/types";
+import { calcCurrentModifierScore } from "@f1pick6/shared/utils";
+
+export interface iMyCardsSortContext {
+  currentRound: number;
+  currentTeam: iCurrentTeam;
+}
 
 const rarityOrder: Record<string, number> = {
   MYTHIC: 5,
@@ -17,7 +23,11 @@ const rarityOrder: Record<string, number> = {
   COMMON: 1,
 };
 
-export function getFilterKeyForMyCards(item: any, key: string) {
+export function getFilterKeyForMyCards(
+  item: iCardInUsersCards,
+  key: string,
+  context?: iMyCardsSortContext,
+) {
   switch (key) {
     case "name":
       return (item.cardData?.cardName || "").toString();
@@ -29,6 +39,14 @@ export function getFilterKeyForMyCards(item: any, key: string) {
       return item.level || 0;
     case "points":
       return item.cardData?.stats?.currentFantasyPoints || 0;
+    case "scoreBoost":
+      return context
+        ? calcCurrentModifierScore(
+            item,
+            context.currentRound,
+            context.currentTeam,
+          ).totalScoreModifier
+        : 0;
     default:
       return "";
   }
@@ -107,6 +125,8 @@ export function sortCardsForMyCards(
   selectedRarity: string,
   selectedTeam: string,
   sortBy: string,
+  context?: iMyCardsSortContext,
+  selectedType: CardType | "ALL" = "ALL",
 ) {
   let out = cards.filter((c) => {
     const name = c.cardData.cardName?.toLowerCase() || "";
@@ -120,6 +140,9 @@ export function sortCardsForMyCards(
     if (selectedRarity !== "ALL" && c.rarity !== selectedRarity) return false;
 
     if (selectedTeam !== "ALL" && c.cardData.teamName !== selectedTeam)
+      return false;
+
+    if (selectedType !== "ALL" && c.cardData.type !== selectedType)
       return false;
 
     return true;
@@ -137,8 +160,8 @@ export function sortCardsForMyCards(
       const key = rawKey || "name";
       const dir = (rawDir || "asc").toLowerCase();
 
-      const va = getFilterKeyForMyCards(a, key);
-      const vb = getFilterKeyForMyCards(b, key);
+      const va = getFilterKeyForMyCards(a, key, context);
+      const vb = getFilterKeyForMyCards(b, key, context);
 
       let res = 0;
       if (typeof va === "string" && typeof vb === "string") {

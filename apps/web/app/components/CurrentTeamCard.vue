@@ -6,14 +6,22 @@
       :quantity="data.quantity"
       :level="data.level"
       :xp="data.xp"
+      hideUserData
     />
     <div v-if="userObj" class="mt-1 text-center">
       <div class="inline-block py-1 px-2 rounded-lg bg-black">
         <button @click="toggleModifierInfo">
-          <p class="flex text-xs font-f1 items-baseline underline">
-            <span :style="{}"> + </span>
-            <span :style="{}"> {{ cardScoreModifier * 100 }}% </span>
-            <span>&nbsp;Boost</span>
+          <p
+            class="flex text-xs font-f1 items-baseline underline"
+            :class="{
+              'text-common': cardScoreModifier <= 0.2,
+              'text-uncommon':
+                cardScoreModifier >= 0.3 && cardScoreModifier <= 0.5,
+              'text-rare': cardScoreModifier >= 0.6 && cardScoreModifier <= 0.8,
+              'text-legendary': cardScoreModifier >= 0.9,
+            }"
+          >
+            +{{ cardScoreModifier * 100 }}% Boost
           </p>
         </button>
       </div>

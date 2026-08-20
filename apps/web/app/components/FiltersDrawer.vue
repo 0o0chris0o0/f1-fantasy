@@ -31,6 +31,7 @@
               @input="onSearch"
               placeholder="Search driver or team"
               size="lg"
+              icon="bi:search"
             />
           </div>
 
@@ -84,6 +85,7 @@ const props = defineProps<{
   selectedTeam: string;
   sortBy: string;
   teams: string[];
+  sortOptions?: SelectItem[];
 }>();
 
 const sortByValue = ref(props.sortBy);
@@ -101,14 +103,16 @@ const teamOptions = computed<SelectItem[]>(() => [
   ...props.teams.map((team) => ({ id: team, label: team })),
 ]);
 
-const sortOptions = ref<SelectItem[]>([
+const defaultSortOptions: SelectItem[] = [
   { id: "rarity:desc,points:desc,name", label: "Rarity (Legendary First)" },
   { id: "rarity:asc,points:desc,name", label: "Rarity (Common First)" },
   { id: "name", label: "Name (A-Z)" },
   { id: "quantity:desc,rarity:desc,name", label: "Quantity" },
   { id: "level:desc,rarity:desc,name", label: "Level" },
   { id: "points:desc,rarity:desc,name", label: "Fantasy Points" },
-]);
+];
+
+const sortOptions = computed(() => props.sortOptions || defaultSortOptions);
 
 const emit = defineEmits<{
   (e: "update:showFilters", value: boolean): void;
@@ -139,15 +143,3 @@ const onSort = () => {
 
 const onReset = () => emit("reset");
 </script>
-
-<style scoped lang="scss">
-.card-size {
-  span {
-    display: inline-block;
-    width: 10px;
-    height: 16px;
-    border-radius: 3px;
-    border: 2px solid white;
-  }
-}
-</style>

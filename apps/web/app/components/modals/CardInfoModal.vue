@@ -1,10 +1,16 @@
 <template>
-  <UModal class="cursor-pointer" variant="fullscreen">
+  <UModal
+    fullscreen
+    :close="{
+      color: 'primary',
+      size: 'xl',
+    }"
+    close-icon="material-symbols:close"
+  >
     <CardFace :card="card" :rarity="rarity" :hide-card-score="hideCardScore" />
-    <template #content>
-      <div class="absolute top-0 right-0">X</div>
+    <template #body>
       <div class="w-full flex flex-col gap-6 min-h-0">
-        <div class="w-[220px] mx-auto">
+        <div class="w-55 mx-auto">
           <CardFace
             :card="card"
             :rarity="rarity"
@@ -55,33 +61,39 @@
                 <p class="uppercase font-mono text-xs">AVG FANTASY POINTS:</p>
                 <p class="font-f1 font-bold text-xl">
                   {{ card.stats.averageFantasyPoints }}
+                  <span class="text-xs">PTS</span>
                 </p>
               </div>
               <div
                 v-if="isDriverCard(card) && driverStats"
                 class="grid grid-cols-2 gap-3 mb-2"
               >
-                <div class="p-2 bg-surface-container-high rounded-xl">
+                <div class="py-2 px-3 bg-surface-container-high rounded-xl">
                   <p class="uppercase font-mono text-xs">AVG QUAL POS:</p>
-                  <p class="text-xl font-bold">
-                    {{ driverStats.averageQualifyingPosition }}
+                  <p class="font-f1 text-xl font-bold">
+                    {{
+                      driverStats.averageQualifyingPosition
+                        ? `P${driverStats.averageQualifyingPosition}`
+                        : "N/A"
+                    }}
                   </p>
                 </div>
-                <div class="p-2 bg-surface-container-high rounded-xl">
+                <div class="py-2 px-3 bg-surface-container-high rounded-xl">
                   <p class="uppercase font-mono text-xs">AVG RACE POS:</p>
-                  <p class="text-xl font-bold">
-                    {{ driverStats.averageRacePosition }}
+                  <p class="font-f1 text-xl font-bold">
+                    {{
+                      driverStats.averageRacePosition
+                        ? `P${driverStats.averageRacePosition}`
+                        : "N/A"
+                    }}
                   </p>
                 </div>
-                <div class="p-2 bg-surface-container-high rounded-xl">
+                <div class="py-2 px-3 bg-surface-container-high rounded-xl">
                   <p class="uppercase font-mono text-xs">DNF'S:</p>
-                  <p class="text-xl font-bold">
+                  <p class="font-f1 text-xl font-bold">
                     {{ driverStats.numberOfDNFs }}
                   </p>
                 </div>
-              </div>
-              <div>
-                <p class="text-xl font-bold text-secondary">HOME RACEs:</p>
               </div>
               <p
                 v-if="!card.homeRaces.length"
@@ -89,20 +101,27 @@
               >
                 No Home Races
               </p>
-              <div
-                v-else
-                v-if="isDriverCard(card) && driverStats"
-                class="grid grid-cols-1 gap-3"
-              >
+              <div v-else class="grid grid-cols-1 gap-3">
+                <div>
+                  <p class="font-headline text-xl font-bold text-secondary">
+                    Home Races
+                  </p>
+                </div>
                 <div
-                  class="p-2 bg-surface-container-high rounded-xl"
+                  class="px-4 py-3 bg-surface-container-high rounded-xl"
                   v-if="card.homeRaces.length"
                   v-for="race in card.homeRaces"
                 >
-                  <p class="uppercase font-mono text-sm text-primary">
-                    Round {{ race.round }}:
+                  <p
+                    class="uppercase font-mono text-primary"
+                    :class="{ 'font-bold': race.round === currentRound }"
+                  >
+                    <span class="text-sm">Round {{ race.round }}:&nbsp;</span>
+                    <span class="text-xs italic opacity-75"
+                      >(current round: {{ currentRound }})</span
+                    >
                   </p>
-                  <p>{{ race.raceName }}</p>
+                  <p class="font-f1">{{ race.raceName }}</p>
                   <p class="font-mono text-tertiary">
                     {{ prettyRaceDate(race.raceStart) }}
                   </p>
@@ -136,6 +155,9 @@ const {
   };
   hideCardScore?: boolean;
 }>();
+
+const roundInfo = await useRoundInfo();
+const currentRound = computed(() => roundInfo.value?.currentRound);
 
 const customizeIcon = (content: string) => {
   return content
