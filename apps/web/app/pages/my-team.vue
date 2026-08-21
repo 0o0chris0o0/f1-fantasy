@@ -41,7 +41,7 @@
       <template #content>
         <div class="h-full max-h-screen overflow-y-auto pb-6">
           <div
-            class="flex items-end justify-between mb-4 border-b border-gray-700 pb-4 px-4"
+            class="flex items-center justify-between mb-4 border-b border-gray-700 pb-4 px-4"
           >
             <div class="flex gap-4">
               <button
@@ -78,13 +78,13 @@
                 CONSTRUCTORS
               </button>
             </div>
-            <SimpleButton
-              version="primary"
+            <button
               aria-label="Open filters"
               @click="toggleFilters"
+              class="pb-1"
             >
-              <Icon name="bi:sort-down" class="text-lg" />
-            </SimpleButton>
+              <Icon name="bi:sort-down" class="text-2xl text-primary" />
+            </button>
           </div>
           <FiltersDrawer
             v-model:showFilters="showFilters"

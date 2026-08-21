@@ -14,14 +14,12 @@
       >
         <div class="flex justify-between items-center mb-4">
           <h3 class="font-headline text-xl font-semibold">Filters</h3>
-          <SimpleButton
+          <button
             @click="emit('update:showFilters', false)"
             aria-label="Close filters"
-            size="sm"
-            version="close"
           >
-            <Icon name="material-symbols:close" class="text-xl" />
-          </SimpleButton>
+            <Icon name="material-symbols:close" class="text-2xl" />
+          </button>
         </div>
 
         <div class="space-y-4 text-gray-500">

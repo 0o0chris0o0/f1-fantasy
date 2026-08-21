@@ -4,6 +4,7 @@
     :close="{
       color: 'primary',
       size: 'xl',
+      class: 'p-0',
     }"
     close-icon="material-symbols:close"
   >

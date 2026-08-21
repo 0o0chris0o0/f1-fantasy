@@ -7,9 +7,8 @@
       <div class="flex justify-end mb-8">
         <button>
           <Icon
-            name="bi:x"
-            size="2em"
-            class="text-xl text-primary"
+            name="material-symbols:close"
+            class="text-2xl text-primary"
             @click="$emit('toggleMenu')"
           />
         </button>
@@ -24,16 +23,14 @@
           <li>
             <NuxtLink to="/store">Store</NuxtLink>
           </li>
-          <li>
-            <NuxtLink to="/packs" class="main-link flex items-center gap-3">
-              Packs
-              <span
-                v-if="userStore.userPacksCount"
-                class="bg-error rounded-full drop-shadow-error text-sm font-headline font-bold w-6 leading-6 tracking-wide text-center"
-              >
-                {{ userStore.userPacksCount }}
-              </span>
-            </NuxtLink>
+          <li class="flex items-center gap-3">
+            <NuxtLink to="/packs" class="main-link"> Packs </NuxtLink>
+            <span
+              v-if="userStore.userPacksCount"
+              class="bg-error rounded-full drop-shadow-error text-sm font-headline font-bold w-6 leading-6 tracking-wide text-center"
+            >
+              {{ userStore.userPacksCount }}
+            </span>
           </li>
           <li>
             <NuxtLink to="/my-team">My Team</NuxtLink>

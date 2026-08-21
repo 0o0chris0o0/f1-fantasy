@@ -39,7 +39,7 @@
         </div>
       </div>
       <!-- Actions -->
-      <div class="flex flex-col gap-3">
+      <div class="flex flex-col gap-3 text-center">
         <NuxtLink :to="`open-pack?packId=${pack.packId}`">
           <Button version="normal">
             <span

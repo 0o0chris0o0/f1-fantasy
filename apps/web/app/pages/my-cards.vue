@@ -3,7 +3,7 @@
     <PageHeader class="mb-6">My Cards</PageHeader>
 
     <div
-      class="flex items-end justify-between mb-4 border-b border-gray-700 pb-4 px-4"
+      class="flex items-center justify-between mb-4 border-b border-gray-700 pb-4 px-4"
     >
       <div class="flex gap-4">
         <button
@@ -40,13 +40,9 @@
           CONSTRUCTORS
         </button>
       </div>
-      <SimpleButton
-        version="primary"
-        aria-label="Open filters"
-        @click="toggleFilters"
-      >
-        <Icon name="bi:sort-down" class="text-lg" />
-      </SimpleButton>
+      <button class="pb-1" aria-label="Open filters" @click="toggleFilters">
+        <Icon name="bi:sort-down" class="text-2xl text-primary" />
+      </button>
     </div>
 
     <FiltersDrawer
@@ -152,7 +148,7 @@ const resetFilters = () => {
   searchText.value = "";
   selectedRarity.value = "ALL";
   selectedTeam.value = "ALL";
-  sortBy.value = "name";
+  sortBy.value = "rarity:desc,points:desc,name";
   selectedType.value = "ALL";
 };
 </script>
