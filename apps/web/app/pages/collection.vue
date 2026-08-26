@@ -2,14 +2,16 @@
   <Loader v-if="isLoading" />
   <PageHeader class="mb-6">Collection</PageHeader>
 
+  <!-- Progress Bar -->
   <div
     v-if="userObj?.collectionCompletion !== undefined"
-    class="flex items-center justify-between gap-3"
+    class="flex items-center justify-between gap-3 px-4"
   >
     <div class="font-f1 font-bold leading-tight uppercase text-center">
       <span class="text-xs">Cards</span>
       <p>{{ userObj.cardsInCollection }}/{{ totalCards }}</p>
     </div>
+
     <div class="flex-1 relative">
       <div
         class="absolute mx-auto w-full h-3 rounded-full border-2 border-dashed overflow-hidden opacity-75 collection-track"
@@ -30,7 +32,9 @@
       <p>{{ userObj.collectionCompletion }}<span class="text-xs">%</span></p>
     </div>
   </div>
-  <div v-if="userObj?.rewardLevel" class="my-4 text-center">
+
+  <!-- Collection Spinner Icon -->
+  <div v-if="userObj?.rewardLevel" class="my-2 text-center">
     <div class="inline-block relative">
       <SegmentedCircle
         :count="userObj.rewardLevel <= 2 ? 14 : 13"
@@ -45,141 +49,240 @@
   </div>
 
   <div
-    class="flex items-end justify-between mb-4 border-b border-gray-700 pb-4"
+    class="flex items-center justify-between mb-4 border-b border-gray-700 pb-4 px-4"
   >
-    <div>
-      <p class="text-sm mb-1">Grid size</p>
-      <div class="grid grid-cols-3 gap-1">
-        <button
-          v-for="n in gridSizes"
-          :key="n"
-          :class="[
-            'flex gap-0.5 px-1 py-3 border-2 border-gray-500 rounded-xl justify-center card-size',
-            {
-              'opacity-50 bg-gray-600': gridSize === n,
-            },
-          ]"
-          @click="changeGridSize(n as '2' | '3')"
-          :aria-pressed="gridSize === n"
-          :disabled="gridSize === n"
-          :title="`Set grid to ${n} columns`"
-        >
-          <span v-for="i in Number(n)" :key="i"></span>
-        </button>
-      </div>
+    <div class="flex gap-4">
+      <button
+        @click="setSelectedType('ALL')"
+        :class="[
+          'font-headline pb-1 border-b-2 text-sm transition-colors',
+          selectedType === 'ALL'
+            ? 'border-primary text-primary'
+            : 'border-transparent text-on-surface-variant hover:text-on-surface',
+        ]"
+      >
+        ALL
+      </button>
+      <button
+        @click="setSelectedType(CardType.DRIVER)"
+        :class="[
+          'font-headline pb-1 border-b-2 text-sm transition-colors',
+          selectedType === CardType.DRIVER
+            ? 'border-primary text-primary'
+            : 'border-transparent text-on-surface-variant hover:text-on-surface',
+        ]"
+      >
+        DRIVERS
+      </button>
+      <button
+        @click="setSelectedType(CardType.CONSTRUCTOR)"
+        :class="[
+          'font-headline pb-1 border-b-2 text-sm transition-colors',
+          selectedType === CardType.CONSTRUCTOR
+            ? 'border-primary text-primary'
+            : 'border-transparent text-on-surface-variant hover:text-on-surface',
+        ]"
+      >
+        CONSTRUCTORS
+      </button>
     </div>
-    <div class="relative">
-      <Button size="small" @click="toggleFilters">
-        <Icon name="mage:filter" class="text-2xl" />
-      </Button>
-      <div
-        v-if="areFiltersActive"
-        class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full"
-      ></div>
-    </div>
+    <button aria-label="Open filters" @click="toggleFilters" class="pb-1">
+      <Icon name="bi:sort-down" class="text-2xl text-primary" />
+    </button>
   </div>
 
-  <CollectionFiltersDrawer
+  <FiltersDrawer
     v-model:showFilters="showFilters"
     v-model:searchText="searchText"
     v-model:selectedRarity="selectedRarity"
     v-model:selectedTeam="selectedTeam"
-    v-model:sortBy="sortBy"
+    v-model:sortBy="selectedSort"
     v-model:onlyOwnedCards="onlyOwnedCards"
     :teams="teams"
+    :sort-options="teamSortOptions"
     @reset="resetFilters"
   />
 
   <ClientOnly>
     <TransitionGroup name="cards" tag="div" class="space-y-6">
-      <div v-for="(cards, team) in filteredCardsByTeam" :key="team">
-        <div class="flex gap-2 items-center mb-1">
-          <img :src="`/img/teams/${cards[0]?.teamId}.avif`" />
-          <p class="font-f1 text-lg">{{ toTitleCase(team) }}</p>
+      <div
+        v-for="(cardGroups, team) in filteredCardsByTeamAndCard"
+        :key="team"
+        class="px-4"
+      >
+        <div class="flex gap-2 items-center mb-3">
+          <img
+            :src="`/img/teams/${cardGroups[0]?.teamId}.avif`"
+            class="h-6 w-auto"
+          />
+          <p class="font-f1 text-lg font-bold">{{ toTitleCase(team) }}</p>
         </div>
-        <div
-          class="grid gap-2"
-          :class="{
-            'grid-cols-2': gridSize === '2',
-            'grid-cols-3': gridSize === '3',
-            'grid-cols-4': gridSize === '4',
-          }"
-        >
-          <template
-            v-for="card in cards"
-            :key="`${card.cardId}-${card.rarity}`"
+        <div class="grid grid-cols-1 gap-3">
+          <div
+            v-for="group in cardGroups"
+            :key="group.cardId"
+            class="bg-gray-800/80 border border-gray-700/60 rounded-xl overflow-hidden shadow-sm"
           >
-            <div>
-              <div class="relative">
-                <div
-                  v-if="
-                    !userStore.doesUserHaveCardInCollection(
-                      card.cardId,
-                      card.rarity,
-                    )
+            <!-- Dropdown Header -->
+            <button
+              @click="toggleCardOpen(group.cardId)"
+              class="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-700/50 transition-colors text-left"
+            >
+              <div class="flex items-center gap-3">
+                <Icon
+                  :name="
+                    group.type === CardType.CONSTRUCTOR
+                      ? 'game-icons:car-wheel'
+                      : 'ph:user-bold'
                   "
-                  class="absolute inset-0 z-10 text-3xl grid place-content-center gap-1"
-                >
-                  <Icon
-                    v-if="!userStore.doesUserHaveCard(card.cardId, card.rarity)"
-                    name="uis:padlock"
-                  />
-                  <button
-                    v-else
-                    @click="handleAddToCollection(card.cardId, card.rarity)"
-                  >
-                    <Icon name="material-symbols:add-circle" color="#008236" />
-                  </button>
-                </div>
-                <div class="bg-gray-900 rounded-lg">
-                  <UserCard
-                    :card="card"
-                    :rarity="card.rarity"
-                    hideUserData
-                    :class="{
-                      'opacity-25': !userStore.doesUserHaveCardInCollection(
-                        card.cardId,
-                        card.rarity,
-                      ),
-                    }"
-                  />
-                </div>
-              </div>
-              <div class="flex justify-center items-center gap-2 mt-1">
-                <div
-                  v-if="
-                    userStore.doesUserHaveCard(card.cardId, card.rarity) &&
-                    !userStore.doesUserHaveCardInCollection(
-                      card.cardId,
-                      card.rarity,
-                    )
-                  "
-                  class="flex items-center justify-center gap-1 text-xs sm:text-sm font-f1 font-bold"
-                >
-                  <Icon name="bi:stack" />
-                  <p>
-                    x{{
-                      userStore.getXCardFromUserObj(card.cardId, card.rarity)
-                        ?.quantity
-                    }}
+                  class="text-primary text-xl shrink-0"
+                />
+                <div>
+                  <h4 class="font-headline font-semibold text-base text-white">
+                    {{ group.displayName }}
+                  </h4>
+                  <p class="text-xs text-gray-400">
+                    {{ getCollectedCountForGroup(group) }}/4 Collected
                   </p>
                 </div>
-                <div
-                  v-if="
-                    userStore.isXCardInUsersCurrentTeam(
-                      card.cardId,
-                      card.rarity,
-                    )
-                  "
-                >
-                  <Icon
-                    name="game-icons:steering-wheel"
-                    class="text-green-600"
+              </div>
+
+              <div class="flex items-center gap-2">
+                <!-- Rarity dots -->
+                <div class="flex gap-1">
+                  <span
+                    v-for="card in group.cards"
+                    :key="card.rarity"
+                    :class="[
+                      'w-2 h-2 rounded-full',
+                      userStore.doesUserHaveCardInCollection(
+                        card.cardId,
+                        card.rarity,
+                      )
+                        ? getRarityBgColor(card.rarity)
+                        : 'bg-gray-600 opacity-40',
+                    ]"
+                    :title="`${card.rarity}: ${userStore.doesUserHaveCardInCollection(card.cardId, card.rarity) ? 'In Collection' : 'Not Collected'}`"
                   />
+                </div>
+                <Icon
+                  name="material-symbols:keyboard-arrow-down-rounded"
+                  :class="[
+                    'text-2xl text-gray-400 transition-transform duration-200',
+                    isCardOpen(group.cardId) ? 'rotate-180 text-primary' : '',
+                  ]"
+                />
+              </div>
+            </button>
+
+            <!-- Dropdown Content (Rarities) -->
+            <div
+              v-show="isCardOpen(group.cardId)"
+              class="p-4 border-t border-gray-700/60 bg-gray-900/50"
+            >
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div
+                  v-for="card in group.cards"
+                  :key="`${card.cardId}-${card.rarity}`"
+                  class="flex flex-col items-center"
+                >
+                  <div class="relative w-full">
+                    <div
+                      v-if="
+                        !userStore.doesUserHaveCardInCollection(
+                          card.cardId,
+                          card.rarity,
+                        )
+                      "
+                      class="absolute inset-0 z-10 text-3xl grid place-content-center gap-1"
+                    >
+                      <Icon
+                        v-if="
+                          !userStore.doesUserHaveCard(card.cardId, card.rarity)
+                        "
+                        name="uis:padlock"
+                        class="text-gray-400"
+                      />
+                      <button
+                        v-else
+                        @click="handleAddToCollection(card.cardId, card.rarity)"
+                        title="Add to collection"
+                        class="hover:scale-110 transition-transform"
+                      >
+                        <Icon
+                          name="material-symbols:add-circle"
+                          color="#008236"
+                        />
+                      </button>
+                    </div>
+                    <div class="bg-gray-900 rounded-lg">
+                      <UserCard
+                        :card="card"
+                        :rarity="card.rarity"
+                        hideUserData
+                        :class="{
+                          'opacity-25': !userStore.doesUserHaveCardInCollection(
+                            card.cardId,
+                            card.rarity,
+                          ),
+                        }"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="flex justify-center items-center gap-2 mt-1.5 text-xs font-f1 font-bold"
+                  >
+                    <div
+                      v-if="
+                        userStore.doesUserHaveCard(card.cardId, card.rarity) &&
+                        !userStore.doesUserHaveCardInCollection(
+                          card.cardId,
+                          card.rarity,
+                        )
+                      "
+                      class="flex items-center gap-1"
+                    >
+                      <Icon name="bi:stack" />
+                      <p>
+                        x{{
+                          userStore.getXCardFromUserObj(
+                            card.cardId,
+                            card.rarity,
+                          )?.quantity
+                        }}
+                      </p>
+                    </div>
+                    <div
+                      v-if="
+                        userStore.isXCardInUsersCurrentTeam(
+                          card.cardId,
+                          card.rarity,
+                        )
+                      "
+                    >
+                      <Icon
+                        name="game-icons:steering-wheel"
+                        class="text-green-500"
+                      />
+                    </div>
+                    <div
+                      v-if="
+                        userStore.doesUserHaveCardInCollection(
+                          card.cardId,
+                          card.rarity,
+                        )
+                      "
+                    >
+                      <Icon
+                        name="bi:check-circle-fill"
+                        class="text-green-500 text-sm"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </template>
+          </div>
         </div>
       </div>
     </TransitionGroup>
@@ -189,9 +292,9 @@
 <script setup lang="ts">
 import type { QueryDocumentSnapshot } from "firebase/firestore";
 import { collection, getDocs } from "firebase/firestore";
-import AddToCollectionConfirmation from "~/components/modals/AddToCollectionConfirmation.vue";
-import RewardsInfo from "~/components/modals/RewardsInfo.vue";
+import type { SelectItem } from "@nuxt/ui";
 import {
+  CardType,
   iCardRarity,
   type iConstructorCard,
   type iConstructorCollectionCard,
@@ -203,20 +306,39 @@ definePageMeta({
   middleware: "auth",
 });
 
+interface CardGroup {
+  cardId: string;
+  cardName: string;
+  type: CardType;
+  teamId: string;
+  teamName: string;
+  displayName: string;
+  cards: (iConstructorCollectionCard | iDriverCollectionCard)[];
+}
+
 const db = useFirestore();
 const userStore = useUserStore();
 
 const { userObj } = storeToRefs(userStore);
 
 // filter / sort state
+const selectedType = ref<CardType | "ALL">("ALL");
 const searchText = ref("");
 const selectedRarity = ref("ALL");
 const selectedTeam = ref("ALL");
-const sortBy = ref("default");
+const selectedSort = ref("default");
 const onlyOwnedCards = ref(false);
-const gridSize = ref<"2" | "3" | "4">("4");
-const gridSizes = ["4", "3", "2"] as const;
 const showFilters = ref(false);
+const openCardIds = ref<Record<string, boolean>>({});
+
+const teamSortOptions: SelectItem[] = [
+  { id: "default", label: "Default" },
+  { id: "points:desc,rarity:desc,name", label: "Fantasy Points" },
+  { id: "rarity:desc,points:desc,name", label: "Rarity (Legendary First)" },
+  { id: "rarity:asc,points:desc,name", label: "Rarity (Common First)" },
+  { id: "name", label: "Name (A-Z)" },
+  { id: "quantity:desc,rarity:desc,name", label: "Quantity" },
+];
 
 const isLoading = ref(false);
 const allCards = useState<
@@ -257,8 +379,42 @@ await callOnce(
   { mode: "navigation" },
 );
 
-const changeGridSize = (newSize: "2" | "3") => {
-  gridSize.value = newSize;
+const setSelectedType = (type: CardType | "ALL") => {
+  selectedType.value = type;
+};
+
+const isCardOpen = (cardId: string) => {
+  if (openCardIds.value[cardId] !== undefined) {
+    return openCardIds.value[cardId];
+  }
+  return !!searchText.value;
+};
+
+const toggleCardOpen = (cardId: string) => {
+  openCardIds.value[cardId] = !isCardOpen(cardId);
+};
+
+const getCollectedCountForGroup = (group: CardGroup) => {
+  return group.cards.filter((card) =>
+    userStore.doesUserHaveCardInCollection(card.cardId, card.rarity),
+  ).length;
+};
+
+const getRarityBgColor = (rarity: string) => {
+  switch (rarity) {
+    case "COMMON":
+      return "bg-slate-400";
+    case "UNCOMMON":
+      return "bg-emerald-500";
+    case "RARE":
+      return "bg-sky-500";
+    case "LEGENDARY":
+      return "bg-amber-400";
+    case "MYTHIC":
+      return "bg-purple-500";
+    default:
+      return "bg-gray-400";
+  }
 };
 
 const filteredCards = computed(() => {
@@ -270,30 +426,44 @@ const filteredCards = computed(() => {
     selectedRarity.value,
     selectedTeam.value,
     onlyOwnedCards.value,
-    sortBy.value,
+    selectedSort.value,
+    selectedType.value,
   );
 });
 
-const filteredCardsByTeam = computed(() => {
-  const returnObj: Record<
-    string,
-    (iConstructorCollectionCard | iDriverCollectionCard)[]
-  > = {};
+const filteredCardsByTeamAndCard = computed(() => {
+  const returnObj: Record<string, CardGroup[]> = {};
 
   filteredCards.value.forEach((card) => {
-    if (!returnObj[card.teamName.toLowerCase()]) {
-      returnObj[card.teamName.toLowerCase()] = [card];
-    } else {
-      returnObj[card.teamName.toLowerCase()]?.push(card);
+    const teamKey = card.teamName?.toLowerCase() || "";
+    if (!returnObj[teamKey]) {
+      returnObj[teamKey] = [];
     }
+
+    let cardGroup = returnObj[teamKey].find((g) => g.cardId === card.cardId);
+    if (!cardGroup) {
+      const displayName =
+        card.type === CardType.CONSTRUCTOR ? "Constructor Card" : card.cardName;
+
+      cardGroup = {
+        cardId: card.cardId,
+        cardName: card.cardName,
+        type: card.type,
+        teamId: card.teamId,
+        teamName: card.teamName,
+        displayName,
+        cards: [],
+      };
+      returnObj[teamKey].push(cardGroup);
+    }
+
+    cardGroup.cards.push(card);
   });
 
   return returnObj;
 });
 
 const confirmAddToCollection = async (cardId: string, rarity: iCardRarity) => {
-  // closeAddToCollectionConfirmationModal();
-
   isLoading.value = true;
 
   await addCardToCollection(cardId, rarity, totalCards.value);
@@ -302,32 +472,14 @@ const confirmAddToCollection = async (cardId: string, rarity: iCardRarity) => {
   if (userObj.value?.progressInRewardTrack === 0) {
     const rewardObject = rewardObj[userObj.value.rewardLevel];
     if (!rewardObject) return;
-    const rewardCards = await giveUserReward(rewardObject);
-
-    // patchRewardsInfoModal({
-    //   attrs: {
-    //     rewardObj: rewardObject,
-    //     rewardCards
-    //   },
-    // });
-
-    // openRewardInfoModal();
+    await giveUserReward(rewardObject);
   }
 
   isLoading.value = false;
 };
 
 const handleAddToCollection = (cardId: string, cardRarity: iCardRarity) => {
-  const userCardObj = userStore.getXCardFromUserObj(cardId, cardRarity);
-
-  // patchAddToCollectionConfirmationModal({
-  //   attrs: {
-  //     card: userCardObj,
-  //     rarity: cardRarity,
-  //   },
-  // });
-
-  // openAddToCollectionConfirmationModal();
+  confirmAddToCollection(cardId, cardRarity);
 };
 
 const toggleFilters = () => {
@@ -338,8 +490,9 @@ const resetFilters = () => {
   searchText.value = "";
   selectedRarity.value = "ALL";
   selectedTeam.value = "ALL";
-  sortBy.value = "default";
+  selectedSort.value = "default";
   onlyOwnedCards.value = false;
+  selectedType.value = "ALL";
 };
 
 const areFiltersActive = computed(() => {
@@ -347,8 +500,9 @@ const areFiltersActive = computed(() => {
     !!searchText.value ||
     selectedRarity.value !== "ALL" ||
     selectedTeam.value !== "ALL" ||
-    sortBy.value !== "default" ||
-    onlyOwnedCards.value
+    selectedSort.value !== "default" ||
+    onlyOwnedCards.value ||
+    selectedType.value !== "ALL"
   );
 });
 </script>

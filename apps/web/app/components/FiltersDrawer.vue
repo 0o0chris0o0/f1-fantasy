@@ -33,6 +33,14 @@
             />
           </div>
 
+          <div v-if="onlyOwnedCards !== undefined">
+            <UCheckbox
+              :model-value="onlyOwnedCards"
+              @update:model-value="onOnlyOwned"
+              label="Only show cards I can add"
+            />
+          </div>
+
           <div class="flex space-x-2">
             <USelect
               :model-value="selectedRarity"
@@ -74,6 +82,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch, computed } from "vue";
 import type { SelectItem } from "@nuxt/ui";
 
 const props = defineProps<{
@@ -84,9 +93,17 @@ const props = defineProps<{
   sortBy: string;
   teams: string[];
   sortOptions?: SelectItem[];
+  onlyOwnedCards?: boolean;
 }>();
 
 const sortByValue = ref(props.sortBy);
+
+watch(
+  () => props.sortBy,
+  (newVal) => {
+    sortByValue.value = newVal;
+  },
+);
 
 const rarityOptions: SelectItem[] = [
   { id: "ALL", label: "All rarities" },
@@ -118,6 +135,7 @@ const emit = defineEmits<{
   (e: "update:selectedRarity", value: string): void;
   (e: "update:selectedTeam", value: string): void;
   (e: "update:sortBy", value: string): void;
+  (e: "update:onlyOwnedCards", value: boolean): void;
   (e: "toggleSortOrder"): void;
   (e: "reset"): void;
 }>();
@@ -125,6 +143,10 @@ const emit = defineEmits<{
 const onSearch = (e: Event) => {
   const v = (e.target as HTMLInputElement)?.value ?? "";
   emit("update:searchText", v);
+};
+
+const onOnlyOwned = (value: boolean | "indeterminate") => {
+  emit("update:onlyOwnedCards", Boolean(value));
 };
 
 const onRarity = (value: string) => {

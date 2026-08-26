@@ -63,6 +63,8 @@ export function getFilterKeyForCollection(
       return rarityOrder[item.rarity] || 0;
     case "quantity":
       return item.quantity || 0;
+    case "points":
+      return item.stats?.currentFantasyPoints || 0;
     default:
       return "";
   }
@@ -233,6 +235,7 @@ export function sortCardsForCollection(
   selectedTeam: string,
   onlyOwnedCards: boolean,
   sortBy: string,
+  selectedType: CardType | "ALL" = "ALL",
 ) {
   let out = cards.filter((c) => {
     const name = c.cardName?.toLowerCase() || "";
@@ -246,6 +249,8 @@ export function sortCardsForCollection(
     if (selectedRarity !== "ALL" && c.rarity !== selectedRarity) return false;
 
     if (selectedTeam !== "ALL" && c.teamName !== selectedTeam) return false;
+
+    if (selectedType !== "ALL" && c.type !== selectedType) return false;
 
     // shows only cards that can be added
     if (onlyOwnedCards && (!c.quantity || c.userHasInCollection)) return false;
