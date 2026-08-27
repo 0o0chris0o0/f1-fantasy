@@ -1,7 +1,23 @@
-import { collection, doc, getDoc, where, query, getDocs, updateDoc, writeBatch, arrayUnion } from "firebase/firestore";
-import { iCardRarity, type iCardInCollection, type iCardInUsersCards, type iConstructorCard, type iDriverCard } from "@f1pick6/shared";
+import {
+  collection,
+  doc,
+  getDoc,
+  where,
+  query,
+  getDocs,
+  updateDoc,
+  writeBatch,
+  arrayUnion,
+} from "firebase/firestore";
+import {
+  iCardRarity,
+  type iCardInCollection,
+  type iCardInUsersCards,
+  type iConstructorCard,
+  type iDriverCard,
+} from "@f1pick6/shared";
 import type { iUserCardHistory, iPack, iPackInUser } from "@f1pick6/shared";
-import { sortCardsForPackOpening } from './filteringSorting';
+import { sortCardsForPackOpening } from "./filteringSorting";
 
 export async function openPack(packId: string) {
   const db = useFirestore();
@@ -11,25 +27,26 @@ export async function openPack(packId: string) {
   const { userObj, userDocRef } = storeToRefs(userStore);
 
   if (!userObj.value) {
-    throw new Error('Missing user');
+    throw new Error("Missing user");
   }
 
   // get the pack obj from the DB
-  const packDocRef = doc(db, 'packs', packId);
+  const packDocRef = doc(db, "packs", packId);
   const packDocSnap = await getDoc(packDocRef);
   if (!packDocSnap.exists()) {
-    throw new Error('Pack does not exist');
+    throw new Error("Pack does not exist");
   }
   const packData = packDocSnap.data() as iPack;
 
   // check the user has atleast 1 of the requested pack
-  if (userObj.value.packs[packData.packId]?.quantity! < 1) {
-    throw new Error('User doesnt have the required number of packs');
+  const userPackToOpen = userObj.value.packs[packData.packId];
+  if (!userPackToOpen || userPackToOpen.quantity < 1) {
+    throw new Error("User doesnt have the required number of packs");
   }
 
   // get all enabled cards
-  const cardsCollectionRef = collection(db, 'cards');
-  const cardsQuery = query(cardsCollectionRef, where('enabled', '==', true));
+  const cardsCollectionRef = collection(db, "cards");
+  const cardsQuery = query(cardsCollectionRef, where("enabled", "==", true));
   const cardsSnap = await getDocs(cardsQuery);
   let allCards: (iDriverCard | iConstructorCard)[] = [];
   cardsSnap.forEach((doc) => {
@@ -39,24 +56,35 @@ export async function openPack(packId: string) {
   // pick random cards based on pack data
   const pickedCards = pickCardsForUser(allCards, packData.cardsIncluded);
 
-  const newCards = await createLootCards(pickedCards, packData, userObj.value.cards, userObj.value.cardsHistory, userObj.value.collection)
+  const newCards = await createLootCards(
+    pickedCards,
+    packData,
+    userObj.value.cards,
+    userObj.value.cardsHistory,
+    userObj.value.collection,
+  );
 
   // create users card obj, includes adding rarity, level & xp
-  const newCardsForUsers = mergeNewCardsWithCurrentUserCards(newCards, userObj.value.cards);
- 
+  const newCardsForUsers = mergeNewCardsWithCurrentUserCards(
+    newCards,
+    userObj.value.cards,
+  );
+
   if (!userDocRef.value) {
-    throw new Error('User not logged in');
+    throw new Error("User not logged in");
   }
 
-  // Add the cards to the user object 
+  // Add the cards to the user object
   batch.update(userDocRef.value, {
-    cards: newCardsForUsers
+    cards: newCardsForUsers,
   });
 
   // update the new card list for the user
-  const seenCards = newCards.map(card => `${card.cardData.cardId}_${card.rarity}`);
+  const seenCards = newCards.map(
+    (card) => `${card.cardData.cardId}_${card.rarity}`,
+  );
   batch.update(userDocRef.value, {
-    seenCards: arrayUnion(...seenCards)
+    seenCards: arrayUnion(...seenCards),
   });
 
   // Remove the pack from the user object
@@ -64,7 +92,7 @@ export async function openPack(packId: string) {
   const userPackData = userPacks[packData.packId];
 
   if (!userPackData) {
-    throw new Error('User does not have this pack');
+    throw new Error("User does not have this pack");
   }
 
   userPackData.quantity -= 1;
@@ -75,7 +103,7 @@ export async function openPack(packId: string) {
   }
 
   batch.update(userDocRef.value, {
-    packs: userPacks
+    packs: userPacks,
   });
 
   await batch.commit();
@@ -83,37 +111,47 @@ export async function openPack(packId: string) {
   return newCards;
 }
 
-/** 
+/**
  * Picks a set number of random cards from all cards,
  * Includes logic to select atleast 1 driver & 1 constructor
  */
-export function pickCardsForUser(allCards: (iDriverCard | iConstructorCard)[], cardsToPick: number) {
+export function pickCardsForUser(
+  allCards: (iDriverCard | iConstructorCard)[],
+  cardsToPick: number,
+) {
   // Separate cards by type
-  const driverCards = allCards.filter(card => card.type === 'driver');
-  const constructorCards = allCards.filter(card => card.type === 'constructor');
+  const driverCards = allCards.filter((card) => card.type === "driver");
+  const constructorCards = allCards.filter(
+    (card) => card.type === "constructor",
+  );
   let hasDriver = false;
   let hasConstructor = false;
   const selectedIds = new Set<string>();
 
-  const pickedCards: (iDriverCard | iConstructorCard)[] = [];
+  // Indexed (not pushed) so a slot with no available cards leaves a gap instead of shifting later slots out of alignment
+  const pickedCards: ((iDriverCard | iConstructorCard) | undefined)[] =
+    new Array(cardsToPick).fill(undefined);
 
-   // using pack loot chances select the correct number of random cards
-   for (let i = 0; i < cardsToPick; i++) {
+  // using pack loot chances select the correct number of random cards
+  for (let i = 0; i < cardsToPick; i++) {
     let cardPool: (iDriverCard | iConstructorCard)[] = allCards;
+    const remainingSlots = cardsToPick - i;
 
+    // Reserve the last 2 slots so a missing driver and a missing constructor can each still be forced independently, rather than competing for 1 slot
+    if (!hasDriver && !hasConstructor && remainingSlots <= 2) {
+      cardPool = remainingSlots === 2 ? driverCards : constructorCards;
+    }
     // If we haven't selected a driver yet and this is the last slot, force a driver
-    if (!hasDriver && i === cardsToPick - 1) {
+    else if (!hasDriver && remainingSlots === 1) {
       cardPool = driverCards;
     }
     // If we haven't selected a constructor yet and this is the last slot, force a constructor
-    else if (!hasConstructor && i === cardsToPick - 1) {
+    else if (!hasConstructor && remainingSlots === 1) {
       cardPool = constructorCards;
     }
 
     // Filter pool to ensure the card hasn't been picked yet
-    cardPool = cardPool.filter(card => 
-      !selectedIds.has(card.cardId)
-    );
+    cardPool = cardPool.filter((card) => !selectedIds.has(card.cardId));
 
     if (cardPool.length === 0) continue;
 
@@ -122,10 +160,10 @@ export function pickCardsForUser(allCards: (iDriverCard | iConstructorCard)[], c
     if (!pickedCard) continue;
 
     // Track card types
-    if (pickedCard.type === 'driver') hasDriver = true;
-    if (pickedCard.type === 'constructor') hasConstructor = true;
+    if (pickedCard.type === "driver") hasDriver = true;
+    if (pickedCard.type === "constructor") hasConstructor = true;
 
-    pickedCards.push(pickedCard);
+    pickedCards[i] = pickedCard;
     selectedIds.add(pickedCard.cardId);
   }
 
@@ -137,12 +175,12 @@ export function pickCardsForUser(allCards: (iDriverCard | iConstructorCard)[], c
  * Assigns the rarity to each card based on the pack slot data
  */
 export async function createLootCards(
-  pickedCards: (iDriverCard | iConstructorCard)[],
+  pickedCards: ((iDriverCard | iConstructorCard) | undefined)[],
   packData: iPack,
   usersCurrentCards: iCardInUsersCards[],
   usersCardHistory: Record<string, iUserCardHistory>,
-  usersCollection: Record<string, iCardInCollection>
-){
+  usersCollection: Record<string, iCardInCollection>,
+) {
   const db = useFirestore();
   const newCards: iCardInUsersCards[] = [];
 
@@ -153,14 +191,15 @@ export async function createLootCards(
     if (!slotData || !cardInSlot) continue;
 
     // select the rarity based on forced rarity or weighted chances
-    let selectedRarity = slotData.forcedRarity ?? getWeightedRarity(slotData.rarityChances);
+    let selectedRarity =
+      slotData.forcedRarity ?? getWeightedRarity(slotData.rarityChances);
 
     // handle mythic rarity
     if (selectedRarity === iCardRarity.MYTHIC) {
       // if the selected rarity is MYTHIC, first we need to check that the card is in the mythic pool.
-      const mythicPoolRef = doc(db, 'appData/misc');
+      const mythicPoolRef = doc(db, "appData/misc");
       const mythicPoolSnap = await getDoc(mythicPoolRef);
-      const mythicPoolData = mythicPoolSnap.get('mythicPool') || [];
+      const mythicPoolData = mythicPoolSnap.get("mythicPool") || [];
 
       // check if the picked card is in the mythic pool
       const doesMythicVersionExist = mythicPoolData.includes(cardInSlot.cardId);
@@ -168,37 +207,45 @@ export async function createLootCards(
       // if the card does NOT exist we'll change the rarity to legendary instead.
       if (!doesMythicVersionExist) {
         selectedRarity = iCardRarity.LEGENDARY;
-      };
+      }
     }
 
     if (!selectedRarity) continue;
 
     // check if user already has this card in their collection
-    const selectedCardIndex = usersCurrentCards.findIndex((userCard: iCardInUsersCards) => userCard.cardData.cardId === cardInSlot.cardId && userCard.rarity === selectedRarity);
+    const selectedCardIndex = usersCurrentCards.findIndex(
+      (userCard: iCardInUsersCards) =>
+        userCard.cardData.cardId === cardInSlot.cardId &&
+        userCard.rarity === selectedRarity,
+    );
 
     if (usersCurrentCards[selectedCardIndex]) {
       // user already has this card, increase quantity
       newCards.push({
         ...usersCurrentCards[selectedCardIndex],
-        quantity: usersCurrentCards[selectedCardIndex].quantity + 1
-      })
+        quantity: usersCurrentCards[selectedCardIndex].quantity + 1,
+      });
     } else {
       // get the users card history
-      let userCardHistory: iUserCardHistory | undefined = usersCardHistory[cardInSlot.cardId];
+      let userCardHistory: iUserCardHistory | undefined =
+        usersCardHistory[cardInSlot.cardId];
 
       if (!userCardHistory) {
         userCardHistory = {
           xp: 0,
-          level: 1
-        }
+          level: 1,
+        };
       }
 
-      const usersCardFromCollection = usersCollection[`${cardInSlot.cardId}_${selectedRarity}`];
+      const usersCardFromCollection =
+        usersCollection[`${cardInSlot.cardId}_${selectedRarity}`];
 
       const newUserCard: iCardInUsersCards = {
         cardData: cardInSlot,
         inCollection: !!usersCardFromCollection,
-        collectedOn: usersCardFromCollection?.collectedOn ? usersCardFromCollection.collectedOn : null,
+        collectedOn: usersCardFromCollection?.collectedOn
+          ? usersCardFromCollection.collectedOn
+          : null,
         quantity: 1,
         rarity: selectedRarity,
         level: userCardHistory.level,
@@ -218,19 +265,23 @@ export async function createLootCards(
 export function mergeNewCardsWithCurrentUserCards(
   newCards: iCardInUsersCards[],
   usersCurrentCards: iCardInUsersCards[],
-){
+) {
   // clone user obj
   const newUserCardsObj = usersCurrentCards.slice();
 
   newCards.forEach((newCard) => {
-    const cardIndex = newUserCardsObj.findIndex((oldCard) => oldCard.cardData.cardId === newCard.cardData.cardId && oldCard.rarity === newCard.rarity);
+    const cardIndex = newUserCardsObj.findIndex(
+      (oldCard) =>
+        oldCard.cardData.cardId === newCard.cardData.cardId &&
+        oldCard.rarity === newCard.rarity,
+    );
 
     if (newUserCardsObj[cardIndex]) {
       newUserCardsObj[cardIndex].quantity += 1;
     } else {
       newUserCardsObj.push(newCard);
     }
-  })
+  });
 
   return newUserCardsObj;
 }
@@ -238,18 +289,23 @@ export function mergeNewCardsWithCurrentUserCards(
 /**
  * Picks a rarity based on weighted chances
  */
-function getWeightedRarity(chances: Record<iCardRarity, number>): iCardRarity | null {
+function getWeightedRarity(
+  chances: Record<iCardRarity, number>,
+): iCardRarity | null {
   const entries = Object.entries(chances) as [iCardRarity, number][];
   const activeEntries = entries.filter(([_, weight]) => weight > 0);
-  
-  const totalWeight = activeEntries.reduce((sum, [_, weight]) => sum + weight, 0);
+
+  const totalWeight = activeEntries.reduce(
+    (sum, [_, weight]) => sum + weight,
+    0,
+  );
   if (totalWeight === 0) return null;
 
   let random = Math.random() * totalWeight;
 
   for (const [rarity, weight] of activeEntries) {
-      if (random < weight) return rarity;
-      random -= weight;
+    if (random < weight) return rarity;
+    random -= weight;
   }
   return null;
 }

@@ -1,5 +1,5 @@
 <template>
-  <UModal class="w-full">
+  <UModal>
     <template #content>
       <div v-if="pack" class="bg-surface-container-highest p-3 text-white">
         <div class="mb-4">

@@ -1,6 +1,5 @@
 <template>
   <UModal
-    fullscreen
     :close="{
       color: 'primary',
       size: 'xl',

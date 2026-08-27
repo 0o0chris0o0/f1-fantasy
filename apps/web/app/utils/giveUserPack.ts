@@ -1,7 +1,7 @@
 import type { iPack, iPackInUser } from "@f1pick6/shared";
 import { doc, setDoc } from "firebase/firestore";
 
-export async function giveUserPack(pack: iPack) {
+export async function giveUserPack(pack: iPack, chargeCost = true) {
   const userStore = useUserStore();
 
   const { userObj, userDocRef } = storeToRefs(userStore);
@@ -22,13 +22,15 @@ export async function giveUserPack(pack: iPack) {
     };
   }
 
-  packs[pack.packId] = userPack
+  packs[pack.packId] = userPack;
 
   await setDoc(
     userDocRef.value,
-    { 
-      packs, 
-      money: userObj.value.money - pack.cost
-    }, { merge: true }
+    {
+      packs,
+      // reward packs are free, only deduct money when the pack was actually purchased
+      money: chargeCost ? userObj.value.money - pack.cost : userObj.value.money,
+    },
+    { merge: true },
   );
 }

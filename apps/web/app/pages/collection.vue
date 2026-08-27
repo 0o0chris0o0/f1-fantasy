@@ -34,7 +34,11 @@
   </div>
 
   <!-- Collection Spinner Icon -->
-  <div v-if="userObj?.rewardLevel" class="mt-2 mb-4 text-center">
+  <div
+    v-if="userObj?.rewardLevel && userObj.rewardLevel <= 10"
+    class="mt-2 mb-4 text-center"
+  >
+    <p class="font-headline font-semibold">Next Reward</p>
     <div class="inline-block relative">
       <SegmentedCircle
         :count="userObj.rewardLevel <= 2 ? 14 : 13"
@@ -307,6 +311,7 @@ import type { QueryDocumentSnapshot } from "firebase/firestore";
 import { collection, getDocs } from "firebase/firestore";
 import type { SelectItem } from "@nuxt/ui";
 import AddToCollectionConfirmation from "~/components/modals/AddToCollectionConfirmation.vue";
+import RewardsInfo from "~/components/modals/RewardsInfo.vue";
 import {
   CardType,
   iCardRarity,
@@ -314,6 +319,7 @@ import {
   type iConstructorCollectionCard,
   type iDriverCard,
   type iDriverCollectionCard,
+  type iLoot,
 } from "@f1pick6/shared";
 
 definePageMeta({
@@ -334,6 +340,7 @@ const db = useFirestore();
 const userStore = useUserStore();
 const overlay = useOverlay();
 const addToCollectionModal = overlay.create(AddToCollectionConfirmation);
+const rewardsModal = overlay.create(RewardsInfo);
 
 const { userObj } = storeToRefs(userStore);
 
@@ -479,17 +486,26 @@ const filteredCardsByTeamAndCard = computed(() => {
 
 const confirmAddToCollection = async (cardId: string, rarity: iCardRarity) => {
   isLoading.value = true;
+  let rewardedCards: iLoot[] = [];
 
-  await addCardToCollection(cardId, rarity, totalCards.value);
+  try {
+    await addCardToCollection(cardId, rarity, totalCards.value);
 
-  // if we've completed a reward level give the user the reward
-  if (userObj.value?.progressInRewardTrack === 0) {
-    const rewardObject = rewardObj[userObj.value.rewardLevel];
-    if (!rewardObject) return;
-    await giveUserReward(rewardObject);
+    // if we've completed a reward level give the user the reward
+    if (userObj.value?.progressInRewardTrack === 0) {
+      const rewardObject = rewardObj[userObj.value.rewardLevel];
+      if (rewardObject) {
+        rewardedCards = (await giveUserReward(rewardObject)) || [];
+      }
+
+      rewardsModal.open({
+        rewardObj: rewardObject,
+        rewardCards: rewardedCards,
+      });
+    }
+  } finally {
+    isLoading.value = false;
   }
-
-  isLoading.value = false;
 };
 
 const handleAddToCollection = (cardId: string, cardRarity: iCardRarity) => {

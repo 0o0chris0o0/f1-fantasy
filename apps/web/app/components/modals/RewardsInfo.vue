@@ -1,15 +1,11 @@
 <template>
-  <UModal
-    :ui="{
-      overlay: 'bg-gray-900/75',
-    }"
-  >
+  <UModal>
     <template #content>
-      <div v-if="rewardObj" class="text-white text-center px-6">
+      <div v-if="rewardObj" class="text-white text-center p-3 py-6">
         <img
           v-if="rewardObj.rewardType === RewardType.PACK"
-          :src="`/img/pack-${rewardObj.key}.png`"
-          class="w-32 mx-auto mb-6 rotate-card"
+          :src="`/img/${rewardObj.key}-pack.png`"
+          class="w-32 mx-auto mb-6 rotate-card shadow-amber-400 shadow-xl"
         />
         <div
           v-if="rewardObj.rewardType === RewardType.CARDS"
@@ -63,8 +59,13 @@
             </template>
           </span>
         </p>
-        <div class="text-center">
-          <Button @click="close" size="small">Close</Button>
+        <div class="flex items-center justify-center text-center gap-2">
+          <template>
+            <NuxtLink :to="`open-pack?packId=${rewardObj.key}`">
+              <Button size="sm">Open Pack</Button>
+            </NuxtLink>
+          </template>
+          <Button @click="emit('close', true)" size="sm">Close</Button>
         </div>
       </div>
     </template>
@@ -78,8 +79,9 @@ import type { iLoot, iReward } from "@f1pick6/shared/types";
 const props = defineProps<{
   rewardObj?: iReward;
   rewardCards?: iLoot[];
-  close?: () => void;
 }>();
+
+const emit = defineEmits<{ close: [boolean] }>();
 </script>
 
 <style scoped></style>
