@@ -1,11 +1,10 @@
 <template>
-  <UModal
-    :ui="{
-      overlay: 'bg-gray-900/75',
-    }"
-  >
+  <UModal>
     <template #content>
-      <div v-if="card && rarity && props.confirm" class="max-w-md px-4">
+      <div
+        v-if="card && rarity"
+        class="p-6 bg-surface-container-highest max-w-md"
+      >
         <div class="mb-6 w-52 mx-auto text-white">
           <UserCard
             :card="card.cardData"
@@ -14,17 +13,12 @@
             :quantity="card.quantity"
           />
         </div>
-        <p class="font-f1 text-xl text-center text-gray-200 mb-4 px-4">
-          Adding
-          <span
-            :class="[
-              'font-bold',
-              `text-${enumToText(iCardRarity, card.rarity)}`,
-            ]"
-            >{{ card.cardData.cardName }} -
-            {{ toCamel(enumToText(iCardRarity, rarity)) }}</span
+        <p class="font-f1 text-xl text-center text-gray-100 mb-4">
+          Add
+          <span :class="['font-bold', `text-${card.rarity.toLowerCase()}`]"
+            >{{ card.cardData.cardName }} ({{ card.rarity }})</span
           >
-          to your collection
+          to your collection?
         </p>
         <div
           v-if="
@@ -35,22 +29,28 @@
           "
           class="mb-4"
         >
-          <p class="italic text-sm text-orange-500 text-center">
-            This card is currently in your team. If you add it to your
-            collection it will also be removed from your team.
+          <p class="italic text-xs text-orange-400 text-center">
+            This card is currently in your team. Adding it to your collection
+            will remove it from your team.
           </p>
         </div>
-        <div class="flex justify-center items-center text-center gap-4">
-          <div>
-            <Button @click="props.close" size="small">Cancel</Button>
-          </div>
-          <div>
-            <Button
-              @click="props.confirm(card.cardData.cardId, rarity)"
-              version="green"
-              >Confirm</Button
-            >
-          </div>
+        <div class="flex justify-center items-center gap-4">
+          <Button
+            size="sm"
+            version="neutral"
+            :disabled="isSubmitting"
+            @click="emit('close')"
+          >
+            Cancel
+          </Button>
+          <Button
+            size="sm"
+            version="secondary"
+            :disabled="isSubmitting"
+            @click="handleConfirm"
+          >
+            {{ isSubmitting ? "Adding..." : "Confirm" }}
+          </Button>
         </div>
       </div>
     </template>
@@ -58,18 +58,31 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import { iCardRarity, type iCardInUsersCards } from "@f1pick6/shared/types";
-
-const userStore = useUserStore();
 
 const props = defineProps<{
   card?: iCardInUsersCards | null;
   rarity?: iCardRarity;
-  close?: () => void;
-  confirm?: (cardId: string, rarity: iCardRarity) => void;
+  confirm?: (cardId: string, rarity: iCardRarity) => Promise<void> | void;
 }>();
+
+const emit = defineEmits<{ close: [] }>();
+
+const userStore = useUserStore();
+const isSubmitting = ref(false);
+
+const handleConfirm = async () => {
+  if (!props.card || !props.rarity || !props.confirm || isSubmitting.value) {
+    return;
+  }
+
+  isSubmitting.value = true;
+  try {
+    await props.confirm(props.card.cardData.cardId, props.rarity);
+    emit("close");
+  } finally {
+    isSubmitting.value = false;
+  }
+};
 </script>
-
-<style scoped></style>
-
-<style lang="scss" scoped></style>

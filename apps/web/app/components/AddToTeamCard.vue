@@ -1,5 +1,9 @@
 <template>
-  <div v-if="card" class="flex items-center gap-4">
+  <div
+    v-if="card"
+    class="flex items-center gap-4"
+    :class="{ 'opacity-20': cardIsInTeam }"
+  >
     <div class="w-20">
       <UserCard
         :card="card.cardData"
@@ -87,9 +91,6 @@
         @click="onSelectCard"
         :disabled="cardIsInTeam"
         class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center"
-        :class="{
-          'opacity-25': cardIsInTeam,
-        }"
         version="tertiary-outline"
         size="sm"
       >

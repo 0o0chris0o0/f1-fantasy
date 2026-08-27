@@ -226,6 +226,14 @@ defineProps<{
   font-size: 0.6em;
   line-height: 1.2;
   display: none;
+
+  p {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
 }
 
 .card-team {
@@ -265,7 +273,7 @@ defineProps<{
 
 @container card (min-width: 100px) {
   .card {
-    font-size: 22px;
+    font-size: 14px;
   }
 
   .card-name {
@@ -279,7 +287,7 @@ defineProps<{
 
 @container card (min-width: 200px) {
   .card {
-    font-size: 28px;
+    font-size: 24px;
   }
 
   .card-team {

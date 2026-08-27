@@ -1,10 +1,10 @@
 <template>
   <div class="mb-4 relative">
     <div class="fixed bottom-10 right-0 space-y-2 z-50 p-2">
-      <div 
+      <div
         v-for="notification in notificationStore.notifications"
         :key="notification.id"
-        class="bg-green-500 rounded-lg p-4 text-sm notification"
+        class="bg-green-600 rounded-lg p-4 text-sm notification"
       >
         <p>{{ notification.message }}</p>
       </div>
@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNotificationStore } from '@/stores/notification';
+import { useNotificationStore } from "@/stores/notification";
 
 const notificationStore = useNotificationStore();
 </script>
@@ -29,6 +29,6 @@ const notificationStore = useNotificationStore();
 }
 
 .notification {
-  animation: fadeIn 0.5s ease-in-out
+  animation: fadeIn 0.5s ease-in-out;
 }
 </style>

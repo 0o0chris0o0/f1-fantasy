@@ -34,7 +34,7 @@
   </div>
 
   <!-- Collection Spinner Icon -->
-  <div v-if="userObj?.rewardLevel" class="my-2 text-center">
+  <div v-if="userObj?.rewardLevel" class="mt-2 mb-4 text-center">
     <div class="inline-block relative">
       <SegmentedCircle
         :count="userObj.rewardLevel <= 2 ? 14 : 13"
@@ -122,18 +122,22 @@
             v-for="group in cardGroups"
             :key="group.cardId"
             class="bg-gray-800/80 border border-gray-700/60 rounded-xl overflow-hidden shadow-sm"
+            :class="{
+              'border-green-600 bg-green-600/20':
+                getCollectedCountForGroup(group) === 4,
+            }"
           >
             <!-- Dropdown Header -->
             <button
               @click="toggleCardOpen(group.cardId)"
-              class="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-700/50 transition-colors text-left"
+              class="w-full px-4 py-3 flex items-center gap-4 justify-between hover:bg-gray-700/50 transition-colors text-left"
             >
               <div class="flex items-center gap-3">
                 <Icon
                   :name="
                     group.type === CardType.CONSTRUCTOR
-                      ? 'game-icons:car-wheel'
-                      : 'ph:user-bold'
+                      ? 'at-icons:wheel'
+                      : 'game-icons:full-motorcycle-helmet'
                   "
                   class="text-primary text-xl shrink-0"
                 />
@@ -145,6 +149,15 @@
                     {{ getCollectedCountForGroup(group) }}/4 Collected
                   </p>
                 </div>
+              </div>
+
+              <div class="ml-auto">
+                <Icon
+                  v-if="userStore.canUserAddACardToCollection(group.cardId)"
+                  name="material-symbols:add-circle"
+                  color="#008236"
+                  class="opacity-80"
+                />
               </div>
 
               <div class="flex items-center gap-2">
@@ -207,7 +220,7 @@
                         v-else
                         @click="handleAddToCollection(card.cardId, card.rarity)"
                         title="Add to collection"
-                        class="hover:scale-110 transition-transform"
+                        class="absolute inset-0 grid place-content-center"
                       >
                         <Icon
                           name="material-symbols:add-circle"
@@ -262,7 +275,7 @@
                     >
                       <Icon
                         name="game-icons:steering-wheel"
-                        class="text-green-500"
+                        class="text-green-600"
                       />
                     </div>
                     <div
@@ -275,7 +288,7 @@
                     >
                       <Icon
                         name="bi:check-circle-fill"
-                        class="text-green-500 text-sm"
+                        class="text-green-600 text-sm"
                       />
                     </div>
                   </div>
@@ -293,6 +306,7 @@
 import type { QueryDocumentSnapshot } from "firebase/firestore";
 import { collection, getDocs } from "firebase/firestore";
 import type { SelectItem } from "@nuxt/ui";
+import AddToCollectionConfirmation from "~/components/modals/AddToCollectionConfirmation.vue";
 import {
   CardType,
   iCardRarity,
@@ -318,6 +332,8 @@ interface CardGroup {
 
 const db = useFirestore();
 const userStore = useUserStore();
+const overlay = useOverlay();
+const addToCollectionModal = overlay.create(AddToCollectionConfirmation);
 
 const { userObj } = storeToRefs(userStore);
 
@@ -405,13 +421,11 @@ const getRarityBgColor = (rarity: string) => {
     case "COMMON":
       return "bg-slate-400";
     case "UNCOMMON":
-      return "bg-emerald-500";
+      return "bg-uncommon";
     case "RARE":
-      return "bg-sky-500";
+      return "bg-rare";
     case "LEGENDARY":
-      return "bg-amber-400";
-    case "MYTHIC":
-      return "bg-purple-500";
+      return "bg-legendary";
     default:
       return "bg-gray-400";
   }
@@ -479,7 +493,14 @@ const confirmAddToCollection = async (cardId: string, rarity: iCardRarity) => {
 };
 
 const handleAddToCollection = (cardId: string, cardRarity: iCardRarity) => {
-  confirmAddToCollection(cardId, cardRarity);
+  const userCardObj = userStore.getXCardFromUserObj(cardId, cardRarity);
+  if (!userCardObj) return;
+
+  addToCollectionModal.open({
+    card: userCardObj,
+    rarity: cardRarity,
+    confirm: confirmAddToCollection,
+  });
 };
 
 const toggleFilters = () => {
@@ -494,17 +515,6 @@ const resetFilters = () => {
   onlyOwnedCards.value = false;
   selectedType.value = "ALL";
 };
-
-const areFiltersActive = computed(() => {
-  return (
-    !!searchText.value ||
-    selectedRarity.value !== "ALL" ||
-    selectedTeam.value !== "ALL" ||
-    selectedSort.value !== "default" ||
-    onlyOwnedCards.value ||
-    selectedType.value !== "ALL"
-  );
-});
 </script>
 
 <style lang="scss" scoped>

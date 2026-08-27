@@ -63,7 +63,7 @@
               deal.price > userObj.money ||
               userStore.hasUserPurchasedXCard(deal.cardData.cardId)
             "
-            class="bg-green-400"
+            class="bg-green-600"
             @click="openBuyConfirmation(deal)"
           >
             <div class="flex items-center gap-1">
