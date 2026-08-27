@@ -1,7 +1,14 @@
 <template>
-  <UModal>
-    <template #content>
-      <div v-if="pack" class="p-6 bg-surface-container-highest">
+  <UModal
+    :close="{
+      color: 'primary',
+      size: 'xl',
+      class: 'p-0',
+    }"
+    close-icon="material-symbols:close"
+  >
+    <template #body>
+      <div v-if="pack" class="p-6 bg-surface-container-highest rounded-lg">
         <div class="mb-6">
           <img
             :src="`/img/${pack.packId}-pack.png`"

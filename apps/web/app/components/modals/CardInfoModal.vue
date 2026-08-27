@@ -36,19 +36,27 @@
                     class="text-sm"
                     :customize="customizeIcon"
                   />
-                  <p class="font-mono tracking-tight text-xs">ADDED --</p>
+                  <p class="font-mono tracking-tight text-xs text-legendary">
+                    ADDED --
+                  </p>
                 </div>
               </template>
               <template v-else>
                 <div class="flex items-center gap-1 opacity-40">
-                  <Icon name="lets-icons:book-check" class="text-sm" />
+                  <Icon name="lets-icons:book-check" class="text-xs" />
                   <p class="font-mono tracking-tight text-xs">
                     NOT IN COLLECTION
                   </p>
                 </div>
               </template>
-              <div v-if="userDetails.inTeam" class="flex items-center">
-                <Icon name="game-icons:steering-wheel" class="text-sm" />
+              <div
+                v-if="userDetails.inTeam"
+                class="flex items-center gap-1 text-green-600"
+              >
+                <Icon name="game-icons:steering-wheel" class="text-xs" />
+                <p class="font-mono tracking-tight text-xs font-bold">
+                  IN TEAM
+                </p>
               </div>
             </div>
             <p

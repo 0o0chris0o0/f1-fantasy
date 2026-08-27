@@ -1,7 +1,17 @@
 <template>
-  <UModal>
-    <template #content>
-      <div v-if="pack" class="bg-surface-container-highest p-3 text-white">
+  <UModal
+    :close="{
+      color: 'primary',
+      size: 'xl',
+      class: 'p-0',
+    }"
+    close-icon="material-symbols:close"
+  >
+    <template #body>
+      <div
+        v-if="pack"
+        class="bg-surface-container-highest p-3 text-white rounded-lg"
+      >
         <div class="mb-4">
           <p class="font-f1 text-2xl font-bold text-center">
             {{ pack.packName }}

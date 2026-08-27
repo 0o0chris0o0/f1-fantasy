@@ -3,7 +3,8 @@ export default defineAppConfig({
     modal: {
       slots: {
         overlay: "bg-gray-900/90",
-        content: "divide-none",
+        header: "flex items-center gap-1.5 p-0 min-h-0 h-0",
+        content: "divide-none max-h-full",
       },
       variants: {
         fullscreen: {
@@ -11,8 +12,9 @@ export default defineAppConfig({
             content: "inset-0",
           },
           false: {
+            body: "flex-1 p-0 py-4 pt-12 overflow-y-auto",
             content:
-              "w-full max-w-[90%] sm:max-w-sm rounded-lg shadow-lg border-0 ring-0 bg-transparent",
+              "w-full max-w-[90%] sm:max-w-sm rounded-lg shadow-lg border-0 ring-0 bg-transparent max-h-full",
           },
         },
         overlay: {
@@ -21,6 +23,23 @@ export default defineAppConfig({
           },
         },
       },
+      compoundVariants: [
+        {
+          scrollable: true,
+          fullscreen: false,
+          class: {
+            overlay: "grid place-items-center p-4 sm:py-8",
+          },
+        },
+        {
+          scrollable: false,
+          fullscreen: false,
+          class: {
+            content:
+              "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-full overflow-hidden",
+          },
+        },
+      ],
     },
     input: {
       slots: {
