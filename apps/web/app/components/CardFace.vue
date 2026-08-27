@@ -285,6 +285,20 @@ defineProps<{
   }
 }
 
+@container card (min-width: 130px) {
+  .card {
+    font-size: 16px;
+  }
+
+  .card-name {
+    display: block;
+  }
+
+  .card-icons {
+    display: flex;
+  }
+}
+
 @container card (min-width: 200px) {
   .card {
     font-size: 24px;

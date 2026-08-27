@@ -105,21 +105,24 @@
                 <div>
                   <p class="font-headline text-xl font-bold text-secondary">
                     Home Races
+                    <span class="text-xs italic opacity-75"
+                      >(Current Round: {{ currentRound }})</span
+                    >
                   </p>
                 </div>
                 <div
-                  class="px-4 py-3 bg-surface-container-high rounded-xl"
                   v-if="card.homeRaces.length"
                   v-for="race in card.homeRaces"
+                  class="px-4 py-3 bg-surface-container-high rounded-xl"
+                  :class="{
+                    'border border-tertiary': race.round === currentRound,
+                  }"
                 >
                   <p
                     class="uppercase font-mono text-primary"
                     :class="{ 'font-bold': race.round === currentRound }"
                   >
                     <span class="text-sm">Round {{ race.round }}:&nbsp;</span>
-                    <span class="text-xs italic opacity-75"
-                      >(current round: {{ currentRound }})</span
-                    >
                   </p>
                   <p class="font-f1">{{ race.raceName }}</p>
                   <p class="font-mono text-tertiary">

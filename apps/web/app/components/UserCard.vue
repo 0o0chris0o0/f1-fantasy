@@ -3,17 +3,29 @@
     <div class="card">
       <div
         v-if="level && !hideCardLevel"
-        class="absolute top-3 left-2 z-10 flex gap-0.5"
+        class="absolute top-3 left-2 z-10 flex items-end gap-0.5"
       >
         <div
           v-for="i in level"
           :key="'filled-' + i"
-          class="w-1.5 h-3 bg-secondary"
+          class="w-1.5 bg-secondary"
+          :class="{
+            'h-2': i === 1,
+            'h-2.5': i === 2,
+            'h-3': i === 3,
+            'h-3.5': i === 4,
+          }"
         ></div>
         <div
           v-for="i in 4 - level"
           :key="'empty-' + i"
-          class="w-1.5 h-3 bg-gray-400"
+          class="w-1.5 bg-gray-400"
+          :class="{
+            'h-2': i === 0,
+            'h-2.5': i === 1,
+            'h-3': i === 2,
+            'h-3.5': i === 3,
+          }"
         ></div>
       </div>
       <div class="shadow-xl">
@@ -90,8 +102,8 @@ const {
 
 const customizeIcon = (content: string) => {
   return content
-    .replace(/fill="[^"]*"/g, `fill="#84cc16"`) // Change fill color to red
-    .replace(/stroke="[^"]*"/g, `stroke="#84cc16"`); // Change stroke color to red
+    .replace(/fill="[^"]*"/g, `fill="#00a63e"`) // Change fill color to red
+    .replace(/stroke="[^"]*"/g, `stroke="#00a63e"`); // Change stroke color to red
 };
 </script>
 
