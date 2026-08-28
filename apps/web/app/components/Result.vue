@@ -1,16 +1,22 @@
 <template>
-  <div class="bg-gray-900 p-3 rounded">
+  <div class="rounded-lg overflow-hidden glass-panel">
     <button
-      class="w-full text-left font-f1 flex gap-4 items-center"
+      class="w-full bg-surface-container-low text-left font-headline flex gap-4 items-center p-3"
       @click="toggleOpen"
+      :class="{ 'bg-surface-container-highest': isOpen }"
     >
-      <span class="underline text-sm"
-        >Round {{ result.round }}<br />
-        {{ result.raceName }}</span
-      >
-      <span class="mx-auto font-semibold"
-        >{{ result.totalModifiedScore }} Pts</span
-      >
+      <div class="flex flex-col">
+        <span class="font-mono uppercase text-primary text-sm">
+          Round {{ result.round }}
+        </span>
+        <span class="font-bold">{{ result.raceName }}</span>
+      </div>
+      <div class="flex items-baseline gap-2 font-mono ml-auto">
+        <span class="mx-auto font-semibold text-xl">{{
+          result.totalModifiedScore
+        }}</span>
+        <span class="text-primary text-sm">PTS</span>
+      </div>
       <Icon
         name="material-symbols:arrow-drop-up-rounded"
         :class="[
@@ -21,70 +27,96 @@
         ]"
       />
     </button>
-    <div v-if="isOpen" class="mt-4">
-      <p class="font-f1 italic text-xs mb-2">Drivers</p>
-      <div class="space-y-2">
-        <div
-          v-for="card in drivers"
-          :class="`relative border-2 rounded-lg pr-3 overflow-hidden py-2 rarity-${card.rarity.toLowerCase()}`"
+    <div v-if="isOpen" class="bg-carbon flex flex-col gap-4 p-3">
+      <div>
+        <p
+          class="font-headline tracking-widest text-primary uppercase italic font-bold text-sm mb-2"
         >
-          <div class="absolute w-20 transform -left-2 top-2">
-            <UserCard
-              :card="card.cardData"
-              :rarity="card.rarity"
-              :level="card.level"
-              hide-user-data
-              hide-card-score
-            />
-          </div>
-          <div class="pl-20 font-f1 text-sm flex-1">
-            <div class="flex items-center w-full justify-between mb-1">
-              <p class="text-xs">
-                <span class="uppercase">{{ card.cardData.cardName }}</span>
-                <span class="opacity-75">&nbsp;(Lvl. {{ card.level }})</span>
-              </p>
-              <p class="flex items-center tracking-tight">
-                <span class="text-xl">{{ card.modifiedFantasyScore }}</span>
-                <span class="text-[10px]">&nbsp;PTS</span>
-              </p>
+          Drivers
+        </p>
+        <div class="space-y-2">
+          <div
+            v-for="card in drivers"
+            class="bg-surface-container-low border rounded-lg flex"
+            :class="[
+              {
+                'border-common/60': card.rarity === iCardRarity.COMMON,
+                'border-uncommon/60': card.rarity === iCardRarity.UNCOMMON,
+                'border-rare/60 shadow-rare/50':
+                  card.rarity === iCardRarity.RARE,
+                'border-legendary/60': card.rarity === iCardRarity.LEGENDARY,
+                'border-mythic/60': card.rarity === iCardRarity.MYTHIC,
+              },
+              `rarity-${card.rarity.toLowerCase()}`,
+            ]"
+          >
+            <div class="relative w-16">
+              <UserCard
+                :card="card.cardData"
+                :rarity="card.rarity"
+                hide-user-data
+                hide-card-score
+              />
+              <span
+                v-if="card.fantasyRaceScore === -5"
+                class="absolute bottom-1 left-1/2 whitespace-nowrap transform -translate-x-1/2 px-1 text-[10px] rounded-sm bg-red-500 uppercase font-bold italic"
+                >{{ card.finishingStatus }}</span
+              >
             </div>
-            <div class="grid grid-flow-col w-full items-center">
-              <div class="flex-1 border-r border-gray-600 pr-2">
-                <div class="flex justify-center items-center mb-1">
-                  <Icon name="game-icons:stopwatch" class="mr-1 text-lg" />
-                  <p v-if="card.realStartingPosition" class="text-xs">
-                    (P{{ card.realStartingPosition }})
-                  </p>
-                </div>
-                <p class="flex items-center justify-center">
-                  <span>{{ card.fantasyQualScore }}</span>
-                  <span class="text-[10px]">&nbsp;PTS</span>
+            <div class="text-sm flex-1 p-2">
+              <div class="flex items-start w-full justify-between mb-1">
+                <p class="font-f1 text-xs flex items-baseline gap-1 mt-0.5">
+                  <span class="uppercase">{{ card.cardData.cardName }}</span>
+                  <span class="opacity-40 text-xs font-headline font-bold">
+                    - LVL. {{ card.level }}
+                  </span>
                 </p>
-              </div>
-              <div class="flex-1 border-r border-gray-600 px-2">
-                <div class="flex justify-center items-center mb-1">
-                  <Icon name="game-icons:checkered-flag" class="mr-1 text-lg" />
-                  <p v-if="card.fantasyRaceScore" class="text-xs">
-                    (P{{ card.realRacePosition }})
-                  </p>
-                  <p v-else class="text-xs">(DNF)</p>
+                <div class="flex items-baseline gap-1 font-mono ml-auto">
+                  <span class="mx-auto font-semibold text-lg">{{
+                    card.modifiedFantasyScore
+                  }}</span>
+                  <span class="text-primary text-xs">PTS</span>
                 </div>
-                <p class="flex items-center justify-center">
-                  <span>{{ card.fantasyRaceScore }}</span>
-                  <span class="text-[10px]">&nbsp;PTS</span>
-                  <span
-                    v-if="card.fantasyRaceScore === -5"
-                    class="text-xs text-red-400 italic opacity-75"
-                    >&nbsp;({{ card.finishingStatus }})</span
+              </div>
+              <div class="grid grid-flow-col w-full items-center font-mono">
+                <div
+                  class="border-r flex flex-col gap-1 border-primary/15 pr-2"
+                >
+                  <div
+                    class="flex justify-center items-center gap-1 text-primary"
                   >
-                </p>
-              </div>
-              <div class="flex pl-3 sm:pl-4">
-                <div class="text-center">
-                  <p class="text-xs text-blue-500">
-                    + {{ Math.round((card.cardModifierValue - 1) * 100) }}%
+                    <Icon name="game-icons:stopwatch" class="text-lg" />
+                    <p v-if="card.realStartingPosition" class="text-xs">
+                      (P{{ card.realStartingPosition }})
+                    </p>
+                  </div>
+                  <p class="flex items-baseline justify-center font-bold">
+                    <span>{{ card.fantasyQualScore }}</span>
+                    <span class="text-[10px]">&nbsp;PTS</span>
                   </p>
-                  <p class="flex items-center justify-center">
+                </div>
+                <div
+                  class="border-r flex flex-col gap-1 border-primary/15 px-2"
+                >
+                  <div
+                    class="flex justify-center items-center gap-1 text-primary"
+                  >
+                    <Icon name="game-icons:checkered-flag" class="text-lg" />
+                    <p v-if="card.fantasyRaceScore" class="text-xs">
+                      (P{{ card.realRacePosition }})
+                    </p>
+                    <p v-else class="text-xs">(DNF)</p>
+                  </div>
+                  <p class="flex items-baseline justify-center">
+                    <span>{{ card.fantasyRaceScore }}</span>
+                    <span class="text-[10px]">&nbsp;PTS</span>
+                  </p>
+                </div>
+                <div class="flex flex-col gap-1 px-2">
+                  <p class="text-xs text-tertiary text-center">
+                    +{{ Math.round((card.cardModifierValue - 1) * 100) }}%
+                  </p>
+                  <p class="flex items-baseline justify-center">
                     <span>{{
                       card.modifiedFantasyScore - card.baseFantasyScore
                     }}</span>
@@ -97,66 +129,79 @@
         </div>
       </div>
 
-      <p class="font-f1 italic text-xs mt-6 mb-2">Constructors</p>
-      <div class="space-y-2">
-        <div
-          v-for="card in constructors"
-          :class="`relative border-2 rounded-lg pr-3 overflow-hidden py-2 rarity-${card.rarity.toLowerCase()}`"
+      <div>
+        <p
+          class="font-headline tracking-widest text-primary uppercase italic font-bold text-sm mb-2"
         >
-          <div class="absolute w-20 transform -left-2 top-2">
-            <UserCard
-              :card="card.cardData"
-              :rarity="card.rarity"
-              :level="card.level"
-              hide-user-data
-              hide-card-score
-            />
-          </div>
-          <div class="pl-20 font-f1 text-sm flex-1">
-            <div class="flex items-center w-full justify-between mb-1">
-              <p class="text-xs">
-                <span class="uppercase">{{ card.cardData.cardName }}</span>
-                <span class="opacity-75">&nbsp;(Lvl. {{ card.level }})</span>
-              </p>
-              <p class="flex items-center tracking-tight">
-                <span class="text-xl">{{ card.modifiedFantasyScore }}</span>
-                <span class="text-[10px]">&nbsp;PTS</span>
-              </p>
+          Constructors
+        </p>
+        <div class="space-y-2">
+          <div
+            v-for="card in constructors"
+            class="bg-surface-container-low border rounded-lg flex"
+            :class="[
+              {
+                'border-common/60': card.rarity === iCardRarity.COMMON,
+                'border-uncommon/60': card.rarity === iCardRarity.UNCOMMON,
+                'border-rare/60 shadow-rare/50':
+                  card.rarity === iCardRarity.RARE,
+                'border-legendary/60': card.rarity === iCardRarity.LEGENDARY,
+                'border-mythic/60': card.rarity === iCardRarity.MYTHIC,
+              },
+              `rarity-${card.rarity.toLowerCase()}`,
+            ]"
+          >
+            <div class="relative w-16">
+              <UserCard
+                :card="card.cardData"
+                :rarity="card.rarity"
+                hide-user-data
+                hide-card-score
+              />
             </div>
-            <div class="grid grid-cols-12 items-center gap-2">
-              <div
-                class="col-span-9 grid grid-cols-12 items-center gap-y-1 border-r border-gray-600 py-1 pr-2"
-              >
-                <template v-for="driver in card.driverScores">
-                  <div class="col-span-7">
+            <div class="text-sm flex-1 p-2">
+              <div class="flex items-start w-full justify-between">
+                <p class="font-f1 text-xs flex items-baseline gap-1 mt-0.5">
+                  <span class="uppercase">{{ card.cardData.cardName }}</span>
+                  <span class="opacity-40 text-xs font-headline font-bold">
+                    - LVL. {{ card.level }}
+                  </span>
+                </p>
+                <div class="flex items-baseline gap-1 font-mono ml-auto">
+                  <span class="mx-auto font-semibold text-lg">{{
+                    card.modifiedFantasyScore
+                  }}</span>
+                  <span class="text-primary text-xs">PTS</span>
+                </div>
+              </div>
+              <div class="flex gap-1">
+                <div class="grow flex flex-col border-r pr-2 border-primary/15">
+                  <div
+                    v-for="driver in card.driverScores"
+                    class="flex items-center gap-1"
+                  >
                     <p class="text-xs italic opacity-60">
                       {{ driver.driverName }}:&nbsp;
                     </p>
-                  </div>
-                  <div class="col-span-5 leading-tight">
-                    <p class="col-span-5 flex items-center">
-                      <span>{{ driver.totalFantasyPoints }}</span>
+                    <p class="col-span-5 flex items-baseline ml-auto">
+                      <span>{{
+                        Math.floor(driver.totalFantasyPoints / 2)
+                      }}</span>
                       <span class="text-[10px]"> &nbsp;PTS </span>
                     </p>
-                    <p
-                      v-if="driver.totalFantasyPoints === -5"
-                      class="text-xs text-red-400 italic opacity-75"
-                    >
-                      ({{ driver.finishingStatus }})
-                    </p>
                   </div>
-                </template>
-              </div>
-              <div class="col-span-3 text-center">
-                <p class="text-xs text-blue-500">
-                  + {{ Math.round((card.cardModifierValue - 1) * 100) }}%
-                </p>
-                <p class="flex items-center justify-center">
-                  <span>{{
-                    card.modifiedFantasyScore - card.baseFantasyScore
-                  }}</span>
-                  <span class="text-[10px]">&nbsp;PTS</span>
-                </p>
+                </div>
+                <div class="ml-auto flex flex-col justify-center px-2">
+                  <p class="text-xs text-tertiary text-center">
+                    +{{ Math.round((card.cardModifierValue - 1) * 100) }}%
+                  </p>
+                  <p class="flex items-baseline justify-center">
+                    <span>{{
+                      card.modifiedFantasyScore - card.baseFantasyScore
+                    }}</span>
+                    <span class="text-[10px]">&nbsp;PTS</span>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -167,7 +212,12 @@
 </template>
 
 <script setup lang="ts">
-import { CardType, type iCardScore, type iResult } from "@f1pick6/shared";
+import {
+  CardType,
+  type iCardScore,
+  type iResult,
+  iCardRarity,
+} from "@f1pick6/shared";
 
 const props = defineProps<{
   result: iResult;
@@ -187,19 +237,46 @@ const toggleOpen = () => {
 </script>
 
 <style scoped>
-.rarity-common {
-  border-color: var(--color-common);
+.glass-panel {
+  background: rgba(31, 31, 40, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.bg-carbon {
+  background-image:
+    linear-gradient(
+      45deg,
+      #13131b 25%,
+      transparent 25%,
+      transparent 75%,
+      #13131b 75%,
+      #13131b
+    ),
+    linear-gradient(
+      45deg,
+      #13131b 25%,
+      transparent 25%,
+      transparent 75%,
+      #13131b 75%,
+      #13131b
+    );
+  background-size: 8px 8px;
+  background-position:
+    0 0,
+    4px 4px;
+  background-color: #1a1a24;
 }
 
 .rarity-uncommon {
-  border-color: var(--color-uncommon);
+  box-shadow: 0 0 14px rgba(4, 101, 109, 0.3);
 }
 
 .rarity-rare {
-  border-color: var(--color-rare);
+  box-shadow: 0 0 16px rgba(146, 59, 168, 0.5);
 }
 
 .rarity-legendary {
-  border-color: var(--color-legendary);
+  box-shadow: 0 0 12px rgba(184, 134, 11, 0.4);
 }
 </style>

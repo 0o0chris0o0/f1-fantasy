@@ -1,32 +1,39 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { pickCardsForUser, createLootCards } from '../openPack.js';
-import type { iPack, iConstructorCard, iDriverCard } from '@f1pick6/shared/types';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import {
+  createLootCards,
+  hasExpectedPackSlots,
+  pickCardsForUser,
+} from "../openPack.js";
+import type {
+  iPack,
+  iConstructorCard,
+  iDriverCard,
+} from "@f1pick6/shared/types";
 
-import { mockDriverCards } from '../__mocks__/mockDriverCards.js';
-import { mockConstructorCards } from '../__mocks__/mockConstructorCards.js';
-import { mockPackData } from '../__mocks__/mockPackData.js';
-import { mockUsersCurrentCards } from '../__mocks__/mockUsersCurrentCards.js';
-import { mockUsersCardHistory } from '../__mocks__/mockUsersCardHistory.js';
+import { mockDriverCards } from "../__mocks__/mockDriverCards.js";
+import { mockConstructorCards } from "../__mocks__/mockConstructorCards.js";
+import { mockPackData } from "../__mocks__/mockPackData.js";
+import { mockUsersCurrentCards } from "../__mocks__/mockUsersCurrentCards.js";
+import { mockUsersCardHistory } from "../__mocks__/mockUsersCardHistory.js";
 
-
-describe('pickCardsForUser', () => {
+describe("pickCardsForUser", () => {
   let mockAllCards: (iDriverCard | iConstructorCard)[];
 
   beforeEach(() => {
     mockAllCards = [...mockDriverCards, ...mockConstructorCards];
   });
 
-  it('should return an array of cards', () => {
+  it("should return an array of cards", () => {
     const result = pickCardsForUser(mockAllCards, 6);
     expect(Array.isArray(result)).toBe(true);
   });
 
-  it('should return the correct number of new cards based on param', () => {
+  it("should return the correct number of new cards based on param", () => {
     const result = pickCardsForUser(mockAllCards, 6);
     expect(result.length).toBe(6);
   });
 
-  it('should not pick the same card twice in a single pack', () => {
+  it("should not pick the same card twice in a single pack", () => {
     const pickedIds = [];
 
     for (let i = 0; i < 50; i++) {
@@ -37,62 +44,80 @@ describe('pickCardsForUser', () => {
     }
   });
 
-  it('should enforce driver on last slot if no driver has been selected', () => {
+  it("should enforce driver on last slot if no driver has been selected", () => {
     // create test object containing only 1 driver
-    const modifiedAllCards = [mockDriverCards[0]!, ...mockConstructorCards]
+    const modifiedAllCards = [mockDriverCards[0]!, ...mockConstructorCards];
 
     const result = pickCardsForUser(modifiedAllCards, 2);
 
     const hasDriver = result.some((card) =>
-      mockDriverCards.some((dc) => dc.cardId === card.cardId)
+      mockDriverCards.some((dc) => dc.cardId === card.cardId),
     );
     expect(hasDriver).toBe(true);
   });
 
-  it('should enforce constructor on last slot if no constructor has been selected', () => {
+  it("should enforce constructor on last slot if no constructor has been selected", () => {
     // create test object containing only 1 driver
     const modifiedAllCards = [...mockDriverCards, mockConstructorCards[0]!];
 
     const result = pickCardsForUser(modifiedAllCards, 2);
 
     const hasConstructor = result.some((card) =>
-      mockConstructorCards.some((cc) => cc.cardId === card.cardId)
+      mockConstructorCards.some((cc) => cc.cardId === card.cardId),
     );
     expect(hasConstructor).toBe(true);
   });
 });
 
-describe('createLootCards', () => {
+describe("createLootCards", () => {
   let mockAllCards: (iDriverCard | iConstructorCard)[];
 
   beforeEach(() => {
     mockAllCards = [...mockDriverCards, ...mockConstructorCards];
+    vi.stubGlobal("useFirestore", () => ({}));
   });
 
-  it('adds new cards when user does not have any', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it("adds new cards when user does not have any", async () => {
     const newCards = pickCardsForUser(mockAllCards, 6);
-    const result = createLootCards(newCards, mockPackData, [], {}, {});
+    const result = await createLootCards(newCards, mockPackData, [], {}, {});
 
     expect(result).toHaveLength(6);
-    expect(result[0]!.rarity).toBe('COMMON');
+    expect(result[0]!.rarity).toBe("COMMON");
     expect(result[0]!.quantity).toBe(1);
   });
 
-  it('increments quantity when user already has the same card and rarity', () => {
+  it("increments quantity when user already has the same card and rarity", async () => {
     // force random card to be first available (will gurantee albon selection)
-    vi.spyOn(Math, 'random').mockReturnValue(0);
+    vi.spyOn(Math, "random").mockReturnValue(0);
     const newCards = pickCardsForUser(mockAllCards, 6);
-    const result = createLootCards(
-      newCards, 
-      mockPackData, 
-      mockUsersCurrentCards, 
+    const result = await createLootCards(
+      newCards,
+      mockPackData,
+      mockUsersCurrentCards,
       mockUsersCardHistory,
-    {}
+      {},
     );
 
-    const albonCard = result.find((card) => card.cardData.cardId === 'albon');
+    const albonCard = result.find((card) => card.cardData.cardId === "albon");
 
     expect(result).toHaveLength(6);
     expect(albonCard!.quantity).toBe(2);
+  });
+});
+
+describe("hasExpectedPackSlots", () => {
+  it("accepts pack configurations with one slot per included card", () => {
+    expect(hasExpectedPackSlots(mockPackData)).toBe(true);
+  });
+
+  it("rejects pack configurations with missing slots", () => {
+    expect(hasExpectedPackSlots({ ...mockPackData, cardsIncluded: 7 })).toBe(
+      false,
+    );
   });
 });

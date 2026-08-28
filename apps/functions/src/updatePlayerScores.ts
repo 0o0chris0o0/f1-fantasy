@@ -6,7 +6,6 @@ import {
   iConstructorFantasyScore,
   iCurrentTeam,
   iDriverFantasyScore,
-  iLeaderBoard,
   iLeaderboardScore,
   iResult,
   iRoundInfo,
@@ -86,6 +85,13 @@ export async function updatePlayerScores(
           c.cardData.cardId === card.cardData.cardId &&
           c.rarity === card.rarity,
       );
+      if (indexOfCard === -1) {
+        logger.warn(
+          `Selected card ${card.cardData.cardId} was not found in ${player.id}'s inventory`,
+        );
+        return;
+      }
+
       const cardQuantity = playersCurrentCards[indexOfCard]?.quantity;
 
       if (cardQuantity > 1) {
@@ -129,8 +135,8 @@ export async function updatePlayerScores(
       latestResultCleared: false,
       results: FieldValue.arrayUnion(playersResultObj),
       currentTeam: {
-        commonSlot_a: null,
-        commonSlot_b: null,
+        uncommonSlot_a: null,
+        uncommonSlot_b: null,
         rareSlot_a: null,
         rareSlot_b: null,
         legendarySlot_a: null,

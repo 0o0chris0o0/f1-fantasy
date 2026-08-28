@@ -4,20 +4,28 @@ import { logger } from "firebase-functions";
 
 export async function updateNextRaceDetails(completedRound: number) {
   const firestore = getFirestore();
+  const roundInfoRef = firestore.doc("appData/roundInfo");
+  const nextRound = completedRound + 1;
 
-  const nextScheduleRef = await firestore.doc(`schedule/round${completedRound + 1}`).get()
-  const nextScheduleData = nextScheduleRef.data() as iRace;
+  const nextScheduleSnap = await firestore
+    .doc(`schedule/round${nextRound}`)
+    .get();
+  const nextScheduleData = nextScheduleSnap.data() as iRace;
 
-  if (nextScheduleRef.exists && nextScheduleData) {
-    const roundInfoRef = firestore.doc('appData/roundInfo');
-    await roundInfoRef.update({
-      currentRound: completedRound + 1,
-      nextRaceName: nextScheduleData.raceName,
-      nextRaceStart: nextScheduleData.raceStart,
-      teamEditCutoff: nextScheduleData.firstPractice
-    })
+  if (nextScheduleSnap.exists && nextScheduleData) {
+    await roundInfoRef.set(
+      {
+        currentRound: nextRound,
+        nextRaceName: nextScheduleData.raceName,
+        nextRaceStart: nextScheduleData.raceStart,
+        teamEditCutoff: nextScheduleData.firstPractice,
+      },
+      { merge: true },
+    );
   } else {
-    logger.warn('No next race found!')
+    await roundInfoRef.set({ currentRound: nextRound }, { merge: true });
+    logger.warn(
+      "No next race found; advanced the current round to prevent reprocessing",
+    );
   }
-
 }

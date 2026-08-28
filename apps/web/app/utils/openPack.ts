@@ -5,7 +5,6 @@ import {
   where,
   query,
   getDocs,
-  updateDoc,
   writeBatch,
   arrayUnion,
 } from "firebase/firestore";
@@ -37,6 +36,11 @@ export async function openPack(packId: string) {
     throw new Error("Pack does not exist");
   }
   const packData = packDocSnap.data() as iPack;
+  if (!hasExpectedPackSlots(packData)) {
+    throw new Error(
+      "Pack configuration does not match the number of cards included",
+    );
+  }
 
   // check the user has atleast 1 of the requested pack
   const userPackToOpen = userObj.value.packs[packData.packId];
@@ -63,6 +67,9 @@ export async function openPack(packId: string) {
     userObj.value.cardsHistory,
     userObj.value.collection,
   );
+  if (newCards.length !== packData.cardsIncluded) {
+    throw new Error("Unable to generate all cards for this pack");
+  }
 
   // create users card obj, includes adding rarity, level & xp
   const newCardsForUsers = mergeNewCardsWithCurrentUserCards(
@@ -74,41 +81,55 @@ export async function openPack(packId: string) {
     throw new Error("User not logged in");
   }
 
-  // Add the cards to the user object
-  batch.update(userDocRef.value, {
-    cards: newCardsForUsers,
-  });
-
-  // update the new card list for the user
   const seenCards = newCards.map(
     (card) => `${card.cardData.cardId}_${card.rarity}`,
   );
-  batch.update(userDocRef.value, {
-    seenCards: arrayUnion(...seenCards),
-  });
 
-  // Remove the pack from the user object
-  const userPacks: Record<string, iPackInUser> = userObj.value!.packs || {};
+  const userPacks: Record<string, iPackInUser> = {
+    ...userObj.value.packs,
+  };
   const userPackData = userPacks[packData.packId];
 
   if (!userPackData) {
     throw new Error("User does not have this pack");
   }
 
-  userPackData.quantity -= 1;
+  const updatedUserPackData = {
+    ...userPackData,
+    quantity: userPackData.quantity - 1,
+  };
 
-  // if there are no more packs left delete the object
-  if (userPackData.quantity < 1) {
+  if (updatedUserPackData.quantity < 1) {
     delete userPacks[packData.packId];
+  } else {
+    userPacks[packData.packId] = updatedUserPackData;
   }
 
   batch.update(userDocRef.value, {
+    cards: newCardsForUsers,
+    seenCards: arrayUnion(...seenCards),
     packs: userPacks,
   });
 
   await batch.commit();
 
   return newCards;
+}
+
+export function hasExpectedPackSlots(packData: iPack) {
+  const slotNumbers = Object.keys(packData.slots).map(Number);
+
+  return (
+    packData.cardsIncluded > 0 &&
+    slotNumbers.length === packData.cardsIncluded &&
+    slotNumbers.every(
+      (slotNumber) =>
+        Number.isInteger(slotNumber) &&
+        slotNumber >= 1 &&
+        slotNumber <= packData.cardsIncluded &&
+        Boolean(packData.slots[slotNumber]),
+    )
+  );
 }
 
 /**
@@ -183,6 +204,7 @@ export async function createLootCards(
 ) {
   const db = useFirestore();
   const newCards: iCardInUsersCards[] = [];
+  let mythicPool: string[] | undefined;
 
   for (const [key, slotData] of Object.entries(packData.slots)) {
     const i = Number(key);
@@ -196,13 +218,15 @@ export async function createLootCards(
 
     // handle mythic rarity
     if (selectedRarity === iCardRarity.MYTHIC) {
-      // if the selected rarity is MYTHIC, first we need to check that the card is in the mythic pool.
-      const mythicPoolRef = doc(db, "appData/misc");
-      const mythicPoolSnap = await getDoc(mythicPoolRef);
-      const mythicPoolData = mythicPoolSnap.get("mythicPool") || [];
+      if (!mythicPool) {
+        const mythicPoolRef = doc(db, "appData/misc");
+        const mythicPoolSnap = await getDoc(mythicPoolRef);
+        mythicPool = mythicPoolSnap.get("mythicPool") || [];
+      }
 
-      // check if the picked card is in the mythic pool
-      const doesMythicVersionExist = mythicPoolData.includes(cardInSlot.cardId);
+      const doesMythicVersionExist = (mythicPool ?? []).includes(
+        cardInSlot.cardId,
+      );
 
       // if the card does NOT exist we'll change the rarity to legendary instead.
       if (!doesMythicVersionExist) {

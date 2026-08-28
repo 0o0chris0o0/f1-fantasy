@@ -23,12 +23,6 @@
             class="w-full p-4 bg-surface-container-highest text-white"
           >
             <div class="flex items-center gap-3">
-              <div class="flex items-center gap-1">
-                <Icon name="bi:stack" class="text-sm" />
-                <p class="font-mono font-bold text-sm">
-                  x{{ userDetails.quantity || 0 }}
-                </p>
-              </div>
               <template v-if="userDetails.inCollection">
                 <div class="flex items-center gap-1">
                   <Icon
@@ -59,11 +53,50 @@
                 </p>
               </div>
             </div>
+
             <p
               class="font-f1 font-bold tracking-wide leading-6 text-2xl uppercase italic my-2"
             >
               {{ card.cardName }}
             </p>
+
+            <div class="flex items-center gap-4">
+              <div class="flex items-center gap-2">
+                <Icon name="bi:stack" class="text-sm" />
+                <p class="font-mono font-bold">
+                  x{{ userDetails.quantity || 0 }}
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <div v-if="userDetails.level" class="flex items-end gap-1">
+                  <div
+                    v-for="i in userDetails.level"
+                    :key="'filled-' + i"
+                    class="w-1.5 bg-secondary"
+                    :class="{
+                      'h-2': i === 1,
+                      'h-2.5': i === 2,
+                      'h-3': i === 3,
+                      'h-3.5': i === 4,
+                    }"
+                  ></div>
+                  <div
+                    v-for="i in 4 - userDetails.level"
+                    :key="'empty-' + i"
+                    class="w-1.5 bg-gray-400"
+                    :class="{
+                      'h-2': i === 0,
+                      'h-2.5': i === 1,
+                      'h-3': i === 2,
+                      'h-3.5': i === 3,
+                    }"
+                  ></div>
+                </div>
+                <p class="font-bold font-headline">
+                  LVL {{ userDetails.level }} (X Races)
+                </p>
+              </div>
+            </div>
             <div class="flex flex-col gap-2">
               <div class="flex items-center justify-between text-primary">
                 <p class="uppercase font-mono text-xs">AVG FANTASY POINTS:</p>
@@ -111,10 +144,10 @@
               </p>
               <div v-else class="grid grid-cols-1 gap-3">
                 <div>
-                  <p class="font-headline text-xl font-bold text-secondary">
+                  <p class="font-headline text-xl font-bold text-secondary/80">
                     Home Races
-                    <span class="text-xs italic opacity-75"
-                      >(Current Round: {{ currentRound }})</span
+                    <span class="text-xs"
+                      >- Current Round: {{ currentRound }}</span
                     >
                   </p>
                 </div>

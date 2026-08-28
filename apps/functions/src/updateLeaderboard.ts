@@ -1,42 +1,66 @@
 import { iLeaderBoard, iLeaderboardScore } from "@f1pick6/shared/types";
 import { getFirestore } from "firebase-admin/firestore";
 
-export async function updateLeaderboard(playerResultsForLeaderboard: Record<string, Omit<iLeaderboardScore, 'currentRank' | 'prevRank'>>) {
+export async function updateLeaderboard(
+  playerResultsForLeaderboard: Record<
+    string,
+    Omit<iLeaderboardScore, "currentRank" | "prevRank">
+  >,
+) {
   const firestore = getFirestore();
   const writeBatch = firestore.batch();
 
   const newLeaderboard: iLeaderBoard = {};
 
-  // sort leaderboard by score
-  const sortedLeaderboard = Object.values(playerResultsForLeaderboard).sort((a, b) => a.currentScore > b.currentScore ? -1 : 1);
-
   // get current leaderboard DB values
-  const leaderboardSnap = await firestore.collection('leaderboard').get();
+  const leaderboardSnap = await firestore.collection("leaderboard").get();
   const leaderboardDocs = leaderboardSnap.docs;
-  
+  const leaderboardDocsByPlayerId = new Map<
+    string,
+    (typeof leaderboardDocs)[number]
+  >();
+
   // create a new leaderboard object with all players before editing the ranks
   leaderboardDocs.forEach((doc) => {
     const data = doc.data() as iLeaderboardScore;
     newLeaderboard[data.playerId] = data;
-  })
+    leaderboardDocsByPlayerId.set(data.playerId, doc);
+  });
 
-  // use the index when looping to set the new ranks
-  sortedLeaderboard.forEach((player, index) => {
-    const prevRank = newLeaderboard[player.playerId].currentRank;
+  Object.values(playerResultsForLeaderboard).forEach((player) => {
+    const existingPlayer = newLeaderboard[player.playerId];
 
     newLeaderboard[player.playerId] = {
       ...player,
+      currentScore: (existingPlayer?.currentScore ?? 0) + player.currentScore,
+      currentRank: existingPlayer?.currentRank ?? 0,
+      prevRank: existingPlayer?.currentRank ?? 0,
+    };
+  });
+
+  const sortedLeaderboard = Object.values(newLeaderboard).sort(
+    (a, b) =>
+      b.currentScore - a.currentScore || a.playerId.localeCompare(b.playerId),
+  );
+
+  sortedLeaderboard.forEach((player, index) => {
+    newLeaderboard[player.playerId] = {
+      ...player,
       currentRank: index + 1,
-      prevRank
-    }
-  })
+      prevRank: player.currentRank || index + 1,
+    };
+  });
 
   // loop through and update each doc in the DB
-  leaderboardDocs.forEach((doc) => {
-    writeBatch.update(doc.ref, {
-      ...newLeaderboard[doc.id]
-    })
-  })
+  Object.entries(newLeaderboard).forEach(([playerId, player]) => {
+    const leaderboardDoc = leaderboardDocsByPlayerId.get(playerId);
+
+    if (leaderboardDoc) {
+      writeBatch.update(leaderboardDoc.ref, { ...player });
+    } else {
+      writeBatch.set(firestore.collection("leaderboard").doc(playerId), player);
+    }
+  });
 
   await writeBatch.commit();
 

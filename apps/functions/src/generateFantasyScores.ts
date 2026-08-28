@@ -1,8 +1,15 @@
-import { FinishingStatus, iConstructorFantasyScore, iDriverFantasyScore, iJolpicaResult } from "@f1pick6/shared";
+import {
+  FinishingStatus,
+  iConstructorFantasyScore,
+  iDriverFantasyScore,
+  iJolpicaResult,
+} from "@f1pick6/shared";
 import { logger } from "firebase-functions";
 
 export function generateFantasyScores(results: iJolpicaResult[]) {
-  const returnObj: { [key: string]: iDriverFantasyScore | iConstructorFantasyScore } = {};
+  const returnObj: {
+    [key: string]: iDriverFantasyScore | iConstructorFantasyScore;
+  } = {};
 
   const driverCount = results.length;
 
@@ -15,8 +22,13 @@ export function generateFantasyScores(results: iJolpicaResult[]) {
     const finishingStatus = getFinishingStatus(result.status.toUpperCase());
     const didDnf = checkForDnf(finishingStatus);
 
-    const {raceFantasyPoints, qualFantasyPoints} = calculateFantasyPoints(finishingPosition, startingPosition, driverCount, didDnf);
-    
+    const { raceFantasyPoints, qualFantasyPoints } = calculateFantasyPoints(
+      finishingPosition,
+      startingPosition,
+      driverCount,
+      didDnf,
+    );
+
     const driverScore: iDriverFantasyScore = {
       driverId,
       driverName: `${result.Driver.givenName} ${result.Driver.familyName}`,
@@ -28,19 +40,20 @@ export function generateFantasyScores(results: iJolpicaResult[]) {
       qualFantasyPoints,
       finishingStatus,
       constructor: result.Constructor.constructorId, // add this to check if the driver has moved teams
-      constructorName: result.Constructor.name
-    }
+      constructorName: result.Constructor.name,
+    };
 
     const constructorScore: iConstructorFantasyScore = {
       dnf: didDnf,
-      totalFantasyPoints: raceFantasyPoints + qualFantasyPoints,
-      raceFantasyPoints,
-      qualFantasyPoints,
-      driverScores: []
-    }
+      totalFantasyPoints:
+        Math.floor(raceFantasyPoints / 2) + Math.floor(qualFantasyPoints / 2),
+      raceFantasyPoints: Math.floor(raceFantasyPoints / 2),
+      qualFantasyPoints: Math.floor(qualFantasyPoints / 2),
+      driverScores: [],
+    };
 
     returnObj[driverId] = driverScore;
-    
+
     // if it doesn't exist yet, create the constructor object
     if (!returnObj[teamId]) {
       returnObj[teamId] = {
@@ -48,7 +61,7 @@ export function generateFantasyScores(results: iJolpicaResult[]) {
         totalFantasyPoints: constructorScore.totalFantasyPoints,
         raceFantasyPoints: constructorScore.raceFantasyPoints,
         qualFantasyPoints: constructorScore.qualFantasyPoints,
-        driverScores: [driverScore]
+        driverScores: [driverScore],
       };
     } else {
       const teamScore = returnObj[teamId] as iConstructorFantasyScore;
@@ -57,12 +70,17 @@ export function generateFantasyScores(results: iJolpicaResult[]) {
       teamScore.qualFantasyPoints += constructorScore.qualFantasyPoints;
       teamScore.driverScores?.push(driverScore);
 
-      // if both this driver and the previous DNF'ed then set the team as DNFed
-      if (didDnf && teamScore.dnf) {
-        teamScore.dnf = true; // If both drivers DNF, the team is considered to have DNFed
+      // A constructor DNF requires every recorded driver to have DNFed.
+      // In that case we'll just give the constructor -5 total points
+      if (teamScore.dnf && didDnf) {
+        teamScore.dnf = true;
+        teamScore.raceFantasyPoints = 0;
+        teamScore.qualFantasyPoints = 0;
+        teamScore.totalFantasyPoints = -5;
+      } else {
+        teamScore.dnf = false;
       }
     }
-
   });
 
   return returnObj;
@@ -71,22 +89,31 @@ export function generateFantasyScores(results: iJolpicaResult[]) {
 function getFinishingStatus(status: string) {
   if (!FinishingStatus[status as keyof typeof FinishingStatus]) {
     logger.warn(`Unknown finishing status: ${status}`);
-    return FinishingStatus.UNKNOWN
+    return FinishingStatus.UNKNOWN;
   } else {
     return FinishingStatus[status as keyof typeof FinishingStatus];
   }
 }
 
 function checkForDnf(finishingStatus: FinishingStatus) {
-  const dnfStatuses = [FinishingStatus.DISQUALIFIED, FinishingStatus["DID NOT START"], FinishingStatus.RETIRED];
+  const dnfStatuses = [
+    FinishingStatus.DISQUALIFIED,
+    FinishingStatus["DID NOT START"],
+    FinishingStatus.RETIRED,
+  ];
   return dnfStatuses.includes(finishingStatus);
 }
 
-export function calculateFantasyPoints(finishingPosition: number, startingPosition: number, driverCount: number, didDnf: boolean) {
+export function calculateFantasyPoints(
+  finishingPosition: number,
+  startingPosition: number,
+  driverCount: number,
+  didDnf: boolean,
+) {
   let returnObj = {
     raceFantasyPoints: 0,
-    qualFantasyPoints: 0
-  }
+    qualFantasyPoints: 0,
+  };
 
   /**
    * QUALIFICATION
@@ -102,7 +129,7 @@ export function calculateFantasyPoints(finishingPosition: number, startingPositi
   /**
    * RACE
    */
-  // -5pts for DNF, 
+  // -5pts for DNF,
   // 2pts for last place, then +2pts for each position after that
   if (didDnf) {
     returnObj.raceFantasyPoints = -5;

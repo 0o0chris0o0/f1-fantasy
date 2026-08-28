@@ -36,8 +36,11 @@
       <div class="font-f1 font-semibold tracking-tight card-name">
         <p>{{ card.cardName }}</p>
       </div>
-      <div class="inline-block text-left uppercase card-team">
-        <p class="opacity-75 tracking-tighter border-t pt-0.5 pr-1">
+      <div
+        v-if="card.type !== CardType.CONSTRUCTOR"
+        class="inline-block text-left font-bold uppercase card-team"
+      >
+        <p class="opacity-75 border-t pt-0.5 pr-1">
           {{ card.teamName }}
         </p>
       </div>
@@ -289,23 +292,21 @@ defineProps<{
   .card {
     font-size: 16px;
   }
-
-  .card-name {
-    display: block;
-  }
-
-  .card-icons {
-    display: flex;
-  }
 }
 
-@container card (min-width: 200px) {
+@container card (min-width: 150px) {
   .card {
-    font-size: 24px;
+    font-size: 20px;
   }
 
   .card-team {
     display: block;
+  }
+}
+
+@container card (min-width: 180px) {
+  .card {
+    font-size: 22px;
   }
 }
 
