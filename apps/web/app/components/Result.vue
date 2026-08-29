@@ -27,7 +27,7 @@
         ]"
       />
     </button>
-    <div v-if="isOpen" class="bg-carbon flex flex-col gap-4 p-3">
+    <div v-if="isOpen" class="bg-carbon flex flex-col gap-4 p-2">
       <div>
         <p
           class="font-headline tracking-widest text-primary uppercase italic font-bold text-sm mb-2"
@@ -175,31 +175,35 @@
                 </div>
               </div>
               <div class="flex gap-1">
-                <div class="grow flex flex-col border-r pr-2 border-primary/15">
+                <div
+                  class="grow flex flex-col gap-1 border-r pr-2 border-primary/15 justify-center"
+                >
                   <div
                     v-for="driver in card.driverScores"
+                    :key="driver.driverName"
                     class="flex items-center gap-1"
                   >
-                    <p class="text-xs italic opacity-60">
-                      {{ driver.driverName }}:&nbsp;
-                    </p>
-                    <p class="col-span-5 flex items-baseline ml-auto">
+                    <p class="italic opacity-60">{{ driver.driverName }}:</p>
+                    <p class="ml-auto flex items-baseline leading-none">
                       <span>{{
                         Math.floor(driver.totalFantasyPoints / 2)
                       }}</span>
-                      <span class="text-[10px]"> &nbsp;PTS </span>
+                      <span class="text-[10px] ml-0.5">PTS</span>
                     </p>
                   </div>
                 </div>
-                <div class="ml-auto flex flex-col justify-center px-2">
-                  <p class="text-xs text-tertiary text-center">
+
+                <div
+                  class="ml-auto flex flex-col gap-1 justify-center px-2 text-center"
+                >
+                  <p class="text-tertiary">
                     +{{ Math.round((card.cardModifierValue - 1) * 100) }}%
                   </p>
-                  <p class="flex items-baseline justify-center">
+                  <p class="flex items-baseline justify-center leading-none">
                     <span>{{
                       card.modifiedFantasyScore - card.baseFantasyScore
                     }}</span>
-                    <span class="text-[10px]">&nbsp;PTS</span>
+                    <span class="text-[10px] ml-0.5">PTS</span>
                   </p>
                 </div>
               </div>

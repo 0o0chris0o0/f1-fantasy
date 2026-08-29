@@ -6,26 +6,18 @@
         class="absolute top-3 left-2 z-10 flex items-end gap-0.5"
       >
         <div
-          v-for="i in level"
-          :key="'filled-' + i"
-          class="w-1.5 bg-secondary"
-          :class="{
-            'h-2': i === 1,
-            'h-2.5': i === 2,
-            'h-3': i === 3,
-            'h-3.5': i === 4,
-          }"
-        ></div>
-        <div
-          v-for="i in 4 - level"
-          :key="'empty-' + i"
-          class="w-1.5 bg-gray-400"
-          :class="{
-            'h-2': i === 0,
-            'h-2.5': i === 1,
-            'h-3': i === 2,
-            'h-3.5': i === 3,
-          }"
+          v-for="i in 4"
+          :key="i"
+          class="w-1.5"
+          :class="[
+            i <= level ? 'bg-secondary' : 'bg-gray-400',
+            {
+              'h-2': i === 1,
+              'h-2.5': i === 2,
+              'h-3': i === 3,
+              'h-3.5': i === 4,
+            },
+          ]"
         ></div>
       </div>
       <div class="shadow-xl">

@@ -260,5 +260,5 @@ export function calcAverage(
   const previousSum = currentAverage * (noOfRaces - 1);
   const newSum = previousSum + newVal;
 
-  return newSum / noOfRaces;
+  return Math.round(newSum / noOfRaces);
 }
