@@ -86,7 +86,7 @@
                 </div>
                 <p class="font-bold font-headline">
                   LVL {{ userDetails.level }} ({{ userDetails.xp }} Race{{
-                    userDetails.xp ? (userDetails.xp > 1 ? "s" : "") : ""
+                    userDetails.xp === 1 ? "" : "s"
                   }})
                 </p>
               </div>

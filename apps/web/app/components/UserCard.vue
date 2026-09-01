@@ -26,6 +26,7 @@
           :rarity="rarity"
           :user-details="{
             level,
+            xp,
             quantity,
             inCollection,
             inTeam,
@@ -77,11 +78,13 @@ const {
   rarity = iCardRarity.COMMON,
   level = 0,
   quantity = 0,
+  xp = 0,
   disableModal = false,
 } = defineProps<{
   card: iDriverCard | iConstructorCard;
   rarity?: iCardRarity;
   level?: number;
+  xp?: number;
   quantity?: number;
   inCollection?: boolean;
   inTeam?: boolean;

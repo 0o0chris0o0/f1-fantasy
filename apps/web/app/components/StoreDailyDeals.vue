@@ -41,6 +41,7 @@
             userStore.getXCardFromUserObj(deal.cardData.cardId, deal.rarity)
               ?.quantity
           "
+          :xp="userStore.getCardXpForUser(deal.cardData.cardId)"
           :level="userStore.getCardLevelForUser(deal.cardData.cardId)"
           :inCollection="
             userStore.doesUserHaveCardInCollection(

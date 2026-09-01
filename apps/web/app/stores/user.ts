@@ -94,6 +94,10 @@ export const useUserStore = defineStore("user", () => {
     return userObj.value?.cardsHistory?.[cardId]?.level || 1;
   };
 
+  const getCardXpForUser = (cardId: string): number => {
+    return userObj.value?.cardsHistory?.[cardId]?.xp || 0;
+  };
+
   const canUserAddACardToCollection = (cardId: string): boolean => {
     return Object.values(iCardRarityEnum).some((rarity) => {
       return (
@@ -137,6 +141,7 @@ export const useUserStore = defineStore("user", () => {
     isXCardInUsersCurrentTeam,
     hasUserPurchasedXCard,
     hasUserSeenCard,
+    getCardXpForUser,
     getCardLevelForUser,
     canUserAddACardToCollection,
     refreshUserData,
