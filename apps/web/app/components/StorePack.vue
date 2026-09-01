@@ -49,6 +49,7 @@ import type { iPack } from "@f1pick6/shared/types";
 import { loadFallbackPackImage } from "~/utils/loadDefaultImage";
 import PackInfoModal from "./modals/PackInfoModal.vue";
 import PackConfirmationModal from "./modals/PackConfirmationModal.vue";
+import PurchaseConfirmationModal from "./modals/PurchaseConfirmationModal.vue";
 
 const props = defineProps<{
   pack: iPack;
@@ -59,6 +60,7 @@ const overlay = useOverlay();
 
 const modalPackInfo = overlay.create(PackInfoModal);
 const modalPackPurchaseConfirmation = overlay.create(PackConfirmationModal);
+const purchaseConfirmationModal = overlay.create(PurchaseConfirmationModal);
 
 const { userObj } = storeToRefs(userStore);
 
@@ -73,6 +75,7 @@ const handleBuyPack = async () => {
     pack: props.pack,
     confirm: async (pack: iPack) => {
       await giveUserPack(pack);
+      purchaseConfirmationModal.open({ type: "pack", itemData: pack });
     },
   });
 };

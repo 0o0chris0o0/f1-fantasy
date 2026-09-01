@@ -95,11 +95,13 @@ import type {
 } from "@f1pick6/shared";
 import { doc, getDoc } from "firebase/firestore";
 import DailyDealConfirmationModal from "./modals/DailyDealConfirmationModal.vue";
+import PurchaseConfirmationModal from "./modals/PurchaseConfirmationModal.vue";
 
 const db = useFirestore();
 const userStore = useUserStore();
 const overlay = useOverlay();
 const dailyDealConfirmationModal = overlay.create(DailyDealConfirmationModal);
+const purchaseConfirmationModal = overlay.create(PurchaseConfirmationModal);
 
 const { userObj } = storeToRefs(userStore);
 const dailyDeals = useState<iDailyDealCard[]>("dailyDeals", () => []);
@@ -146,6 +148,11 @@ const openBuyConfirmation = (deal: iDailyDealCard) => {
         selectedDeal.rarity,
         selectedDeal.price,
       );
+      purchaseConfirmationModal.open({
+        itemData: selectedDeal.cardData,
+        itemRarity: selectedDeal.rarity,
+        type: "card",
+      });
     },
   });
 };
