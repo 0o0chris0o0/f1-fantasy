@@ -34,7 +34,7 @@
             "
             class="mb-4"
           >
-            <p class="italic text-xs text-orange-400 text-center">
+            <p class="italic text-xs text-warning text-center">
               This card is currently in your team. Adding it to your collection
               will remove it from your team.
             </p>

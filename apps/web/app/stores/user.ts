@@ -15,6 +15,9 @@ export const useUserStore = defineStore("user", () => {
   const { data: userObj, pending: userDataPending } =
     useDocument<iFBUser>(userDocRef);
 
+  const lastRefreshTime = ref<number>(0);
+  const REFRESH_INTERVAL = 60 * 60 * 1000; // 60 minutes
+
   const userPacksCount = computed(() => {
     const userPacks = userObj.value?.packs;
     if (!userPacks) {
@@ -100,6 +103,28 @@ export const useUserStore = defineStore("user", () => {
     });
   };
 
+  const refreshUserData = async () => {
+    const now = Date.now();
+    const timeSinceLastRefresh = now - lastRefreshTime.value;
+
+    if (timeSinceLastRefresh < REFRESH_INTERVAL) {
+      return; // Skip refresh if less than {{ REFRESH_INTERVAL }} have passed
+    }
+
+    if (!user.value?.uid || !userDocRef.value) return;
+
+    try {
+      lastRefreshTime.value = now;
+      const { getDoc } = await import("firebase/firestore");
+      const docSnap = await getDoc(userDocRef.value);
+      if (docSnap.exists() && userObj.value) {
+        Object.assign(userObj.value, docSnap.data() as iFBUser);
+      }
+    } catch (error) {
+      console.error("Error refreshing user data:", error);
+    }
+  };
+
   return {
     userObj,
     userDocRef,
@@ -114,5 +139,6 @@ export const useUserStore = defineStore("user", () => {
     hasUserSeenCard,
     getCardLevelForUser,
     canUserAddACardToCollection,
+    refreshUserData,
   };
 });

@@ -31,6 +31,7 @@ const {
   rarity?: iCardRarity;
   userDetails?: {
     level?: number;
+    xp?: number;
     quantity?: number;
     inCollection?: boolean;
     inTeam?: boolean;

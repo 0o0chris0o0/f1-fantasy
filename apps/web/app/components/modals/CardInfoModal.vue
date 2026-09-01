@@ -85,7 +85,9 @@
                   ></div>
                 </div>
                 <p class="font-bold font-headline">
-                  LVL {{ userDetails.level }} (X Races)
+                  LVL {{ userDetails.level }} ({{ userDetails.xp }} Race{{
+                    userDetails.xp ? (userDetails.xp > 1 ? "s" : "") : ""
+                  }})
                 </p>
               </div>
             </div>
@@ -185,6 +187,7 @@ const {
   rarity?: iCardRarity;
   userDetails?: {
     level?: number;
+    xp?: number;
     quantity?: number;
     inCollection?: boolean;
     inTeam?: boolean;

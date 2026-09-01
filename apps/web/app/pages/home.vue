@@ -3,16 +3,13 @@
     <PageHeader class="mb-4"> Home </PageHeader>
 
     <div class="space-y-6 px-4">
-      <LatestResult
-        v-if="userObj && userObj.latestResult && !userObj.latestResultCleared"
-        :latestResult="userObj.latestResult"
-      />
+      <LatestResult />
 
       <NextRaceDetails />
 
-      <!--<YourTeam />
+      <YourTeam />
 
-      <Leaderboard /> -->
+      <Leaderboard />
     </div>
   </div>
 </template>

@@ -40,6 +40,7 @@ export enum CardType {
 export interface iConstructorStats {
   currentFantasyPoints: number;
   averageFantasyPoints: number;
+  numberOfDNFs: number;
 }
 
 export interface iDriverStats extends iConstructorStats {

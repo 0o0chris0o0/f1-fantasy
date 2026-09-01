@@ -68,10 +68,15 @@
 <script lang="ts" setup>
 const user = useCurrentUser();
 const userStore = useUserStore();
-const { userDataPending, userObj } = storeToRefs(userStore);
 const route = useRoute();
+const { visible: isPageVisible } = usePageVisibility();
+
+const { userDataPending, userObj } = storeToRefs(userStore);
 
 const navOpen = ref(false);
+const wasPageVisible = ref(true); // Track previous visibility state
+
+const userMoney = computed(() => userObj.value?.money ?? 0);
 
 const toggleMenu = () => {
   navOpen.value = !navOpen.value;
@@ -81,12 +86,19 @@ const closeMenu = () => {
   navOpen.value = false;
 };
 
-const userMoney = computed(() => userObj.value?.money ?? 0);
-
 watch(navOpen, (isOpen) => {
   if (!import.meta.client) return;
 
   document.documentElement.style.overflow = isOpen ? "hidden" : "";
+});
+
+watch(isPageVisible, (currentlyVisible) => {
+  // Only refresh if page became visible AND was previously hidden
+  // This skips the initial load when page is already visible
+  if (currentlyVisible && !wasPageVisible.value && user.value) {
+    userStore.refreshUserData();
+  }
+  wasPageVisible.value = currentlyVisible;
 });
 
 onBeforeUnmount(() => {

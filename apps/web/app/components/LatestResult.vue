@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="userObj && latestResult && !userObj.latestResultCleared"
     class="relative font-headline py-2 px-3 rounded-lg text-center bg-surface-container-low shadow-xl ring ring-secondary/50"
   >
     <p class="text-xl font-semibold text-on-surface">Latest Result</p>
@@ -9,11 +10,13 @@
         class="flex items-baseline justify-center font-bold text-2xl text-primary"
       >
         <span>{{ latestResult.totalModifiedScore }}</span>
-        <span class="text-[12px]">&nbsp;PTS</span>
+        <span class="text-xs">&nbsp;PTS</span>
       </p>
     </div>
 
-    <NuxtLink :to="`/results/${user?.uid}`" class="text-xs underline"
+    <NuxtLink
+      :to="`/results/${user?.uid}`"
+      class="text-xs underline text-secondary"
       >More info</NuxtLink
     >
 
@@ -27,15 +30,15 @@
 </template>
 
 <script setup lang="ts">
-import type { iResult } from "@f1pick6/shared";
 import { doc, updateDoc } from "firebase/firestore";
 
 const db = useFirestore();
 const user = useCurrentUser();
+const userStore = useUserStore();
 
-defineProps<{
-  latestResult: iResult;
-}>();
+const { userObj } = storeToRefs(userStore);
+
+const latestResult = computed(() => userObj.value?.latestResult);
 
 const clearLatestResult = () => {
   if (user.value?.uid) {

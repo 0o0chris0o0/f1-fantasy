@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="roundInfo"
-    class="bg-gray-950 rounded py-4 text-center font-headline"
+    class="bg-surface-container-low rounded py-4 text-center font-headline"
     :class="{
       'border-2 border-error': isEditingClosed(
         roundInfo.teamEditCutoff,
@@ -13,7 +13,7 @@
       Current round: <strong>Round {{ roundInfo.currentRound }}</strong>
     </p>
     <p class="text-xl font-semibold font-f1">{{ roundInfo.nextRaceName }}</p>
-    <p class="mb-2">{{ raceDateV2(roundInfo.nextRaceStart) }}</p>
+    <p class="mb-2 font-mono">{{ raceDateV2(roundInfo.nextRaceStart) }}</p>
     <div class="text-lg">
       <p
         v-if="
