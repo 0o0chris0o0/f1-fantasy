@@ -34,7 +34,7 @@ import type {
 type PurchaseConfirmationProps =
   | {
       itemData: iDriverCard | iConstructorCard;
-      itemRarity: iCardRarity;
+      itemRarity?: iCardRarity;
       type: "card";
     }
   | {

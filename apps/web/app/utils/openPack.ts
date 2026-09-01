@@ -18,7 +18,19 @@ import {
 import type { iUserCardHistory, iPack, iPackInUser } from "@f1pick6/shared";
 import { sortCardsForPackOpening } from "./filteringSorting";
 
-export async function openPack(packId: string) {
+const MAX_PACKS_PER_OPENING = 5;
+
+export async function openPack(packId: string, packQuantity = 1) {
+  if (
+    !Number.isInteger(packQuantity) ||
+    packQuantity < 1 ||
+    packQuantity > MAX_PACKS_PER_OPENING
+  ) {
+    throw new Error(
+      `Pack quantity must be an integer between 1 and ${MAX_PACKS_PER_OPENING}`,
+    );
+  }
+
   const db = useFirestore();
   const userStore = useUserStore();
   const batch = writeBatch(db);
@@ -42,9 +54,9 @@ export async function openPack(packId: string) {
     );
   }
 
-  // check the user has atleast 1 of the requested pack
+  // Check that the user owns every requested pack before generating rewards.
   const userPackToOpen = userObj.value.packs[packData.packId];
-  if (!userPackToOpen || userPackToOpen.quantity < 1) {
+  if (!userPackToOpen || userPackToOpen.quantity < packQuantity) {
     throw new Error("User doesnt have the required number of packs");
   }
 
@@ -57,31 +69,39 @@ export async function openPack(packId: string) {
     allCards.push(doc.data() as iDriverCard | iConstructorCard);
   });
 
-  // pick random cards based on pack data
-  const pickedCards = pickCardsForUser(allCards, packData.cardsIncluded);
+  const openedCards: iCardInUsersCards[] = [];
+  let newCardsForUsers = userObj.value.cards.map((card) => ({ ...card }));
 
-  const newCards = await createLootCards(
-    pickedCards,
-    packData,
-    userObj.value.cards,
-    userObj.value.cardsHistory,
-    userObj.value.collection,
-  );
-  if (newCards.length !== packData.cardsIncluded) {
-    throw new Error("Unable to generate all cards for this pack");
+  for (
+    let openedPackIndex = 0;
+    openedPackIndex < packQuantity;
+    openedPackIndex++
+  ) {
+    const pickedCards = pickCardsForUser(allCards, packData.cardsIncluded);
+    const newCards = await createLootCards(
+      pickedCards,
+      packData,
+      newCardsForUsers,
+      userObj.value.cardsHistory,
+      userObj.value.collection,
+    );
+
+    if (newCards.length !== packData.cardsIncluded) {
+      throw new Error("Unable to generate all cards for this pack");
+    }
+
+    openedCards.push(...newCards);
+    newCardsForUsers = mergeNewCardsWithCurrentUserCards(
+      newCards,
+      newCardsForUsers,
+    );
   }
-
-  // create users card obj, includes adding rarity, level & xp
-  const newCardsForUsers = mergeNewCardsWithCurrentUserCards(
-    newCards,
-    userObj.value.cards,
-  );
 
   if (!userDocRef.value) {
     throw new Error("User not logged in");
   }
 
-  const seenCards = newCards.map(
+  const seenCards = openedCards.map(
     (card) => `${card.cardData.cardId}_${card.rarity}`,
   );
 
@@ -96,7 +116,7 @@ export async function openPack(packId: string) {
 
   const updatedUserPackData = {
     ...userPackData,
-    quantity: userPackData.quantity - 1,
+    quantity: userPackData.quantity - packQuantity,
   };
 
   if (updatedUserPackData.quantity < 1) {
@@ -113,7 +133,7 @@ export async function openPack(packId: string) {
 
   await batch.commit();
 
-  return newCards;
+  return sortCardsForPackOpening(openedCards);
 }
 
 export function hasExpectedPackSlots(packData: iPack) {

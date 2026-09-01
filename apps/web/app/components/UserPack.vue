@@ -44,16 +44,31 @@
           <Button version="normal">
             <span
               class="block speed-slant-reverse font-bold text-sm z-10 relative"
-              >OPEN SINGLE</span
+              >OPEN{{ pack.quantity === 1 ? "" : " SINGLE" }}</span
             >
           </Button>
         </NuxtLink>
 
-        <Button size="sm" version="secondary-outline">
-          <span class="block speed-slant-reverse text-xs">
-            OPEN ALL ({{ pack.quantity }})
-          </span>
-        </Button>
+        <template v-if="pack.quantity > 1 && pack.quantity <= 5">
+          <NuxtLink
+            :to="`open-pack?packId=${pack.packId}&quantity=${pack.quantity}`"
+          >
+            <Button size="sm" version="secondary-outline">
+              <span class="block speed-slant-reverse text-xs">
+                OPEN ALL ({{ pack.quantity }})
+              </span>
+            </Button>
+          </NuxtLink>
+        </template>
+        <template v-else-if="pack.quantity > 5">
+          <NuxtLink :to="`open-pack?packId=${pack.packId}&quantity=5`">
+            <Button size="sm" version="secondary-outline">
+              <span class="block speed-slant-reverse text-xs">
+                OPEN 5 PACKS
+              </span>
+            </Button>
+          </NuxtLink>
+        </template>
       </div>
     </div>
   </div>

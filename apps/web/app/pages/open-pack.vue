@@ -61,6 +61,9 @@ const route = useRoute();
 const userStore = useUserStore();
 
 const packId = route.query.packId as string;
+const quantity = route.query.quantity
+  ? parseInt(route.query.quantity as string, 10)
+  : 1;
 const isLoading = ref(true);
 const loot = ref<iCardInUsersCards[]>([]);
 const revealStatus = ref<Record<string, boolean>>({});
@@ -72,7 +75,7 @@ onMounted(async () => {
   usersSeenCards.value = [...(userStore.userObj?.seenCards || [])];
   try {
     // perform pack opening, this adds the cards to the user obj
-    loot.value = await openPack(packId);
+    loot.value = await openPack(packId, quantity);
   } catch (error) {
     navigateTo("/packs");
   } finally {
