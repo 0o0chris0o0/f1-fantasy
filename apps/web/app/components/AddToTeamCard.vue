@@ -4,7 +4,7 @@
     class="flex items-center gap-4"
     :class="{ 'opacity-20': cardIsInTeam }"
   >
-    <div class="w-20">
+    <div class="w-20 shrink-0">
       <UserCard
         :card="card.cardData"
         :rarity="card.rarity"
@@ -15,7 +15,7 @@
         hide-user-data
       />
     </div>
-    <div class="grow self-stretch flex flex-col justify-between py-3">
+    <div class="self-stretch flex flex-col justify-between py-3">
       <div class="flex flex-col">
         <p class="font-f1 font-semibold italic">{{ card.cardData.cardName }}</p>
         <div

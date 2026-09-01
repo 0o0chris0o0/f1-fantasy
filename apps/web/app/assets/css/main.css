@@ -59,6 +59,7 @@
   --color-on-surface-variant: #eabcb4;
 
   --color-error: #ff1801;
+  --color-warning: #fa7007;
 
   /* Drop Shadows */
   --drop-shadow-error: 0 0 5px var(--color-error);

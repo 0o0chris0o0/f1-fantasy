@@ -71,12 +71,8 @@ export function generateFantasyScores(results: iJolpicaResult[]) {
       teamScore.driverScores?.push(driverScore);
 
       // A constructor DNF requires every recorded driver to have DNFed.
-      // In that case we'll just give the constructor -5 total points
       if (teamScore.dnf && didDnf) {
         teamScore.dnf = true;
-        teamScore.raceFantasyPoints = 0;
-        teamScore.qualFantasyPoints = 0;
-        teamScore.totalFantasyPoints = -5;
       } else {
         teamScore.dnf = false;
       }
@@ -129,10 +125,10 @@ export function calculateFantasyPoints(
   /**
    * RACE
    */
-  // -5pts for DNF,
+  // 0pts for DNF,
   // 2pts for last place, then +2pts for each position after that
   if (didDnf) {
-    returnObj.raceFantasyPoints = -5;
+    returnObj.raceFantasyPoints = 0;
   } else {
     returnObj.raceFantasyPoints += (1 + (driverCount - finishingPosition)) * 2;
   }

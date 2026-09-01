@@ -58,16 +58,20 @@
                 hide-card-score
               />
               <span
-                v-if="card.fantasyRaceScore === -5"
+                v-if="card.fantasyRaceScore === 0"
                 class="absolute bottom-1 left-1/2 whitespace-nowrap transform -translate-x-1/2 px-1 text-[10px] rounded-sm bg-red-500 uppercase font-bold italic"
                 >{{ card.finishingStatus }}</span
               >
             </div>
             <div class="text-sm flex-1 p-2">
-              <div class="flex items-start w-full justify-between mb-1">
+              <div class="flex items-start w-full gap-2 justify-between mb-1">
                 <p class="font-f1 text-xs flex items-baseline gap-1 mt-0.5">
-                  <span class="uppercase">{{ card.cardData.cardName }}</span>
-                  <span class="opacity-40 text-xs font-headline font-bold">
+                  <span class="uppercase line-clamp-1 grow-0">{{
+                    card.cardData.cardName
+                  }}</span>
+                  <span
+                    class="shrink-0 opacity-40 text-xs font-headline font-bold"
+                  >
                     - LVL. {{ card.level }}
                   </span>
                 </p>

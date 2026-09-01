@@ -1,41 +1,50 @@
-<template>  
-  <div class="relative font-f1 border-2 border-yellow-500 py-2 px-3 rounded-lg shadow-lg">
-    <p class="text-xl text-center font-semibold">Latest Result</p>
-    <div class="flex gap-1 justify-center items-center mb-2">
-      <p class="text-center">{{ latestResult.raceName }}:</p>
-      <p class="flex items-center tracking-tight">
-        <span class="font-bold text-xl">{{ latestResult.totalModifiedScore }}</span>
+<template>
+  <div
+    class="relative font-headline py-2 px-3 rounded-lg text-center bg-surface-container-low shadow-xl ring ring-secondary/50"
+  >
+    <p class="text-xl font-semibold text-on-surface">Latest Result</p>
+    <div class="flex gap-2 justify-center items-center mb-2">
+      <p class="font-f1 font-bold">{{ latestResult.raceName }}:</p>
+      <p
+        class="flex items-baseline justify-center font-bold text-2xl text-primary"
+      >
+        <span>{{ latestResult.totalModifiedScore }}</span>
         <span class="text-[12px]">&nbsp;PTS</span>
       </p>
     </div>
-    <div class="text-center">
-      <NuxtLink :to="`/results/${user?.uid}`" class="text-xs underline">More info</NuxtLink>
-    </div>
-    <button class="absolute -top-2 -right-2 bg-red-700 p-1 rounded-full" @click="clearLatestResult">
-      <Icon name="material-symbols:close-rounded" class="text-2xl" />
+
+    <NuxtLink :to="`/results/${user?.uid}`" class="text-xs underline"
+      >More info</NuxtLink
+    >
+
+    <button
+      class="absolute -top-3 -right-2 bg-error p-1.5 rounded-full"
+      @click="clearLatestResult"
+    >
+      <Icon name="material-symbols:close" class="text-xl" />
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { iResult } from '@f1pick6/shared';
-import { doc, updateDoc } from 'firebase/firestore';
+import type { iResult } from "@f1pick6/shared";
+import { doc, updateDoc } from "firebase/firestore";
 
 const db = useFirestore();
 const user = useCurrentUser();
 
 defineProps<{
-  latestResult: iResult
+  latestResult: iResult;
 }>();
 
 const clearLatestResult = () => {
   if (user.value?.uid) {
-    const playerRef = doc(db, 'players', user.value?.uid)
+    const playerRef = doc(db, "players", user.value?.uid);
     updateDoc(playerRef, {
-      latestResultCleared: true
-    })
+      latestResultCleared: true,
+    });
   }
-}
+};
 </script>
 
 <style lang="scss" scoped></style>

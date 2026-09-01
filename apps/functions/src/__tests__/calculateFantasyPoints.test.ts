@@ -28,7 +28,7 @@ describe("calculateFantasyPoints", () => {
       startingPosition: 1,
       driverCount: 22,
       didDnf: true,
-      expectedRacePoints: -5,
+      expectedRacePoints: 0,
       expectedQualPoints: 10,
     }, // 22nd place, started 1st, DNF
     {
@@ -46,23 +46,23 @@ describe("calculateFantasyPoints", () => {
       didDnf: false,
       expectedRacePoints: 26,
       expectedQualPoints: 5,
-    }, // 10th place, started 5th, no DNF
+    }, // 10th place, started 3rd, no DNF
     {
       finishingPosition: 15,
-      startingPosition: 10,
-      driverCount: 22,
-      didDnf: false,
-      expectedRacePoints: 16,
-      expectedQualPoints: 5,
-    }, // 15th place, started 12th, no DNF
-    {
-      finishingPosition: 20,
       startingPosition: 11,
       driverCount: 22,
       didDnf: false,
-      expectedRacePoints: 6,
+      expectedRacePoints: 16,
       expectedQualPoints: 0,
-    }, // 20th place, started 8th, DNF
+    }, // 15th place, started 11th, no DNF
+    {
+      finishingPosition: 20,
+      startingPosition: 10,
+      driverCount: 22,
+      didDnf: false,
+      expectedRacePoints: 6,
+      expectedQualPoints: 5,
+    }, // 20th place, started 10th, no DNF
     {
       finishingPosition: 1,
       startingPosition: 1,
@@ -110,8 +110,8 @@ describe("generateFantasyScores", () => {
         Constructor: { constructorId: "team-one", name: "Team One" },
       },
       {
-        position: "1",
-        grid: "2",
+        position: "1", // 4 (2) points
+        grid: "2", // 10 (5)
         status: "Finished",
         Driver: {
           driverId: "driver-two",
@@ -126,9 +126,9 @@ describe("generateFantasyScores", () => {
     const constructorScore = scores["team-one"] as iConstructorFantasyScore;
 
     expect(constructorScore.dnf).toBe(false);
-    expect(constructorScore.raceFantasyPoints).toBe(-1);
+    expect(constructorScore.raceFantasyPoints).toBe(2);
     expect(constructorScore.qualFantasyPoints).toBe(10);
-    expect(constructorScore.totalFantasyPoints).toBe(9);
+    expect(constructorScore.totalFantasyPoints).toBe(12);
   });
 
   it("calculates 2 DNS's correctly", () => {
@@ -163,6 +163,6 @@ describe("generateFantasyScores", () => {
     expect(constructorScore.dnf).toBe(true);
     expect(constructorScore.raceFantasyPoints).toBe(0);
     expect(constructorScore.qualFantasyPoints).toBe(0);
-    expect(constructorScore.totalFantasyPoints).toBe(-5);
+    expect(constructorScore.totalFantasyPoints).toBe(0);
   });
 });
