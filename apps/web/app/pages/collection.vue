@@ -41,7 +41,7 @@
     <p class="font-headline font-semibold">Next Reward</p>
     <div class="inline-block relative">
       <SegmentedCircle
-        :count="userObj.rewardLevel <= 2 ? 14 : 13"
+        :count="calcRewardsCount()"
         :activeCount="userObj.progressInRewardTrack"
       />
       <div
@@ -369,6 +369,18 @@ const allCards = useState<
 >("allCards", () => []);
 const totalCards = useState<number>("totalCards", () => 0);
 const teams = useState<string[]>("teams", () => []);
+
+const calcRewardsCount = (): number => {
+  const totalNumRewards: number = Object.keys(rewardObj).length;
+  const userRewardsLevel = userObj.value?.rewardLevel;
+
+  if (userRewardsLevel === undefined) return 0;
+
+  const wholeParts = Math.floor(totalCards.value / totalNumRewards);
+  const remainder = totalCards.value % totalNumRewards;
+
+  return userRewardsLevel >= remainder ? wholeParts + 1 : wholeParts;
+};
 
 await callOnce(
   async () => {

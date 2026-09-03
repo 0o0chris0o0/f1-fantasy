@@ -1,48 +1,102 @@
-import { iCardRarity, RewardType } from "@f1pick6/shared/types"
-import type { iReward } from "@f1pick6/shared/types"
+import { iCardRarity, RewardType } from "@f1pick6/shared/types";
+import type { iReward } from "@f1pick6/shared/types";
 
 export const rewardObj: Record<string, iReward> = {
-  '1': {
+  "1": {
     rewardType: RewardType.COINS,
-    key: 100
+    key: 100,
   },
-  '2': {
+  "2": {
     rewardType: RewardType.CARDS,
-    key: iCardRarity.UNCOMMON
+    key: iCardRarity.UNCOMMON,
   },
-  '3': {
-    rewardType: RewardType.PACK,
-    key: 'normal',
-    rewardName: 'Grand Prix'
-  },
-  '4': {
+  "3": {
     rewardType: RewardType.COINS,
-    key: 500
+    key: 150,
   },
-  '5': {
-    rewardType: RewardType.CARDS,
-    key: iCardRarity.RARE
-  },
-  '6': {
+  "4": {
     rewardType: RewardType.PACK,
-    key: 'premium',
-    rewardName: 'Gold'
+    key: "normal",
+    rewardName: "Grand Prix",
   },
-  '7': {
+  "5": {
     rewardType: RewardType.COINS,
-    key: 750
+    key: 250,
   },
-  '8': {
+  "6": {
     rewardType: RewardType.CARDS,
-    key: iCardRarity.LEGENDARY
+    key: iCardRarity.UNCOMMON,
   },
-  '9': {
+  "7": {
+    rewardType: RewardType.COINS,
+    key: 300,
+  },
+  "8": {
     rewardType: RewardType.PACK,
-    key: 'collector',
-    rewardName: 'Collector'
+    key: "premium",
+    rewardName: "Gold",
   },
-  '10': {
+  "9": {
+    rewardType: RewardType.COINS,
+    key: 350,
+  },
+  "10": {
     rewardType: RewardType.CARDS,
-    key: iCardRarity.MYTHIC
-  }
-}
+    key: iCardRarity.RARE,
+  },
+  "11": {
+    rewardType: RewardType.COINS,
+    key: 400,
+  },
+  "12": {
+    rewardType: RewardType.CARDS,
+    key: iCardRarity.RARE,
+  },
+  "13": {
+    rewardType: RewardType.PACK,
+    key: "premium",
+    rewardName: "Gold",
+  },
+  "14": {
+    rewardType: RewardType.COINS,
+    key: 450,
+  },
+  "15": {
+    rewardType: RewardType.CARDS,
+    key: iCardRarity.RARE,
+  },
+  "16": {
+    rewardType: RewardType.COINS,
+    key: 500,
+  },
+  "17": {
+    rewardType: RewardType.CARDS,
+    key: iCardRarity.RARE,
+  },
+  "18": {
+    rewardType: RewardType.PACK,
+    key: "premium",
+    rewardName: "Gold",
+  },
+  "19": {
+    rewardType: RewardType.COINS,
+    key: 500,
+  },
+  "20": {
+    rewardType: RewardType.CARDS,
+    key: iCardRarity.RARE,
+  },
+  "21": {
+    rewardType: RewardType.CARDS,
+    key: iCardRarity.LEGENDARY,
+  },
+  "22": {
+    rewardType: RewardType.CARDS,
+    key: iCardRarity.LEGENDARY,
+  },
+  "23": {
+    rewardType: RewardType.PACK,
+    key: "premium",
+    rewardName: "collector",
+  },
+};
