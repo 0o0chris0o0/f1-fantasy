@@ -1,33 +1,35 @@
 <template>
-  <div class="flex justify-between items-center">
-    <h2 class="font-semibold font-headline uppercase text-primary px-4">
-      Daily Deals
-    </h2>
+  <div class="px-4">
+    <div class="flex items-center justify-between gap-2">
+      <h2 class="font-semibold font-headline uppercase text-primary">
+        Daily Deals
+      </h2>
 
-    <div class="flex justify-center gap-1">
-      <button
-        type="button"
-        class="slider-nav"
-        aria-label="Previous daily deals"
-        @click="scrollDeals('prev')"
-      >
-        <Icon name="mdi:chevron-left" size="36" />
-      </button>
-      <button
-        type="button"
-        class="slider-nav"
-        aria-label="Next daily deals"
-        @click="scrollDeals('next')"
-      >
-        <Icon name="mdi:chevron-right" size="36" />
-      </button>
+      <div class="ml-auto flex justify-center gap-1">
+        <button
+          type="button"
+          class="slider-nav"
+          aria-label="Previous daily deals"
+          @click="scrollDeals('prev')"
+        >
+          <Icon name="mdi:chevron-left" size="36" />
+        </button>
+        <button
+          type="button"
+          class="slider-nav"
+          aria-label="Next daily deals"
+          @click="scrollDeals('next')"
+        >
+          <Icon name="mdi:chevron-right" size="36" />
+        </button>
+      </div>
     </div>
   </div>
 
   <div v-if="dailyDeals?.length">
     <div
       ref="sliderRef"
-      class="flex gap-6 overflow-x-auto p-4 snap-x snap-mandatory scroll-smooth max-md:scrollbar-none max-md:[-webkit-overflow-scrolling:touch] max-md:[&::-webkit-scrollbar]:hidden"
+      class="flex gap-6 overflow-x-auto px-4 snap-x snap-mandatory scroll-smooth max-md:scrollbar-none max-md:[-webkit-overflow-scrolling:touch] max-md:[&::-webkit-scrollbar]:hidden"
     >
       <div
         v-for="deal in dailyDeals"
@@ -86,6 +88,7 @@
 </template>
 
 <script setup lang="ts">
+const nextDealsAvailable = ref("");
 import { iCardRarity } from "@f1pick6/shared";
 import type {
   iConstructorCard,

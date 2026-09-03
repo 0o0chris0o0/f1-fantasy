@@ -9,6 +9,7 @@
         :card="card.cardData"
         :rarity="card.rarity"
         :level="card.level"
+        :xp="card.xp"
         :quantity="card.quantity"
         :in-collection="card.inCollection"
         hide-card-level

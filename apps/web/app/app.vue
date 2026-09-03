@@ -22,11 +22,13 @@
           </NuxtLink>
           <div class="ml-auto flex items-center gap-4">
             <div v-if="user" class="flex items-center gap-4">
-              <Icon
-                name="bi:person-circle"
-                class="text-on-surface"
-                size="1.5em"
-              />
+              <NuxtLink :to="'/account'">
+                <Icon
+                  name="bi:person-circle"
+                  class="text-on-surface"
+                  size="1.5em"
+                />
+              </NuxtLink>
               <div class="flex items-center gap-2">
                 <Icon
                   name="bi:cash-coin"
