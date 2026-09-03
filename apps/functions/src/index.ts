@@ -7,18 +7,26 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import {logger, setGlobalOptions} from "firebase-functions";
-import {initializeApp} from "firebase-admin/app";
-import {onRequest} from "firebase-functions/https";import getResults from "./getResults";
+import { logger, setGlobalOptions } from "firebase-functions";
+import { initializeApp } from "firebase-admin/app";
+import { onRequest } from "firebase-functions/https";
+import getResults from "./getResults";
 import { generateFantasyScores } from "./generateFantasyScores";
 import { updatePlayerScores } from "./updatePlayerScores";
-import { iConstructorFantasyScore, iDriverFantasyScore, iLeaderBoard, iLeaderboardScore } from "@f1pick6/shared/types";
+import {
+  iConstructorFantasyScore,
+  iDriverFantasyScore,
+  iLeaderBoard,
+  iLeaderboardScore,
+} from "@f1pick6/shared/types";
 import { updateLeaderboard } from "./updateLeaderboard";
 import { updateAllCards } from "./updateAllCards";
 import { updateNextRaceDetails } from "./updateNextRaceDetails";
 import { setupDailyDeals } from "./setupDailyDeals";
 import { updateMythicPool } from "./updateMythicPool";
 import { onSchedule } from "firebase-functions/scheduler";
+import { saveResultSnapshot } from "./saveResultSnapshot";
+import { checkResultRevisions } from "./checkResultRevisions";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -38,7 +46,7 @@ setGlobalOptions({ maxInstances: 10 });
 initializeApp();
 
 if (process.env.FUNCTIONS_EMULATOR) {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 }
 
 const performUpdate = async (round?: string): Promise<string> => {
@@ -48,40 +56,55 @@ const performUpdate = async (round?: string): Promise<string> => {
   if (raceResults && roundData) {
     // generate fantasy scores based on results
     // no modifiers are applied here
-    const fantasyScores: { [key: string]: iDriverFantasyScore | iConstructorFantasyScore } = generateFantasyScores(raceResults);
+    const fantasyScores: {
+      [key: string]: iDriverFantasyScore | iConstructorFantasyScore;
+    } = generateFantasyScores(raceResults);
 
     logger.info("Fantasy Scores Generated");
     logger.log(fantasyScores);
+
+    // store a snapshot so a later revision check can diff against it
+    await saveResultSnapshot(
+      roundData.currentRound,
+      raceResults,
+      fantasyScores,
+    );
 
     // Update all players scores
     // remove used cards for each player
     // update each players card history object & xp values
     // update each players money
     // update each players results
-    const playerResultsForLeaderboard: Record<string, Omit<iLeaderboardScore, 'currentRank' | 'prevRank'>> = await updatePlayerScores(fantasyScores, roundData);
+    const playerResultsForLeaderboard: Record<
+      string,
+      Omit<iLeaderboardScore, "currentRank" | "prevRank">
+    > = await updatePlayerScores(fantasyScores, roundData);
 
     // Update the leaderboard
     const newLeaderboard = await updateLeaderboard(playerResultsForLeaderboard);
-    
+
     logger.info("Leaderboard updated:");
-    logger.log(newLeaderboard)
+    logger.log(newLeaderboard);
 
     // update all cards including those in the players objs
-    const updatedCards = await updateAllCards(fantasyScores, roundData.currentRound);
+    const updatedCards = await updateAllCards(
+      fantasyScores,
+      roundData.currentRound,
+    );
 
     // update mythic pool
     await updateMythicPool(raceResults);
 
     // Update the next race details & round number
     await updateNextRaceDetails(roundData.currentRound);
-    logger.info('Next race details updated')
+    logger.info("Next race details updated");
 
     // set the weeks dailyDeals
     await setupDailyDeals(updatedCards);
 
     return `Update performed for round ${round || "latest"}`;
   } else {
-    return 'No update performed - no results found for the specified round';
+    return "No update performed - no results found for the specified round";
   }
 };
 
@@ -102,4 +125,10 @@ export const updateScores = onSchedule("0 0 * * 1", async (event) => {
   await performUpdate();
 
   logger.log("User cleanup finished");
+});
+
+export const checkForRevisedResults = onSchedule("0 0 * * 3", async (event) => {
+  await checkResultRevisions();
+
+  logger.log("Result revision check finished");
 });

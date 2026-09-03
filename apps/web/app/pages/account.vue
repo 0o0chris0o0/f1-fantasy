@@ -177,7 +177,6 @@ definePageMeta({
 const db = useFirestore();
 const auth = useFirebaseAuth()!;
 const user = useCurrentUser();
-const userStore = useUserStore();
 const notificationStore = useNotificationStore();
 
 // Username
