@@ -7,5 +7,8 @@
     ".": "./src/index.ts",
     "./types": "./src/types/index.ts",
     "./utils": "./src/utils/index.ts"
+  },
+  "dependencies": {
+    "firebase": "^12.14.0"
   }
 }

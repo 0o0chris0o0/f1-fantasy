@@ -10,13 +10,12 @@
     "composite": true,
     "declaration": true,
     "declarationMap": true,
-    "baseUrl": ".",
     "paths": {
       "@f1pick6/shared/types": [
-        "packages/shared/src/types/index.ts"
+        "./packages/shared/src/types/index.ts"
       ],
       "@f1pick6/shared/utils": [
-        "packages/shared/src/utils/index.ts"
+        "./packages/shared/src/utils/index.ts"
       ]
     }
   }
