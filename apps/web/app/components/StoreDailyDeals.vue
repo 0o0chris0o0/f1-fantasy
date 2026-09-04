@@ -29,7 +29,7 @@
   <div v-if="dailyDeals?.length">
     <div
       ref="sliderRef"
-      class="flex gap-6 overflow-x-auto px-4 snap-x snap-mandatory scroll-smooth max-md:scrollbar-none max-md:[-webkit-overflow-scrolling:touch] max-md:[&::-webkit-scrollbar]:hidden"
+      class="flex py-4 gap-6 overflow-x-auto px-4 snap-x snap-mandatory scroll-smooth max-md:scrollbar-none max-md:[-webkit-overflow-scrolling:touch] max-md:[&::-webkit-scrollbar]:hidden"
     >
       <div
         v-for="deal in dailyDeals"
