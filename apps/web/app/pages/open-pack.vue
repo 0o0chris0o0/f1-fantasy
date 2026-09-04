@@ -1,10 +1,11 @@
 <template>
-  <div class="pt-24 overflow-visible open-pack-container">
+  <div class="pt-24 overflow-hidden open-pack-container">
     <div class="absolute left-0 w-full -translate-y-20 checked-line" />
     <Loader v-if="isLoading" />
+    <div class="z-10 bg-grid"></div>
     <div
       :class="[
-        'grid grid-cols-2 gap-x-2 md:gap-x-4 gap-y-12 card-grid',
+        'grid grid-cols-2 gap-x-2 md:gap-x-4 gap-y-12 px-4 card-grid z-20',
         loot.length % 2 === 0 && 'pb-40',
       ]"
     >
@@ -89,6 +90,14 @@ const revealCard = (cardId: number) => {
 </script>
 
 <style lang="scss" scoped>
+.open-pack-container {
+  background: #0d0f12;
+  color: #fff;
+  min-height: 100vh;
+  // overflow: hidden;
+  perspective: 1000px;
+}
+
 .checked-line {
   background: url("/img/line-text.png");
   background-size: auto 102%;
@@ -167,5 +176,19 @@ const revealCard = (cardId: number) => {
   animation-delay: 1s;
   animation-iteration-count: infinite;
   animation-timing-function: ease-in-out;
+}
+
+.bg-grid {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  transform: rotateX(60deg);
+  z-index: 1;
 }
 </style>

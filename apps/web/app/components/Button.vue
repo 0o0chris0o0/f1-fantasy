@@ -2,7 +2,7 @@
   <button
     :type="type"
     :class="[
-      'slant-button font-bold uppercase tracking-widest',
+      'font-bold uppercase tracking-widest',
       versionClasses[version],
       sizeClasses[size],
       disabled ? 'opacity-25' : '',
@@ -50,6 +50,6 @@ const versionClasses = {
 }
 
 .slant-button-sm {
-  clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
+  clip-path: polygon(7% 0, 100% 0, 93% 100%, 0 100%);
 }
 </style>
