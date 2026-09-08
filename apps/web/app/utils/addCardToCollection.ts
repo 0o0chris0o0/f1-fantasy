@@ -1,14 +1,14 @@
-import { updateDoc, increment, Timestamp } from "firebase/firestore";
+import { updateDoc, Timestamp } from 'firebase/firestore';
 import type {
   iCardInUsersCards,
   iCardRarity,
   iCurrentTeam,
-} from "@f1pick6/shared";
+} from '@f1pick6/shared';
 
 export async function addCardToCollection(
   cardId: string,
   rarity: iCardRarity,
-  totalCards: number,
+  totalCards: number
 ) {
   const userStore = useUserStore();
 
@@ -16,9 +16,16 @@ export async function addCardToCollection(
 
   if (!userDocRef.value) return;
 
+  const usersCollection = userObj.value?.collection ?? {};
+  const collectionKey = `${cardId}_${rarity}`;
+
+  // the card is already in the collection, adding it again would
+  // push the card count and the reward track out of sync
+  if (usersCollection[collectionKey]) return;
+
   const userCards = userObj.value?.cards;
   const indexOfSelectedCard = userCards?.findIndex(
-    (c) => c.cardData.cardId === cardId && c.rarity === rarity,
+    (c) => c.cardData.cardId === cardId && c.rarity === rarity
   );
 
   if (!userCards || indexOfSelectedCard === undefined) {
@@ -45,7 +52,7 @@ export async function addCardToCollection(
         iCardInUsersCards,
       ][]
     ).find(
-      ([_, card]) => card?.cardData.cardId === cardId && card.rarity === rarity,
+      ([_, card]) => card?.cardData.cardId === cardId && card.rarity === rarity
     );
 
     if (cardInUsersCurrentTeam) {
@@ -58,23 +65,34 @@ export async function addCardToCollection(
     }
   }
 
-  const newCardCount = (userObj.value?.cardsInCollection ?? 0) + 1;
+  // the collection is the source of truth for the card count, so the count,
+  // the completion and the reward track can't drift apart
+  const newCardCount = Object.keys(usersCollection).length + 1;
   const calcedCompletion = Math.round((newCardCount / totalCards) * 100);
 
-  const { progress: progressInRewardTrack, level: rewardLevel } =
-    calcProgressForRewardTrack(totalCards, newCardCount);
+  const {
+    progress: progressInRewardTrack,
+    level: rewardLevel,
+    completedLevel,
+  } = calcProgressForRewardTrack(
+    totalCards,
+    newCardCount,
+    rewardTrackLevelCount
+  );
 
   // update the user doc
   await updateDoc(userDocRef.value, {
     cards: userCards,
     currentTeam: usersCurrentTeam,
-    cardsInCollection: increment(1),
+    cardsInCollection: newCardCount,
     collectionCompletion: calcedCompletion,
     progressInRewardTrack,
     rewardLevel,
-    [`collection.${cardId}_${rarity}`]: {
+    [`collection.${collectionKey}`]: {
       cardId,
       collectedOn: Timestamp.now(),
     },
   });
+
+  return { completedLevel };
 }

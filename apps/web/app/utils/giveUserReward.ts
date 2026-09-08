@@ -6,8 +6,8 @@ import {
   increment,
   QueryDocumentSnapshot,
   writeBatch,
-} from "firebase/firestore";
-import { RewardType, CardType, iCardRarity } from "@f1pick6/shared/types";
+} from 'firebase/firestore';
+import { RewardType, CardType, iCardRarity } from '@f1pick6/shared/types';
 import type {
   iPack,
   iLoot,
@@ -16,10 +16,10 @@ import type {
   iCardInUsersCards,
   iConstructorCard,
   iDriverCard,
-} from "@f1pick6/shared/types";
+} from '@f1pick6/shared/types';
 
 export async function giveUserReward(
-  rewardObject: iReward,
+  rewardObject: iReward
 ): Promise<iLoot[] | void> {
   const db = useFirestore();
   const userStore = useUserStore();
@@ -42,17 +42,17 @@ export async function giveUserReward(
       break;
     case RewardType.CARDS:
       // get all cards
-      const cardsRef = collection(db, "cards");
+      const cardsRef = collection(db, 'cards');
       const cardsSnapshot = await getDocs(cardsRef);
 
       const cardDocs = cardsSnapshot.docs.map(
         (cardDoc: QueryDocumentSnapshot) =>
-          cardDoc.data() as iDriverCard | iConstructorCard,
+          cardDoc.data() as iDriverCard | iConstructorCard
       );
 
       const driverCards = cardDocs.filter((c) => c.type === CardType.DRIVER);
       const constructorCards = cardDocs.filter(
-        (c) => c.type === CardType.CONSTRUCTOR,
+        (c) => c.type === CardType.CONSTRUCTOR
       );
 
       const randomDriverCard =
@@ -68,7 +68,7 @@ export async function giveUserReward(
       // and for the loot obj to show in the modal
       const cardsToAdd: iCardInUsersCards[] = [];
       const cardsHistory: Record<string, iUserCardHistory> = structuredClone(
-        toRaw(userObj.value.cardsHistory),
+        toRaw(userObj.value.cardsHistory)
       );
       const lootCards: iLoot[] = [];
 
@@ -116,7 +116,7 @@ export async function giveUserReward(
       // create users card obj, merging the new cards with the current ones
       const newCardsForUsers = mergeNewCardsWithCurrentUserCards(
         cardsToAdd,
-        userObj.value.cards,
+        userObj.value.cards
       );
 
       // update the user object within the DB
@@ -127,7 +127,7 @@ export async function giveUserReward(
 
       break;
     case RewardType.PACK:
-      const packsRef = collection(db, "packs");
+      const packsRef = collection(db, 'packs');
       const packSnap = await getDoc(doc(packsRef, rewardObject.key as string));
       const packData = packSnap.data() as iPack;
 
@@ -135,10 +135,6 @@ export async function giveUserReward(
       await giveUserPack(packData, false);
       break;
   }
-
-  batch.update(userDocRef.value, {
-    rewardLevel: increment(1),
-  });
 
   await batch.commit();
 

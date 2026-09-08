@@ -35,7 +35,7 @@
 
   <!-- Collection Spinner Icon -->
   <div
-    v-if="userObj?.rewardLevel && userObj.rewardLevel <= 10"
+    v-if="userObj?.rewardLevel && rewardObj[userObj.rewardLevel]"
     class="mt-2 mb-4 text-center"
   >
     <p class="font-headline font-semibold">Next Reward</p>
@@ -174,7 +174,7 @@
                       'w-2 h-2 rounded-full',
                       userStore.doesUserHaveCardInCollection(
                         card.cardId,
-                        card.rarity,
+                        card.rarity
                       )
                         ? getRarityBgColor(card.rarity)
                         : 'bg-gray-600 opacity-40',
@@ -208,7 +208,7 @@
                       v-if="
                         !userStore.doesUserHaveCardInCollection(
                           card.cardId,
-                          card.rarity,
+                          card.rarity
                         )
                       "
                       class="absolute inset-0 z-10 text-3xl grid place-content-center gap-1"
@@ -240,7 +240,7 @@
                         :class="{
                           'opacity-25': !userStore.doesUserHaveCardInCollection(
                             card.cardId,
-                            card.rarity,
+                            card.rarity
                           ),
                         }"
                       />
@@ -254,7 +254,7 @@
                         userStore.doesUserHaveCard(card.cardId, card.rarity) &&
                         !userStore.doesUserHaveCardInCollection(
                           card.cardId,
-                          card.rarity,
+                          card.rarity
                         )
                       "
                       class="flex items-center gap-1"
@@ -264,7 +264,7 @@
                         x{{
                           userStore.getXCardFromUserObj(
                             card.cardId,
-                            card.rarity,
+                            card.rarity
                           )?.quantity
                         }}
                       </p>
@@ -273,7 +273,7 @@
                       v-if="
                         userStore.isXCardInUsersCurrentTeam(
                           card.cardId,
-                          card.rarity,
+                          card.rarity
                         )
                       "
                     >
@@ -286,7 +286,7 @@
                       v-if="
                         userStore.doesUserHaveCardInCollection(
                           card.cardId,
-                          card.rarity,
+                          card.rarity
                         )
                       "
                     >
@@ -307,11 +307,11 @@
 </template>
 
 <script setup lang="ts">
-import type { QueryDocumentSnapshot } from "firebase/firestore";
-import { collection, getDocs } from "firebase/firestore";
-import type { SelectItem } from "@nuxt/ui";
-import AddToCollectionConfirmation from "~/components/modals/AddToCollectionConfirmation.vue";
-import RewardsInfo from "~/components/modals/RewardsInfo.vue";
+import type { QueryDocumentSnapshot } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
+import type { SelectItem } from '@nuxt/ui';
+import AddToCollectionConfirmation from '~/components/modals/AddToCollectionConfirmation.vue';
+import RewardsInfo from '~/components/modals/RewardsInfo.vue';
 import {
   CardType,
   iCardRarity,
@@ -320,10 +320,10 @@ import {
   type iDriverCard,
   type iDriverCollectionCard,
   type iLoot,
-} from "@f1pick6/shared";
+} from '@f1pick6/shared';
 
 definePageMeta({
-  middleware: "auth",
+  middleware: 'auth',
 });
 
 interface CardGroup {
@@ -345,56 +345,56 @@ const rewardsModal = overlay.create(RewardsInfo);
 const { userObj } = storeToRefs(userStore);
 
 // filter / sort state
-const selectedType = ref<CardType | "ALL">("ALL");
-const searchText = ref("");
-const selectedRarity = ref("ALL");
-const selectedTeam = ref("ALL");
-const selectedSort = ref("default");
+const selectedType = ref<CardType | 'ALL'>('ALL');
+const searchText = ref('');
+const selectedRarity = ref('ALL');
+const selectedTeam = ref('ALL');
+const selectedSort = ref('default');
 const onlyOwnedCards = ref(false);
 const showFilters = ref(false);
 const openCardIds = ref<Record<string, boolean>>({});
 
 const teamSortOptions: SelectItem[] = [
-  { id: "default", label: "Default" },
-  { id: "points:desc,rarity:desc,name", label: "Fantasy Points" },
-  { id: "rarity:desc,points:desc,name", label: "Rarity (Legendary First)" },
-  { id: "rarity:asc,points:desc,name", label: "Rarity (Common First)" },
-  { id: "name", label: "Name (A-Z)" },
-  { id: "quantity:desc,rarity:desc,name", label: "Quantity" },
+  { id: 'default', label: 'Default' },
+  { id: 'points:desc,rarity:desc,name', label: 'Fantasy Points' },
+  { id: 'rarity:desc,points:desc,name', label: 'Rarity (Legendary First)' },
+  { id: 'rarity:asc,points:desc,name', label: 'Rarity (Common First)' },
+  { id: 'name', label: 'Name (A-Z)' },
+  { id: 'quantity:desc,rarity:desc,name', label: 'Quantity' },
 ];
 
 const isLoading = ref(false);
 const allCards = useState<
   (iDriverCollectionCard | iConstructorCollectionCard)[]
->("allCards", () => []);
-const totalCards = useState<number>("totalCards", () => 0);
-const teams = useState<string[]>("teams", () => []);
+>('allCards', () => []);
+const totalCards = useState<number>('totalCards', () => 0);
+const teams = useState<string[]>('teams', () => []);
 
 const calcRewardsCount = (): number => {
-  const totalNumRewards: number = Object.keys(rewardObj).length;
   const userRewardsLevel = userObj.value?.rewardLevel;
 
   if (userRewardsLevel === undefined) return 0;
 
-  const wholeParts = Math.floor(totalCards.value / totalNumRewards);
-  const remainder = totalCards.value % totalNumRewards;
-
-  return userRewardsLevel >= remainder ? wholeParts + 1 : wholeParts;
+  return calcCardsInRewardLevel(
+    totalCards.value,
+    userRewardsLevel,
+    rewardTrackLevelCount
+  );
 };
 
 await callOnce(
   async () => {
     // get all cards
-    const cardsRef = collection(db, "cards");
+    const cardsRef = collection(db, 'cards');
     const cardsSnapshot = await getDocs(cardsRef);
     const teamsSet = new Set<string>();
 
     const cardDocs = cardsSnapshot.docs.map(
       (cardDoc: QueryDocumentSnapshot) => {
-        const teamName = cardDoc.get("teamName");
+        const teamName = cardDoc.get('teamName');
         if (teamName) teamsSet.add(teamName);
         return cardDoc.data() as iDriverCard | iConstructorCard;
-      },
+      }
     );
 
     // get a list of all teams
@@ -408,13 +408,13 @@ await callOnce(
     allCards.value = createCardsForCollection(
       cardDocs,
       userObj.value?.cards || [],
-      userObj.value?.collection || {},
+      userObj.value?.collection || {}
     );
   },
-  { mode: "navigation" },
+  { mode: 'navigation' }
 );
 
-const setSelectedType = (type: CardType | "ALL") => {
+const setSelectedType = (type: CardType | 'ALL') => {
   selectedType.value = type;
 };
 
@@ -431,22 +431,22 @@ const toggleCardOpen = (cardId: string) => {
 
 const getCollectedCountForGroup = (group: CardGroup) => {
   return group.cards.filter((card) =>
-    userStore.doesUserHaveCardInCollection(card.cardId, card.rarity),
+    userStore.doesUserHaveCardInCollection(card.cardId, card.rarity)
   ).length;
 };
 
 const getRarityBgColor = (rarity: string) => {
   switch (rarity) {
-    case "COMMON":
-      return "bg-slate-400";
-    case "UNCOMMON":
-      return "bg-uncommon";
-    case "RARE":
-      return "bg-rare";
-    case "LEGENDARY":
-      return "bg-legendary";
+    case 'COMMON':
+      return 'bg-slate-400';
+    case 'UNCOMMON':
+      return 'bg-uncommon';
+    case 'RARE':
+      return 'bg-rare';
+    case 'LEGENDARY':
+      return 'bg-legendary';
     default:
-      return "bg-gray-400";
+      return 'bg-gray-400';
   }
 };
 
@@ -460,7 +460,7 @@ const filteredCards = computed(() => {
     selectedTeam.value,
     onlyOwnedCards.value,
     selectedSort.value,
-    selectedType.value,
+    selectedType.value
   );
 });
 
@@ -468,7 +468,7 @@ const filteredCardsByTeamAndCard = computed(() => {
   const returnObj: Record<string, CardGroup[]> = {};
 
   filteredCards.value.forEach((card) => {
-    const teamKey = card.teamName?.toLowerCase() || "";
+    const teamKey = card.teamName?.toLowerCase() || '';
     if (!returnObj[teamKey]) {
       returnObj[teamKey] = [];
     }
@@ -476,7 +476,7 @@ const filteredCardsByTeamAndCard = computed(() => {
     let cardGroup = returnObj[teamKey].find((g) => g.cardId === card.cardId);
     if (!cardGroup) {
       const displayName =
-        card.type === CardType.CONSTRUCTOR ? "Constructor Card" : card.cardName;
+        card.type === CardType.CONSTRUCTOR ? 'Constructor Card' : card.cardName;
 
       cardGroup = {
         cardId: card.cardId,
@@ -501,14 +501,14 @@ const confirmAddToCollection = async (cardId: string, rarity: iCardRarity) => {
   let rewardedCards: iLoot[] = [];
 
   try {
-    await addCardToCollection(cardId, rarity, totalCards.value);
+    const { completedLevel } =
+      (await addCardToCollection(cardId, rarity, totalCards.value)) || {};
 
     // if we've completed a reward level give the user the reward
-    if (userObj.value?.progressInRewardTrack === 0) {
-      const rewardObject = rewardObj[userObj.value.rewardLevel];
-      if (rewardObject) {
-        rewardedCards = (await giveUserReward(rewardObject)) || [];
-      }
+    const rewardObject = completedLevel ? rewardObj[completedLevel] : undefined;
+
+    if (rewardObject) {
+      rewardedCards = (await giveUserReward(rewardObject)) || [];
 
       rewardsModal.open({
         rewardObj: rewardObject,
@@ -536,12 +536,12 @@ const toggleFilters = () => {
 };
 
 const resetFilters = () => {
-  searchText.value = "";
-  selectedRarity.value = "ALL";
-  selectedTeam.value = "ALL";
-  selectedSort.value = "default";
+  searchText.value = '';
+  selectedRarity.value = 'ALL';
+  selectedTeam.value = 'ALL';
+  selectedSort.value = 'default';
   onlyOwnedCards.value = false;
-  selectedType.value = "ALL";
+  selectedType.value = 'ALL';
 };
 </script>
 

@@ -1,28 +1,44 @@
+export function calcCardsInRewardLevel(
+  totalCards: number,
+  level: number,
+  totalLevels: number
+) {
+  const baseCardsPerLevel = Math.floor(totalCards / totalLevels);
+  const extraCards = totalCards % totalLevels;
+
+  // the leftover cards are handed out to the earliest levels
+  return level <= extraCards ? baseCardsPerLevel + 1 : baseCardsPerLevel;
+}
+
 export function calcProgressForRewardTrack(
   totalCards: number,
   cardCount: number,
+  totalLevels: number
 ) {
-  const baseCardsPerLevel = Math.floor(totalCards / 10);
-  const extraCards = totalCards % 10;
+  let cardsIntoLevel = cardCount;
 
-  let returnObj = {
-    progress: 0,
-    level: 1,
-  };
+  for (let level = 1; level <= totalLevels; level++) {
+    const cardsInThisLevel = calcCardsInRewardLevel(
+      totalCards,
+      level,
+      totalLevels
+    );
 
-  for (let level = 1; level <= 10; level++) {
-    const cardsInThisLevel =
-      level <= extraCards ? baseCardsPerLevel + 1 : baseCardsPerLevel;
+    // there are more levels than cards, so this one can never be completed
+    if (cardsInThisLevel === 0) continue;
 
-    if (cardCount <= cardsInThisLevel) {
-      return {
-        progress: cardCount === cardsInThisLevel ? 0 : cardCount,
-        level,
-      };
+    if (cardsIntoLevel < cardsInThisLevel) {
+      return { progress: cardsIntoLevel, level, completedLevel: null };
     }
 
-    cardCount -= cardsInThisLevel;
+    if (cardsIntoLevel === cardsInThisLevel) {
+      // the level is complete, so the user moves on to the next one
+      return { progress: 0, level: level + 1, completedLevel: level };
+    }
+
+    cardsIntoLevel -= cardsInThisLevel;
   }
 
-  return returnObj;
+  // the whole track has been completed
+  return { progress: 0, level: totalLevels + 1, completedLevel: null };
 }
