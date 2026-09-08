@@ -5,7 +5,7 @@
       :class="{ 'menu-open': navOpen }"
     >
       <div
-        class="relative min-h-screen bg-surface w-full flex flex-col pb-6 content-container"
+        class="relative min-h-screen bg-surface w-full flex flex-col content-container"
         :class="[`page-${makeCssSafe(route.path)}`]"
       >
         <header
@@ -50,10 +50,9 @@
           >
             <Loader />
           </div>
-          <div v-show="!userDataPending">
+          <div v-show="!userDataPending" class="flex-1 flex flex-col min-h-0">
             <NuxtPage />
           </div>
-          <NotificationContainer />
         </main>
       </div>
       <button
@@ -91,7 +90,7 @@ const closeMenu = () => {
 watch(navOpen, (isOpen) => {
   if (!import.meta.client) return;
 
-  document.documentElement.style.overflow = isOpen ? "hidden" : "";
+  document.documentElement.style.overflow = isOpen ? 'hidden' : '';
 });
 
 watch(isPageVisible, (currentlyVisible) => {
@@ -105,7 +104,7 @@ watch(isPageVisible, (currentlyVisible) => {
 
 onBeforeUnmount(() => {
   if (!import.meta.client) return;
-  document.documentElement.style.overflow = "";
+  document.documentElement.style.overflow = '';
 });
 </script>
 
@@ -119,7 +118,7 @@ onBeforeUnmount(() => {
   background-size: 32px 32px;
 
   &.page-open-pack {
-    --bg-gradient: url("/img/surface.avif");
+    --bg-gradient: url('/img/surface.avif');
     background-size: 200px;
   }
 }

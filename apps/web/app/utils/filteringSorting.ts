@@ -1,4 +1,4 @@
-import { CardType, iCardRarity } from "@f1pick6/shared/types";
+import { CardType, iCardRarity } from '@f1pick6/shared/types';
 import type {
   iCurrentTeam,
   iCardInCollection,
@@ -7,8 +7,8 @@ import type {
   iConstructorCollectionCard,
   iDriverCard,
   iDriverCollectionCard,
-} from "@f1pick6/shared/types";
-import { calcCurrentModifierScore } from "@f1pick6/shared/utils";
+} from '@f1pick6/shared/types';
+import { calcCurrentModifierScore } from '@f1pick6/shared/utils';
 
 export interface iMyCardsSortContext {
   currentRound: number;
@@ -26,60 +26,60 @@ const rarityOrder: Record<string, number> = {
 export function getFilterKeyForMyCards(
   item: iCardInUsersCards,
   key: string,
-  context?: iMyCardsSortContext,
+  context?: iMyCardsSortContext
 ) {
   switch (key) {
-    case "name":
-      return (item.cardData?.cardName || "").toString();
-    case "rarity":
+    case 'name':
+      return (item.cardData?.cardName || '').toString();
+    case 'rarity':
       return rarityOrder[item.rarity] || 0;
-    case "quantity":
+    case 'quantity':
       return item.quantity || 0;
-    case "level":
+    case 'level':
       return item.level || 0;
-    case "points":
+    case 'points':
       return item.cardData?.stats?.currentFantasyPoints || 0;
-    case "scoreBoost":
+    case 'scoreBoost':
       return context
         ? calcCurrentModifierScore(
             item,
             context.currentRound,
-            context.currentTeam,
+            context.currentTeam
           ).totalScoreModifier
         : 0;
     default:
-      return "";
+      return '';
   }
 }
 
 export function getFilterKeyForCollection(
   item: iDriverCollectionCard | iConstructorCollectionCard,
-  key: string,
+  key: string
 ) {
   switch (key) {
-    case "name":
-      return (item.cardName || "").toString();
-    case "rarity":
+    case 'name':
+      return (item.cardName || '').toString();
+    case 'rarity':
       return rarityOrder[item.rarity] || 0;
-    case "quantity":
+    case 'quantity':
       return item.quantity || 0;
-    case "points":
+    case 'points':
       return item.stats?.currentFantasyPoints || 0;
     default:
-      return "";
+      return '';
   }
 }
 
 export function createCardsForCollection(
   allCards: (iDriverCard | iConstructorCard)[],
   userCards: iCardInUsersCards[],
-  userCollection: Record<string, iCardInCollection>,
+  userCollection: Record<string, iCardInCollection>
 ): (iDriverCollectionCard | iConstructorCollectionCard)[] {
   const constructors = allCards.filter(
-    (c) => (c as any).type === "constructor",
+    (c) => (c as any).type === 'constructor'
   ) as iConstructorCard[];
   const drivers = allCards.filter(
-    (c) => (c as any).type === "driver",
+    (c) => (c as any).type === 'driver'
   ) as iDriverCard[];
 
   const rarities = [
@@ -105,7 +105,7 @@ export function createCardsForCollection(
     });
 
   const driverCardsForCollection: iDriverCollectionCard[] = Object.values(
-    rarities,
+    rarities
   ).flatMap((rarity) => {
     return drivers.map((card: iDriverCard) => ({
       ...card,
@@ -128,23 +128,23 @@ export function sortCardsForMyCards(
   selectedTeam: string,
   sortBy: string,
   context?: iMyCardsSortContext,
-  selectedType: CardType | "ALL" = "ALL",
+  selectedType: CardType | 'ALL' = 'ALL'
 ) {
   let out = cards.filter((c) => {
-    const name = c.cardData.cardName?.toLowerCase() || "";
-    const team = c.cardData.teamName?.toLowerCase() || "";
+    const name = c.cardData.cardName?.toLowerCase() || '';
+    const team = c.cardData.teamName?.toLowerCase() || '';
     const q = searchText.trim().toLowerCase();
 
     if (q) {
       if (!(name.includes(q) || team.includes(q))) return false;
     }
 
-    if (selectedRarity !== "ALL" && c.rarity !== selectedRarity) return false;
+    if (selectedRarity !== 'ALL' && c.rarity !== selectedRarity) return false;
 
-    if (selectedTeam !== "ALL" && c.cardData.teamName !== selectedTeam)
+    if (selectedTeam !== 'ALL' && c.cardData.teamName !== selectedTeam)
       return false;
 
-    if (selectedType !== "ALL" && c.cardData.type !== selectedType)
+    if (selectedType !== 'ALL' && c.cardData.type !== selectedType)
       return false;
 
     return true;
@@ -152,27 +152,27 @@ export function sortCardsForMyCards(
 
   const compareMulti = (a: iCardInUsersCards, b: iCardInUsersCards) => {
     // allow comma-separated criteria like "rarity:desc,name" or "name,level:asc"
-    const criteria = String(sortBy || "name")
-      .split(",")
+    const criteria = String(sortBy || 'name')
+      .split(',')
       .map((s) => s.trim())
       .filter(Boolean);
 
     for (const crit of criteria) {
-      const [rawKey, rawDir] = crit.split(":").map((s) => s && s.trim());
-      const key = rawKey || "name";
-      const dir = (rawDir || "asc").toLowerCase();
+      const [rawKey, rawDir] = crit.split(':').map((s) => s && s.trim());
+      const key = rawKey || 'name';
+      const dir = (rawDir || 'asc').toLowerCase();
 
       const va = getFilterKeyForMyCards(a, key, context);
       const vb = getFilterKeyForMyCards(b, key, context);
 
       let res = 0;
-      if (typeof va === "string" && typeof vb === "string") {
+      if (typeof va === 'string' && typeof vb === 'string') {
         res = va.localeCompare(vb);
       } else {
         res = (Number(va) || 0) - (Number(vb) || 0);
       }
 
-      if (res !== 0) return dir === "desc" ? -res : res;
+      if (res !== 0) return dir === 'desc' ? -res : res;
     }
 
     return 0;
@@ -184,7 +184,7 @@ export function sortCardsForMyCards(
 }
 
 export function defaultCollectionSorting(
-  cards: (iConstructorCollectionCard | iDriverCollectionCard)[],
+  cards: (iConstructorCollectionCard | iDriverCollectionCard)[]
 ) {
   const constructorCards = cards.filter((c) => c.type === CardType.CONSTRUCTOR);
   const driverCards = cards.filter((c) => c.type === CardType.DRIVER);
@@ -235,22 +235,22 @@ export function sortCardsForCollection(
   selectedTeam: string,
   onlyOwnedCards: boolean,
   sortBy: string,
-  selectedType: CardType | "ALL" = "ALL",
+  selectedType: CardType | 'ALL' = 'ALL'
 ) {
   let out = cards.filter((c) => {
-    const name = c.cardName?.toLowerCase() || "";
-    const team = c.teamName?.toLowerCase() || "";
+    const name = c.cardName?.toLowerCase() || '';
+    const team = c.teamName?.toLowerCase() || '';
     const q = searchText.trim().toLowerCase();
 
     if (q) {
       if (!(name.includes(q) || team.includes(q))) return false;
     }
 
-    if (selectedRarity !== "ALL" && c.rarity !== selectedRarity) return false;
+    if (selectedRarity !== 'ALL' && c.rarity !== selectedRarity) return false;
 
-    if (selectedTeam !== "ALL" && c.teamName !== selectedTeam) return false;
+    if (selectedTeam !== 'ALL' && c.teamName !== selectedTeam) return false;
 
-    if (selectedType !== "ALL" && c.type !== selectedType) return false;
+    if (selectedType !== 'ALL' && c.type !== selectedType) return false;
 
     // shows only cards that can be added
     if (onlyOwnedCards && (!c.quantity || c.userHasInCollection)) return false;
@@ -260,36 +260,36 @@ export function sortCardsForCollection(
 
   const compareMulti = (
     a: iDriverCollectionCard | iConstructorCollectionCard,
-    b: iDriverCollectionCard | iConstructorCollectionCard,
+    b: iDriverCollectionCard | iConstructorCollectionCard
   ) => {
     // allow comma-separated criteria like "rarity:desc,name" or "name,level:asc"
-    const criteria = String(sortBy || "name")
-      .split(",")
+    const criteria = String(sortBy || 'name')
+      .split(',')
       .map((s) => s.trim())
       .filter(Boolean);
 
     for (const crit of criteria) {
-      const [rawKey, rawDir] = crit.split(":").map((s) => s && s.trim());
-      const key = rawKey || "name";
-      const dir = (rawDir || "asc").toLowerCase();
+      const [rawKey, rawDir] = crit.split(':').map((s) => s && s.trim());
+      const key = rawKey || 'name';
+      const dir = (rawDir || 'asc').toLowerCase();
 
       const va = getFilterKeyForCollection(a, key);
       const vb = getFilterKeyForCollection(b, key);
 
       let res = 0;
-      if (typeof va === "string" && typeof vb === "string") {
+      if (typeof va === 'string' && typeof vb === 'string') {
         res = va.localeCompare(vb);
       } else {
         res = (Number(va) || 0) - (Number(vb) || 0);
       }
 
-      if (res !== 0) return dir === "desc" ? -res : res;
+      if (res !== 0) return dir === 'desc' ? -res : res;
     }
 
     return 0;
   };
 
-  if (sortBy === "default") {
+  if (sortBy === 'default') {
     return defaultCollectionSorting(out);
   }
 
@@ -300,30 +300,30 @@ export function sortCardsForCollection(
 
 export function filterCardsForMyTeam(
   editing: keyof iCurrentTeam,
-  allCards: iCardInUsersCards[],
+  allCards: iCardInUsersCards[]
 ) {
   let returnCards: iCardInUsersCards[] = [...allCards];
 
   switch (editing) {
-    case "uncommonSlot_a":
+    case 'uncommonSlot_a':
       returnCards = allCards.filter(
         (c) =>
-          c.rarity === iCardRarity.UNCOMMON || c.rarity === iCardRarity.COMMON,
+          c.rarity === iCardRarity.UNCOMMON || c.rarity === iCardRarity.COMMON
       );
       break;
 
-    case "uncommonSlot_b":
+    case 'uncommonSlot_b':
       returnCards = allCards.filter(
         (c) =>
-          c.rarity === iCardRarity.UNCOMMON || c.rarity === iCardRarity.COMMON,
+          c.rarity === iCardRarity.UNCOMMON || c.rarity === iCardRarity.COMMON
       );
       break;
 
-    case "rareSlot_a":
+    case 'rareSlot_a':
       returnCards = allCards.filter((c) => c.rarity !== iCardRarity.LEGENDARY);
       break;
 
-    case "rareSlot_b":
+    case 'rareSlot_b':
       returnCards = allCards.filter((c) => c.rarity !== iCardRarity.LEGENDARY);
       break;
 
@@ -341,8 +341,8 @@ export function filterCardsForMyTeam(
         return rarityB - rarityA; // higher rarity first
       }
 
-      const nameA = a.cardData.cardName || "";
-      const nameB = b.cardData.cardName || "";
+      const nameA = a.cardData.cardName || '';
+      const nameB = b.cardData.cardName || '';
 
       return nameA.localeCompare(nameB); // sort by name if same rarity
     })
@@ -358,7 +358,7 @@ export function filterCardsForMyTeam(
 
 export function sortCardsForPackOpening(cards: iCardInUsersCards[]) {
   cards.sort((a, b) =>
-    (rarityOrder[a.rarity] || 0) > (rarityOrder[b.rarity] || 0) ? 1 : -1,
+    (rarityOrder[a.rarity] || 0) < (rarityOrder[b.rarity] || 0) ? 1 : -1
   );
 
   return cards;
