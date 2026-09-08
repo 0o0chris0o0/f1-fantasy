@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed inset-0 bg-neutral/90 z-50 flex items-center justify-center h-screen"
+    class="fixed inset-0 bg-neutral/90 z-50 flex items-center justify-center"
   >
     <div class="spinner-container">
       <div class="outer-ring"></div>

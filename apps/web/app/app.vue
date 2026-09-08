@@ -1,11 +1,11 @@
 <template>
   <UApp>
     <div
-      class="min-h-screen w-full bg-neutral text-white"
+      class="min-h-dvh w-full bg-neutral text-white"
       :class="{ 'menu-open': navOpen }"
     >
       <div
-        class="relative min-h-screen bg-surface w-full flex flex-col content-container"
+        class="relative min-h-dvh bg-surface w-full flex flex-col content-container"
         :class="[`page-${makeCssSafe(route.path)}`]"
       >
         <header
