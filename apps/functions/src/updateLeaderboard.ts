@@ -1,11 +1,11 @@
-import { iLeaderBoard, iLeaderboardScore } from "@f1pick6/shared/types";
-import { getFirestore } from "firebase-admin/firestore";
+import { iLeaderBoard, iLeaderboardScore } from '@f1pick6/shared/types';
+import { getFirestore } from 'firebase-admin/firestore';
 
 export async function updateLeaderboard(
   playerResultsForLeaderboard: Record<
     string,
-    Omit<iLeaderboardScore, "currentRank" | "prevRank">
-  >,
+    Omit<iLeaderboardScore, 'currentRank' | 'prevRank'>
+  >
 ) {
   const firestore = getFirestore();
   const writeBatch = firestore.batch();
@@ -13,7 +13,7 @@ export async function updateLeaderboard(
   const newLeaderboard: iLeaderBoard = {};
 
   // get current leaderboard DB values
-  const leaderboardSnap = await firestore.collection("leaderboard").get();
+  const leaderboardSnap = await firestore.collection('leaderboard').get();
   const leaderboardDocs = leaderboardSnap.docs;
   const leaderboardDocsByPlayerId = new Map<
     string,
@@ -32,6 +32,11 @@ export async function updateLeaderboard(
 
     newLeaderboard[player.playerId] = {
       ...player,
+      qualifyingScore:
+        (existingPlayer?.qualifyingScore ?? 0) + player.qualifyingScore,
+      modifierScore:
+        (existingPlayer?.modifierScore ?? 0) + player.modifierScore,
+      raceScore: (existingPlayer?.raceScore ?? 0) + player.raceScore,
       currentScore: (existingPlayer?.currentScore ?? 0) + player.currentScore,
       currentRank: existingPlayer?.currentRank ?? 0,
       prevRank: existingPlayer?.currentRank ?? 0,
@@ -40,7 +45,7 @@ export async function updateLeaderboard(
 
   const sortedLeaderboard = Object.values(newLeaderboard).sort(
     (a, b) =>
-      b.currentScore - a.currentScore || a.playerId.localeCompare(b.playerId),
+      b.currentScore - a.currentScore || a.playerId.localeCompare(b.playerId)
   );
 
   sortedLeaderboard.forEach((player, index) => {
@@ -58,7 +63,7 @@ export async function updateLeaderboard(
     if (leaderboardDoc) {
       writeBatch.update(leaderboardDoc.ref, { ...player });
     } else {
-      writeBatch.set(firestore.collection("leaderboard").doc(playerId), player);
+      writeBatch.set(firestore.collection('leaderboard').doc(playerId), player);
     }
   });
 
