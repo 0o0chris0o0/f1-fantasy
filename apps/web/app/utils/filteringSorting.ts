@@ -234,9 +234,12 @@ export function sortCardsForCollection(
   selectedRarity: string,
   selectedTeam: string,
   onlyOwnedCards: boolean,
+  hideCardsInTeam: boolean,
   sortBy: string,
   selectedType: CardType | 'ALL' = 'ALL'
 ) {
+  const userStore = useUserStore();
+
   let out = cards.filter((c) => {
     const name = c.cardName?.toLowerCase() || '';
     const team = c.teamName?.toLowerCase() || '';
@@ -254,6 +257,14 @@ export function sortCardsForCollection(
 
     // shows only cards that can be added
     if (onlyOwnedCards && (!c.quantity || c.userHasInCollection)) return false;
+
+    // shows only cards NOT in the users team unless they have more than 1
+    if (
+      hideCardsInTeam &&
+      c.quantity === 1 &&
+      userStore.isXCardInUsersCurrentTeam(c.cardId, c.rarity)
+    )
+      return false;
 
     return true;
   });

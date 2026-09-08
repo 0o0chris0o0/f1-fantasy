@@ -8,7 +8,7 @@
       :class="{ 'menu-open': navOpen }"
     >
       <div
-        class="relative min-h-dvh bg-surface w-full flex flex-col content-container"
+        class="relative min-h-dvh bg-surface w-full flex flex-col pb-32 content-container"
         :class="[`page-${makeCssSafe(route.path)}`]"
       >
         <header

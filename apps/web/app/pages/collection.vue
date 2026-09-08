@@ -102,6 +102,7 @@
     v-model:selectedTeam="selectedTeam"
     v-model:sortBy="selectedSort"
     v-model:onlyOwnedCards="onlyOwnedCards"
+    v-model:hideCardsInTeam="hideCardsInTeam"
     :teams="teams"
     :sort-options="teamSortOptions"
     @reset="resetFilters"
@@ -351,6 +352,7 @@ const selectedRarity = ref('ALL');
 const selectedTeam = ref('ALL');
 const selectedSort = ref('default');
 const onlyOwnedCards = ref(false);
+const hideCardsInTeam = ref(false);
 const showFilters = ref(false);
 const openCardIds = ref<Record<string, boolean>>({});
 
@@ -459,6 +461,7 @@ const filteredCards = computed(() => {
     selectedRarity.value,
     selectedTeam.value,
     onlyOwnedCards.value,
+    hideCardsInTeam.value,
     selectedSort.value,
     selectedType.value
   );

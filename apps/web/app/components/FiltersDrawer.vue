@@ -41,6 +41,14 @@
             />
           </div>
 
+          <div v-if="hideCardsInTeam !== undefined">
+            <UCheckbox
+              :model-value="hideCardsInTeam"
+              @update:model-value="onHideTeamCards"
+              label="Hide cards in team"
+            />
+          </div>
+
           <div class="flex space-x-2">
             <USelect
               :model-value="selectedRarity"
@@ -72,7 +80,15 @@
             </USelect>
           </div>
 
-          <div class="pt-4 border-t border-on-surface-variant/30 text-center">
+          <div
+            class="pt-4 border-t border-on-surface-variant/30 flex justify-between text-center"
+          >
+            <Button
+              @click="emit('update:showFilters', false)"
+              size="sm"
+              version="primary"
+              >Close</Button
+            >
             <Button @click="onReset" size="sm" version="normal">Reset</Button>
           </div>
         </div>
@@ -82,19 +98,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
-import type { SelectItem } from "@nuxt/ui";
+import { ref, watch, computed } from 'vue';
+import type { SelectItem } from '@nuxt/ui';
 
-const props = defineProps<{
-  showFilters: boolean;
-  searchText: string;
-  selectedRarity: string;
-  selectedTeam: string;
-  sortBy: string;
-  teams: string[];
-  sortOptions?: SelectItem[];
-  onlyOwnedCards?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    showFilters: boolean;
+    searchText: string;
+    selectedRarity: string;
+    selectedTeam: string;
+    sortBy: string;
+    teams: string[];
+    sortOptions?: SelectItem[];
+    onlyOwnedCards?: boolean;
+    hideCardsInTeam?: boolean;
+  }>(),
+  {
+    // Vue turns an absent boolean prop into false rather than undefined, so
+    // these need an explicit undefined for the checkboxes to stay opt-in
+    onlyOwnedCards: undefined,
+    hideCardsInTeam: undefined,
+  }
+);
 
 const sortByValue = ref(props.sortBy);
 
@@ -102,64 +127,69 @@ watch(
   () => props.sortBy,
   (newVal) => {
     sortByValue.value = newVal;
-  },
+  }
 );
 
 const rarityOptions: SelectItem[] = [
-  { id: "ALL", label: "All rarities" },
-  { id: "COMMON", label: "Common" },
-  { id: "UNCOMMON", label: "Uncommon" },
-  { id: "RARE", label: "Rare" },
-  { id: "LEGENDARY", label: "Legendary" },
+  { id: 'ALL', label: 'All rarities' },
+  { id: 'COMMON', label: 'Common' },
+  { id: 'UNCOMMON', label: 'Uncommon' },
+  { id: 'RARE', label: 'Rare' },
+  { id: 'LEGENDARY', label: 'Legendary' },
 ];
 
 const teamOptions = computed<SelectItem[]>(() => [
-  { id: "ALL", label: "All teams" },
+  { id: 'ALL', label: 'All teams' },
   ...props.teams.map((team) => ({ id: team, label: team })),
 ]);
 
 const defaultSortOptions: SelectItem[] = [
-  { id: "rarity:desc,points:desc,name", label: "Rarity (Legendary First)" },
-  { id: "rarity:asc,points:desc,name", label: "Rarity (Common First)" },
-  { id: "name", label: "Name (A-Z)" },
-  { id: "quantity:desc,rarity:desc,name", label: "Quantity" },
-  { id: "level:desc,rarity:desc,name", label: "Level" },
-  { id: "points:desc,rarity:desc,name", label: "Fantasy Points" },
+  { id: 'rarity:desc,points:desc,name', label: 'Rarity (Legendary First)' },
+  { id: 'rarity:asc,points:desc,name', label: 'Rarity (Common First)' },
+  { id: 'name', label: 'Name (A-Z)' },
+  { id: 'quantity:desc,rarity:desc,name', label: 'Quantity' },
+  { id: 'level:desc,rarity:desc,name', label: 'Level' },
+  { id: 'points:desc,rarity:desc,name', label: 'Fantasy Points' },
 ];
 
 const sortOptions = computed(() => props.sortOptions || defaultSortOptions);
 
 const emit = defineEmits<{
-  (e: "update:showFilters", value: boolean): void;
-  (e: "update:searchText", value: string): void;
-  (e: "update:selectedRarity", value: string): void;
-  (e: "update:selectedTeam", value: string): void;
-  (e: "update:sortBy", value: string): void;
-  (e: "update:onlyOwnedCards", value: boolean): void;
-  (e: "toggleSortOrder"): void;
-  (e: "reset"): void;
+  (e: 'update:showFilters', value: boolean): void;
+  (e: 'update:searchText', value: string): void;
+  (e: 'update:selectedRarity', value: string): void;
+  (e: 'update:selectedTeam', value: string): void;
+  (e: 'update:sortBy', value: string): void;
+  (e: 'update:onlyOwnedCards', value: boolean): void;
+  (e: 'update:hideCardsInTeam', value: boolean): void;
+  (e: 'toggleSortOrder'): void;
+  (e: 'reset'): void;
 }>();
 
 const onSearch = (e: Event) => {
-  const v = (e.target as HTMLInputElement)?.value ?? "";
-  emit("update:searchText", v);
+  const v = (e.target as HTMLInputElement)?.value ?? '';
+  emit('update:searchText', v);
 };
 
-const onOnlyOwned = (value: boolean | "indeterminate") => {
-  emit("update:onlyOwnedCards", Boolean(value));
+const onOnlyOwned = (value: boolean | 'indeterminate') => {
+  emit('update:onlyOwnedCards', Boolean(value));
+};
+
+const onHideTeamCards = (value: boolean | 'indeterminate') => {
+  emit('update:hideCardsInTeam', Boolean(value));
 };
 
 const onRarity = (value: string) => {
-  emit("update:selectedRarity", value);
+  emit('update:selectedRarity', value);
 };
 
 const onTeam = (value: string) => {
-  emit("update:selectedTeam", value);
+  emit('update:selectedTeam', value);
 };
 
 const onSort = () => {
-  emit("update:sortBy", sortByValue.value);
+  emit('update:sortBy', sortByValue.value);
 };
 
-const onReset = () => emit("reset");
+const onReset = () => emit('reset');
 </script>
