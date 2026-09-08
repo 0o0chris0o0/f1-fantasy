@@ -54,8 +54,23 @@
               <UserCard
                 :card="card.cardData"
                 :rarity="card.rarity"
+                :level="card.level"
+                :xp="card.xp"
+                :inTeam="
+                  userStore.isXCardInUsersCurrentTeam(
+                    card.cardData.cardId,
+                    card.rarity
+                  )
+                "
+                :in-collection="
+                  userStore.doesUserHaveCardInCollection(
+                    card.cardData.cardId,
+                    card.rarity
+                  )
+                "
                 hide-user-data
                 hide-card-score
+                hide-card-level
               />
               <span
                 v-if="card.fantasyRaceScore === 0"
@@ -225,11 +240,13 @@ import {
   type iCardScore,
   type iResult,
   iCardRarity,
-} from "@f1pick6/shared";
+} from '@f1pick6/shared';
 
 const props = defineProps<{
   result: iResult;
 }>();
+
+const userStore = useUserStore();
 
 const isOpen = useState(props.result.raceName, () => false);
 const drivers: iCardScore[] = Object.values(props.result.cards)

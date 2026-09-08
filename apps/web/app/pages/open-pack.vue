@@ -23,7 +23,7 @@
 
     <div
       ref="cardGrid"
-      class="absolute inset-0 overflow-y-auto touch-scroll grid grid-cols-2 items-start gap-x-5 gap-y-6 z-10 pt-[7cap] pb-8 px-4"
+      class="absolute inset-0 overflow-y-auto touch-scroll grid grid-cols-2 items-start gap-x-5 z-10 pt-[7cap] pb-8 px-4"
     >
       <div
         class="absolute top-0 left-0 w-full h-[50px] border-y-[5px] border-white checked-line transition-opacity duration-500"

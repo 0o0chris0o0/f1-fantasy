@@ -30,8 +30,10 @@
                     class="text-sm"
                     :customize="customizeIcon"
                   />
-                  <p class="font-mono tracking-tight text-xs text-legendary">
-                    ADDED --
+                  <p
+                    class="font-mono font-bold tracking-tight text-xs text-legendary"
+                  >
+                    IN COLLECTION
                   </p>
                 </div>
               </template>
@@ -86,7 +88,7 @@
                 </div>
                 <p class="font-bold font-headline">
                   LVL {{ userDetails.level }} ({{ userDetails.xp }} Race{{
-                    userDetails.xp === 1 ? "" : "s"
+                    userDetails.xp === 1 ? '' : 's'
                   }})
                 </p>
               </div>
@@ -109,7 +111,7 @@
                     {{
                       driverStats.averageQualifyingPosition
                         ? `P${driverStats.averageQualifyingPosition}`
-                        : "N/A"
+                        : 'N/A'
                     }}
                   </p>
                 </div>
@@ -119,7 +121,7 @@
                     {{
                       driverStats.averageRacePosition
                         ? `P${driverStats.averageRacePosition}`
-                        : "N/A"
+                        : 'N/A'
                     }}
                   </p>
                 </div>
@@ -174,9 +176,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import { CardType, iCardRarity } from "@f1pick6/shared/types";
-import type { iConstructorCard, iDriverCard } from "@f1pick6/shared/types";
+import { computed } from 'vue';
+import { CardType, iCardRarity } from '@f1pick6/shared/types';
+import type { iConstructorCard, iDriverCard } from '@f1pick6/shared/types';
 
 const {
   card,
@@ -205,7 +207,7 @@ const customizeIcon = (content: string) => {
 };
 
 const isDriverCard = (
-  value: iDriverCard | iConstructorCard,
+  value: iDriverCard | iConstructorCard
 ): value is iDriverCard => {
   return value.type === CardType.DRIVER;
 };

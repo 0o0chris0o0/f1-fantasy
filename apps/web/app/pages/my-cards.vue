@@ -75,11 +75,12 @@
             :card="card.cardData"
             :rarity="card.rarity"
             :level="card.level"
+            :xp="card.xp"
             :quantity="card.quantity"
             :inTeam="
               userStore.isXCardInUsersCurrentTeam(
                 card.cardData.cardId,
-                card.rarity,
+                card.rarity
               )
             "
             :in-collection="card.inCollection"
@@ -92,26 +93,26 @@
 
 <script setup lang="ts">
 // Components
-import { storeToRefs } from "pinia";
-import FiltersDrawer from "~/components/FiltersDrawer.vue";
-import { ref, computed } from "vue";
-import { CardType } from "@f1pick6/shared/types";
-import { sortCardsForMyCards } from "~/utils/filteringSorting";
+import { storeToRefs } from 'pinia';
+import FiltersDrawer from '~/components/FiltersDrawer.vue';
+import { ref, computed } from 'vue';
+import { CardType } from '@f1pick6/shared/types';
+import { sortCardsForMyCards } from '~/utils/filteringSorting';
 
 const userStore = useUserStore();
 
 const { userObj } = storeToRefs(userStore);
 
 // filter / sort state
-const searchText = ref("");
-const selectedRarity = ref("ALL");
-const selectedTeam = ref("ALL");
-const sortBy = ref("rarity:desc,points:desc,name");
-const selectedType = ref<CardType | "ALL">("ALL");
+const searchText = ref('');
+const selectedRarity = ref('ALL');
+const selectedTeam = ref('ALL');
+const sortBy = ref('rarity:desc,points:desc,name');
+const selectedType = ref<CardType | 'ALL'>('ALL');
 const showFilters = ref(false);
 
 definePageMeta({
-  middleware: "auth",
+  middleware: 'auth',
 });
 
 const teams = computed(() => {
@@ -132,11 +133,11 @@ const filteredCards = computed(() => {
     selectedTeam.value,
     sortBy.value,
     undefined,
-    selectedType.value,
+    selectedType.value
   );
 });
 
-const setSelectedType = (type: CardType | "ALL") => {
+const setSelectedType = (type: CardType | 'ALL') => {
   selectedType.value = type;
 };
 
@@ -145,11 +146,11 @@ const toggleFilters = () => {
 };
 
 const resetFilters = () => {
-  searchText.value = "";
-  selectedRarity.value = "ALL";
-  selectedTeam.value = "ALL";
-  sortBy.value = "rarity:desc,points:desc,name";
-  selectedType.value = "ALL";
+  searchText.value = '';
+  selectedRarity.value = 'ALL';
+  selectedTeam.value = 'ALL';
+  sortBy.value = 'rarity:desc,points:desc,name';
+  selectedType.value = 'ALL';
 };
 </script>
 
