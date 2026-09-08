@@ -1,5 +1,8 @@
 <template>
   <UApp>
+    <NuxtLoadingIndicator
+      color="repeating-linear-gradient(to right, var(--color-primary-container) 0%, var(--color-primary) 50%, var(--color-secondary) 100%)"
+    />
     <div
       class="min-h-dvh w-full bg-neutral text-white"
       :class="{ 'menu-open': navOpen }"
@@ -62,6 +65,7 @@
         @click="closeMenu"
       ></button>
       <Nav :nav-open="navOpen" @toggle-menu="toggleMenu" />
+      <Loader v-if="navigationIsSlow" />
     </div>
   </UApp>
 </template>
@@ -70,6 +74,7 @@
 const user = useCurrentUser();
 const userStore = useUserStore();
 const route = useRoute();
+const nuxtApp = useNuxtApp();
 const { visible: isPageVisible } = usePageVisibility();
 
 const { userDataPending, userObj } = storeToRefs(userStore);
@@ -86,6 +91,32 @@ const toggleMenu = () => {
 const closeMenu = () => {
   navOpen.value = false;
 };
+
+// the old page stays on screen while the next one's chunk, middleware and data
+// resolve, so cover it once that wait is long enough to look like a dead tap
+const SLOW_NAVIGATION_MS = 350;
+const navigationIsSlow = ref(false);
+let slowNavigationTimer: ReturnType<typeof setTimeout> | undefined;
+
+const hideNavigationLoader = () => {
+  clearTimeout(slowNavigationTimer);
+  navigationIsSlow.value = false;
+};
+
+const unhookNavigationLoader = [
+  nuxtApp.hook('page:loading:start', () => {
+    // the initial page load has its own loading state
+    if (nuxtApp.isHydrating) return;
+
+    slowNavigationTimer = setTimeout(() => {
+      navigationIsSlow.value = true;
+    }, SLOW_NAVIGATION_MS);
+  }),
+  nuxtApp.hook('page:loading:end', hideNavigationLoader),
+  // a navigation that dies part way through must never leave the loader stuck up
+  nuxtApp.hook('vue:error', hideNavigationLoader),
+  nuxtApp.hook('app:error', hideNavigationLoader),
+];
 
 watch(navOpen, (isOpen) => {
   if (!import.meta.client) return;
@@ -105,6 +136,9 @@ watch(isPageVisible, (currentlyVisible) => {
 onBeforeUnmount(() => {
   if (!import.meta.client) return;
   document.documentElement.style.overflow = '';
+
+  clearTimeout(slowNavigationTimer);
+  for (const unhook of unhookNavigationLoader) unhook();
 });
 </script>
 

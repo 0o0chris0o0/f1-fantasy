@@ -15,6 +15,7 @@
       </div>
       <ul
         class="space-y-6 font-headline uppercase tracking-tighter text-2xl text-white"
+        @click="closeOnLinkTap"
       >
         <li>
           <NuxtLink :to="userLoggedIn ? '/home' : '/'"> Home </NuxtLink>
@@ -86,6 +87,16 @@ const userLoggedIn = computed(() => {
   return !!user.value?.uid;
 });
 
+// close as soon as a link is tapped rather than waiting for the route to change,
+// which on a slow connection leaves the menu sitting open with no sign of progress
+const closeOnLinkTap = (event: MouseEvent) => {
+  if (!(event.target as HTMLElement).closest("a")) return;
+  if (!props.navOpen) return;
+
+  emit("toggleMenu");
+};
+
+// catches navigation we didn't start ourselves, e.g. browser back
 watch(
   () => route.path,
   () => {
